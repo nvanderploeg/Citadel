@@ -9,17 +9,13 @@
 #ifndef citadelGame_h
 #define citadelGame_h
 
-#include <iostream>
-
 namespace citadel {
 
 class CitadelGame {
 public:
-    CitadelGame() { }
+    CitadelGame();
     
-    int run() { std::cout << "hello world!" << std::endl;
-        return 0;
-    }
+    int run();
 };
 
 } //namespace citadel.
