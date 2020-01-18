@@ -11,6 +11,9 @@
 		543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE49523D2B06E0014178D /* citadelGame.cpp */; };
 		543BE49B23D2B06E0014178D /* citadelGame.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49623D2B06E0014178D /* citadelGame.h */; };
 		543BE49C23D2B06E0014178D /* citadelDef.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49823D2B06E0014178D /* citadelDef.h */; };
+		543BE49F23D2B60D0014178D /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE49E23D2B60D0014178D /* libglfw3.a */; };
+		543BE4AA23D2B8CE0014178D /* gameConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE4A823D2B8CE0014178D /* gameConfig.cpp */; };
+		543BE4AB23D2B8CE0014178D /* gameConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE4A923D2B8CE0014178D /* gameConfig.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +22,9 @@
 		543BE49523D2B06E0014178D /* citadelGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = citadelGame.cpp; sourceTree = "<group>"; };
 		543BE49623D2B06E0014178D /* citadelGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = citadelGame.h; sourceTree = "<group>"; };
 		543BE49823D2B06E0014178D /* citadelDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = citadelDef.h; sourceTree = "<group>"; };
+		543BE49E23D2B60D0014178D /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = ../../external/glfw/build/src/libglfw3.a; sourceTree = "<group>"; };
+		543BE4A823D2B8CE0014178D /* gameConfig.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gameConfig.cpp; sourceTree = "<group>"; };
+		543BE4A923D2B8CE0014178D /* gameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gameConfig.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				543BE49F23D2B60D0014178D /* libglfw3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,6 +44,7 @@
 			children = (
 				543BE49223D2B06E0014178D /* citadel */,
 				543BE48123D2AF170014178D /* Products */,
+				543BE49D23D2B60D0014178D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +72,8 @@
 			children = (
 				543BE49523D2B06E0014178D /* citadelGame.cpp */,
 				543BE49623D2B06E0014178D /* citadelGame.h */,
+				543BE4A823D2B8CE0014178D /* gameConfig.cpp */,
+				543BE4A923D2B8CE0014178D /* gameConfig.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -76,6 +86,14 @@
 			path = system;
 			sourceTree = "<group>";
 		};
+		543BE49D23D2B60D0014178D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				543BE49E23D2B60D0014178D /* libglfw3.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -83,6 +101,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				543BE4AB23D2B8CE0014178D /* gameConfig.h in Headers */,
 				543BE49923D2B06E0014178D /* citadel.h in Headers */,
 				543BE49C23D2B06E0014178D /* citadelDef.h in Headers */,
 				543BE49B23D2B06E0014178D /* citadelGame.h in Headers */,
@@ -147,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */,
+				543BE4AA23D2B8CE0014178D /* gameConfig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,7 +190,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -228,7 +248,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -267,7 +287,11 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				HEADER_SEARCH_PATHS = ../../source;
+				HEADER_SEARCH_PATHS = (
+					../../source,
+					../../external/glfw/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../external/glfw/build/src;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -278,7 +302,11 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				HEADER_SEARCH_PATHS = ../../source;
+				HEADER_SEARCH_PATHS = (
+					../../source,
+					../../external/glfw/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../external/glfw/build/src;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

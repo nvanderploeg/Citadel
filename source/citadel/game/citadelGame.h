@@ -11,11 +11,17 @@
 
 namespace citadel {
 
+class GameConfig;
+
 class CitadelGame {
 public:
     CitadelGame();
-    
+    ~CitadelGame() = default;
     int run();
+    
+private:
+    bool ready;
+    std::shared_ptr<GameConfig> gameConfig;
 };
 
 } //namespace citadel.

@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		543BE46823D2A50D0014178D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE46723D2A50D0014178D /* main.cpp */; };
 		543BE48E23D2AF240014178D /* libCitadelEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE48C23D2AF180014178D /* libCitadelEngine.a */; };
+		543BE4A123D2B6740014178D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A023D2B6740014178D /* Foundation.framework */; };
+		543BE4A323D2B6880014178D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A223D2B6880014178D /* CoreGraphics.framework */; };
+		543BE4A523D2B6A40014178D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A423D2B6A40014178D /* IOKit.framework */; };
+		543BE4A723D2B6C10014178D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A623D2B6C10014178D /* AppKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +42,10 @@
 		543BE46723D2A50D0014178D /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		543BE47223D2A6E80014178D /* citadel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = citadel.h; sourceTree = "<group>"; };
 		543BE48723D2AF170014178D /* CitadelEngine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CitadelEngine.xcodeproj; path = ../project/CitadelEngine/CitadelEngine.xcodeproj; sourceTree = "<group>"; };
+		543BE4A023D2B6740014178D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		543BE4A223D2B6880014178D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		543BE4A423D2B6A40014178D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		543BE4A623D2B6C10014178D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +53,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				543BE4A723D2B6C10014178D /* AppKit.framework in Frameworks */,
+				543BE4A523D2B6A40014178D /* IOKit.framework in Frameworks */,
+				543BE4A323D2B6880014178D /* CoreGraphics.framework in Frameworks */,
+				543BE4A123D2B6740014178D /* Foundation.framework in Frameworks */,
 				543BE48E23D2AF240014178D /* libCitadelEngine.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +111,10 @@
 		543BE48D23D2AF240014178D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				543BE4A623D2B6C10014178D /* AppKit.framework */,
+				543BE4A423D2B6A40014178D /* IOKit.framework */,
+				543BE4A223D2B6880014178D /* CoreGraphics.framework */,
+				543BE4A023D2B6740014178D /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -200,7 +216,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -259,7 +275,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
