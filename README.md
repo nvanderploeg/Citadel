@@ -16,3 +16,4 @@ Stay tuned.
 
 ### Stephanie Barrett
 ### Norman van der Ploeg
+### Dario Segura
