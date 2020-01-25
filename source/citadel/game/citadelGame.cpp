@@ -5,12 +5,15 @@
 //  Created by Norman van der Ploeg on 2020-01-17.
 //  Copyright © 2020 Floating Citadel Games. All rights reserved.
 //
+
 //std includes
 #include <stdlib.h>
 #include <memory.h>
 #include <iostream>
+
 //lib includes
 #include "GLFW/glfw3.h"
+
 //Citadel includes
 #include "citadelGame.h"
 #include "gameConfig.h"
@@ -39,11 +42,14 @@ int CitadelGame::run() {
     if (!window) {
         return 501; // couldn't create window
     }
+    
+    glfwSetKeyCallback(window, [](GLFWwindow* window,int key, int scancode, int action, int mods){
+        cout << "Key Callback" << endl << key << "," << scancode << "," << action << "," << mods << endl;
+    });
 
     // Keep running until term
     while (!glfwWindowShouldClose(window))
     {
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

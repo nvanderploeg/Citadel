@@ -8,6 +8,7 @@
 
 #ifndef Citadel_h
 #define Citadel_h
+
 #include <memory>
 #include "game/citadelGame.h"
 #include "system/citadelDef.h"
