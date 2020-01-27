@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5423EF8A23DE7236002E7C6B /* game.config in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5423EF8823DE71D0002E7C6B /* game.config */; };
 		543BE46823D2A50D0014178D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE46723D2A50D0014178D /* main.cpp */; };
 		543BE48E23D2AF240014178D /* libCitadelEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE48C23D2AF180014178D /* libCitadelEngine.a */; };
 		543BE4A123D2B6740014178D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A023D2B6740014178D /* Foundation.framework */; };
@@ -28,19 +29,20 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		543BE46223D2A50D0014178D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
+				5423EF8A23DE7236002E7C6B /* game.config in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5423EF8823DE71D0002E7C6B /* game.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = game.config; sourceTree = "<group>"; };
 		543BE46423D2A50D0014178D /* Floating Citadel Demo app */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Floating Citadel Demo app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		543BE46723D2A50D0014178D /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		543BE47223D2A6E80014178D /* citadel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = citadel.h; sourceTree = "<group>"; };
 		543BE48723D2AF170014178D /* CitadelEngine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CitadelEngine.xcodeproj; path = ../project/CitadelEngine/CitadelEngine.xcodeproj; sourceTree = "<group>"; };
 		543BE4A023D2B6740014178D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		543BE4A223D2B6880014178D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -85,19 +87,10 @@
 		543BE46623D2A50D0014178D /* Floating Citadel Demo app */ = {
 			isa = PBXGroup;
 			children = (
-				543BE47123D2A6E80014178D /* citadel */,
+				5423EF8823DE71D0002E7C6B /* game.config */,
 				543BE46723D2A50D0014178D /* main.cpp */,
 			);
 			path = "Floating Citadel Demo app";
-			sourceTree = "<group>";
-		};
-		543BE47123D2A6E80014178D /* citadel */ = {
-			isa = PBXGroup;
-			children = (
-				543BE47223D2A6E80014178D /* citadel.h */,
-			);
-			name = citadel;
-			path = ../../source/citadel;
 			sourceTree = "<group>";
 		};
 		543BE48823D2AF170014178D /* Products */ = {

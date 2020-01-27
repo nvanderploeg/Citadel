@@ -38,7 +38,7 @@ int CitadelGame::run() {
     if (!ready) {
         return 500; //Failed to init
     }
-    GLFWwindow* window = glfwCreateWindow(gameConfig->width, gameConfig->height, gameConfig->title.c_str(), NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(gameConfig->windowProperties.width, gameConfig->windowProperties.height, gameConfig->windowProperties.title.c_str(), NULL, NULL);
     if (!window) {
         return 501; // couldn't create window
     }

@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5423EF7023DE63A7002E7C6B /* JSONSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF6C23DE63A7002E7C6B /* JSONSerializable.h */; };
+		5423EF7123DE63A7002E7C6B /* windowProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF6D23DE63A7002E7C6B /* windowProperties.cpp */; };
+		5423EF7223DE63A7002E7C6B /* windowProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF6E23DE63A7002E7C6B /* windowProperties.h */; };
+		5423EF7523DE697D002E7C6B /* serializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF7323DE697D002E7C6B /* serializer.cpp */; };
+		5423EF7623DE697D002E7C6B /* serializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF7423DE697D002E7C6B /* serializer.h */; };
+		5423EF7C23DE6B5E002E7C6B /* json-forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF7923DE6B5E002E7C6B /* json-forwards.h */; };
+		5423EF7D23DE6B5E002E7C6B /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF7A23DE6B5E002E7C6B /* json.h */; };
+		5423EF7E23DE6B5E002E7C6B /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF7B23DE6B5E002E7C6B /* jsoncpp.cpp */; };
+		5423EF8623DE711C002E7C6B /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF8423DE711C002E7C6B /* ResourcePath.mm */; };
+		5423EF8723DE711C002E7C6B /* ResourcePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF8523DE711C002E7C6B /* ResourcePath.h */; };
 		543BE49923D2B06E0014178D /* citadel.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49323D2B06E0014178D /* citadel.h */; };
 		543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE49523D2B06E0014178D /* citadelGame.cpp */; };
 		543BE49B23D2B06E0014178D /* citadelGame.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49623D2B06E0014178D /* citadelGame.h */; };
@@ -17,6 +27,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5423EF6C23DE63A7002E7C6B /* JSONSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONSerializable.h; sourceTree = "<group>"; };
+		5423EF6D23DE63A7002E7C6B /* windowProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = windowProperties.cpp; sourceTree = "<group>"; };
+		5423EF6E23DE63A7002E7C6B /* windowProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = windowProperties.h; sourceTree = "<group>"; };
+		5423EF7323DE697D002E7C6B /* serializer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serializer.cpp; sourceTree = "<group>"; };
+		5423EF7423DE697D002E7C6B /* serializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serializer.h; sourceTree = "<group>"; };
+		5423EF7923DE6B5E002E7C6B /* json-forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
+		5423EF7A23DE6B5E002E7C6B /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		5423EF7B23DE6B5E002E7C6B /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
+		5423EF8423DE711C002E7C6B /* ResourcePath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
+		5423EF8523DE711C002E7C6B /* ResourcePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePath.h; sourceTree = "<group>"; };
 		543BE48023D2AF170014178D /* libCitadelEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCitadelEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		543BE49323D2B06E0014178D /* citadel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = citadel.h; sourceTree = "<group>"; };
 		543BE49523D2B06E0014178D /* citadelGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = citadelGame.cpp; sourceTree = "<group>"; };
@@ -39,9 +59,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5423EF7723DE6B5E002E7C6B /* jsoncpp */ = {
+			isa = PBXGroup;
+			children = (
+				5423EF7823DE6B5E002E7C6B /* json */,
+				5423EF7B23DE6B5E002E7C6B /* jsoncpp.cpp */,
+			);
+			name = jsoncpp;
+			path = ../../external/jsoncpp;
+			sourceTree = "<group>";
+		};
+		5423EF7823DE6B5E002E7C6B /* json */ = {
+			isa = PBXGroup;
+			children = (
+				5423EF7923DE6B5E002E7C6B /* json-forwards.h */,
+				5423EF7A23DE6B5E002E7C6B /* json.h */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
 		543BE47723D2AF170014178D = {
 			isa = PBXGroup;
 			children = (
+				5423EF7723DE6B5E002E7C6B /* jsoncpp */,
 				543BE49223D2B06E0014178D /* citadel */,
 				543BE48123D2AF170014178D /* Products */,
 				543BE49D23D2B60D0014178D /* Frameworks */,
@@ -81,6 +121,13 @@
 		543BE49723D2B06E0014178D /* system */ = {
 			isa = PBXGroup;
 			children = (
+				5423EF8523DE711C002E7C6B /* ResourcePath.h */,
+				5423EF8423DE711C002E7C6B /* ResourcePath.mm */,
+				5423EF7323DE697D002E7C6B /* serializer.cpp */,
+				5423EF7423DE697D002E7C6B /* serializer.h */,
+				5423EF6C23DE63A7002E7C6B /* JSONSerializable.h */,
+				5423EF6D23DE63A7002E7C6B /* windowProperties.cpp */,
+				5423EF6E23DE63A7002E7C6B /* windowProperties.h */,
 				543BE49823D2B06E0014178D /* citadelDef.h */,
 			);
 			path = system;
@@ -101,10 +148,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5423EF7D23DE6B5E002E7C6B /* json.h in Headers */,
 				543BE4AB23D2B8CE0014178D /* gameConfig.h in Headers */,
 				543BE49923D2B06E0014178D /* citadel.h in Headers */,
+				5423EF8723DE711C002E7C6B /* ResourcePath.h in Headers */,
+				5423EF7623DE697D002E7C6B /* serializer.h in Headers */,
 				543BE49C23D2B06E0014178D /* citadelDef.h in Headers */,
+				5423EF7C23DE6B5E002E7C6B /* json-forwards.h in Headers */,
 				543BE49B23D2B06E0014178D /* citadelGame.h in Headers */,
+				5423EF7023DE63A7002E7C6B /* JSONSerializable.h in Headers */,
+				5423EF7223DE63A7002E7C6B /* windowProperties.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,8 +218,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5423EF8623DE711C002E7C6B /* ResourcePath.mm in Sources */,
+				5423EF7E23DE6B5E002E7C6B /* jsoncpp.cpp in Sources */,
 				543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */,
+				5423EF7523DE697D002E7C6B /* serializer.cpp in Sources */,
 				543BE4AA23D2B8CE0014178D /* gameConfig.cpp in Sources */,
+				5423EF7123DE63A7002E7C6B /* windowProperties.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +346,7 @@
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
 					../../source,
+					../../external/jsoncpp,
 					../../external/glfw/include,
 				);
 				LIBRARY_SEARCH_PATHS = ../../external/glfw/build/src;
@@ -304,6 +362,7 @@
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
 					../../source,
+					../../external/jsoncpp,
 					../../external/glfw/include,
 				);
 				LIBRARY_SEARCH_PATHS = ../../external/glfw/build/src;
