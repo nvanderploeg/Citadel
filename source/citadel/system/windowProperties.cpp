@@ -25,7 +25,7 @@ namespace citadel {
 
 	}
 
-	void WindowProperties::serialize(Json::Value & jValue)
+	void WindowProperties::serialize(Json::Value& jValue)
 	{
 		jValue["width"] = width;
 		jValue["height"] = height;
@@ -33,7 +33,7 @@ namespace citadel {
 		jValue["maxFPS"] = maxFPS;
 	}
 
-	void WindowProperties::deserialize(const Json::Value & jValue)
+	void WindowProperties::deserialize(const Json::Value& jValue)
 	{
 		width = jValue.get("width", DEFAULT_WIDTH).asUInt();
 		height = jValue.get("height", DEFAULT_HEIGHT).asUInt();

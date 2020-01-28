@@ -19,9 +19,12 @@ public:
     ~CitadelGame() = default;
     int run();
     
+    
 private:
     bool ready;
+    Clock clock;
     std::shared_ptr<GameConfig> gameConfig;
+    void Tick(Time &deltaTime);
 };
 
 } //namespace citadel.

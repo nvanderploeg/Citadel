@@ -1,8 +1,5 @@
-#include <string>
-#include <fstream>
-#include "json/json.h"
-#include "serializer.h"
-#include "ResourcePath.h"
+
+#include "citadelSystem.h"
 
 namespace citadel {
 

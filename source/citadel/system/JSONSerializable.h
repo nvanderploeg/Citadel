@@ -10,8 +10,8 @@ namespace citadel {
     public:
         IJSONSerializable() { }
         virtual ~IJSONSerializable() { }
-        virtual void serialize(Json::Value & jValue) = 0;
-        virtual void deserialize(const Json::Value & jValue) = 0;
+        virtual void serialize(Json::Value& jValue) = 0;
+        virtual void deserialize(const Json::Value& jValue) = 0;
         
     }; // class IJSONSerializable
     
@@ -23,7 +23,7 @@ namespace citadel {
         { \
             Serializer::getSerializableTypeObjectMap()[id] = construct##type; \
         } \
-        static type* construct##type(const Json::Value & jValue) \
+        static type* construct##type(const Json::Value& jValue) \
         { \
             type* pObject = new type(); \
             pObject->deserialize(jValue); \

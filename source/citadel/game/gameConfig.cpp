@@ -10,28 +10,30 @@
 #include <cstdlib>
 #include "gameConfig.h"
 #include "serializer.h"
+#include "windowProperties.h"
 
 namespace citadel {
 
 GameConfig::GameConfig(const std::string & path)
 {
+    windowProperties = std::make_shared<WindowProperties>();
     Json::Value jConfig = Serializer::loadFile(path);
     if(jConfig != Json::nullValue) {
         deserialize(jConfig);
     }
 }
 
-void GameConfig::serialize(Json::Value & jValue)
+void GameConfig::serialize(Json::Value& jValue)
 {
-    windowProperties.serialize(jValue["windowProperties"]);
+    windowProperties->serialize(jValue["windowProperties"]);
     jValue["texturePath"] = texturePath;
     jValue["fontPath"] = fontPath;
     jValue["dataPath"] = dataPath;
 }
 
-void GameConfig::deserialize(const Json::Value & jValue)
+void GameConfig::deserialize(const Json::Value& jValue)
 {
-    windowProperties.deserialize(jValue["windowProperties"]);
+    windowProperties->deserialize(jValue["windowProperties"]);
     texturePath = jValue.get("texturePath", "textures/").asString();
     fontPath = jValue.get("fontPath", "fonts/").asString();
     dataPath = jValue.get("dataPath", "data/").asString();

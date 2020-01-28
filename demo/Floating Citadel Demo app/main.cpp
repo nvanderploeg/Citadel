@@ -7,6 +7,7 @@
 //
 
 #include "citadel/citadel.h"
+
 using namespace citadel;
 
 int main(int argc, const char * argv[]) {

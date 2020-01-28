@@ -15,8 +15,15 @@
 		5423EF7C23DE6B5E002E7C6B /* json-forwards.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF7923DE6B5E002E7C6B /* json-forwards.h */; };
 		5423EF7D23DE6B5E002E7C6B /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF7A23DE6B5E002E7C6B /* json.h */; };
 		5423EF7E23DE6B5E002E7C6B /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF7B23DE6B5E002E7C6B /* jsoncpp.cpp */; };
-		5423EF8623DE711C002E7C6B /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF8423DE711C002E7C6B /* ResourcePath.mm */; };
-		5423EF8723DE711C002E7C6B /* ResourcePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF8523DE711C002E7C6B /* ResourcePath.h */; };
+		5423EF8623DE711C002E7C6B /* resourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF8423DE711C002E7C6B /* resourcePath.mm */; };
+		5423EF8723DE711C002E7C6B /* resourcePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF8523DE711C002E7C6B /* resourcePath.h */; };
+		5423EF8F23DFC207002E7C6B /* tickable.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF8E23DFC207002E7C6B /* tickable.h */; };
+		5423EF9223DFC23D002E7C6B /* cTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF9023DFC23D002E7C6B /* cTime.cpp */; };
+		5423EF9323DFC23D002E7C6B /* cTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9123DFC23D002E7C6B /* cTime.h */; };
+		5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9423DFC44F002E7C6B /* citadelSystem.h */; };
+		5423EF9723DFC493002E7C6B /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9623DFC493002E7C6B /* types.h */; };
+		5423EF9E23DFCE3B002E7C6B /* clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9C23DFCE3B002E7C6B /* clock.h */; };
+		5423EF9F23DFCE3B002E7C6B /* clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF9D23DFCE3B002E7C6B /* clock.cpp */; };
 		543BE49923D2B06E0014178D /* citadel.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49323D2B06E0014178D /* citadel.h */; };
 		543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE49523D2B06E0014178D /* citadelGame.cpp */; };
 		543BE49B23D2B06E0014178D /* citadelGame.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49623D2B06E0014178D /* citadelGame.h */; };
@@ -35,8 +42,15 @@
 		5423EF7923DE6B5E002E7C6B /* json-forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
 		5423EF7A23DE6B5E002E7C6B /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
 		5423EF7B23DE6B5E002E7C6B /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
-		5423EF8423DE711C002E7C6B /* ResourcePath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
-		5423EF8523DE711C002E7C6B /* ResourcePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourcePath.h; sourceTree = "<group>"; };
+		5423EF8423DE711C002E7C6B /* resourcePath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = resourcePath.mm; sourceTree = "<group>"; };
+		5423EF8523DE711C002E7C6B /* resourcePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resourcePath.h; sourceTree = "<group>"; };
+		5423EF8E23DFC207002E7C6B /* tickable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tickable.h; sourceTree = "<group>"; };
+		5423EF9023DFC23D002E7C6B /* cTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTime.cpp; sourceTree = "<group>"; };
+		5423EF9123DFC23D002E7C6B /* cTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTime.h; sourceTree = "<group>"; };
+		5423EF9423DFC44F002E7C6B /* citadelSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = citadelSystem.h; sourceTree = "<group>"; };
+		5423EF9623DFC493002E7C6B /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		5423EF9C23DFCE3B002E7C6B /* clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clock.h; sourceTree = "<group>"; };
+		5423EF9D23DFCE3B002E7C6B /* clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = clock.cpp; sourceTree = "<group>"; };
 		543BE48023D2AF170014178D /* libCitadelEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCitadelEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		543BE49323D2B06E0014178D /* citadel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = citadel.h; sourceTree = "<group>"; };
 		543BE49523D2B06E0014178D /* citadelGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = citadelGame.cpp; sourceTree = "<group>"; };
@@ -100,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				543BE49323D2B06E0014178D /* citadel.h */,
+				5423EF9423DFC44F002E7C6B /* citadelSystem.h */,
 				543BE49423D2B06E0014178D /* game */,
 				543BE49723D2B06E0014178D /* system */,
 			);
@@ -121,14 +136,20 @@
 		543BE49723D2B06E0014178D /* system */ = {
 			isa = PBXGroup;
 			children = (
-				5423EF8523DE711C002E7C6B /* ResourcePath.h */,
-				5423EF8423DE711C002E7C6B /* ResourcePath.mm */,
+				5423EF9D23DFCE3B002E7C6B /* clock.cpp */,
+				5423EF9C23DFCE3B002E7C6B /* clock.h */,
+				5423EF9623DFC493002E7C6B /* types.h */,
+				543BE49823D2B06E0014178D /* citadelDef.h */,
+				5423EF6C23DE63A7002E7C6B /* JSONSerializable.h */,
+				5423EF8523DE711C002E7C6B /* resourcePath.h */,
+				5423EF8423DE711C002E7C6B /* resourcePath.mm */,
 				5423EF7323DE697D002E7C6B /* serializer.cpp */,
 				5423EF7423DE697D002E7C6B /* serializer.h */,
-				5423EF6C23DE63A7002E7C6B /* JSONSerializable.h */,
+				5423EF9023DFC23D002E7C6B /* cTime.cpp */,
+				5423EF9123DFC23D002E7C6B /* cTime.h */,
+				5423EF8E23DFC207002E7C6B /* tickable.h */,
 				5423EF6D23DE63A7002E7C6B /* windowProperties.cpp */,
 				5423EF6E23DE63A7002E7C6B /* windowProperties.h */,
-				543BE49823D2B06E0014178D /* citadelDef.h */,
 			);
 			path = system;
 			sourceTree = "<group>";
@@ -150,14 +171,19 @@
 			files = (
 				5423EF7D23DE6B5E002E7C6B /* json.h in Headers */,
 				543BE4AB23D2B8CE0014178D /* gameConfig.h in Headers */,
+				5423EF9723DFC493002E7C6B /* types.h in Headers */,
 				543BE49923D2B06E0014178D /* citadel.h in Headers */,
-				5423EF8723DE711C002E7C6B /* ResourcePath.h in Headers */,
+				5423EF9323DFC23D002E7C6B /* cTime.h in Headers */,
+				5423EF8723DE711C002E7C6B /* resourcePath.h in Headers */,
+				5423EF9E23DFCE3B002E7C6B /* clock.h in Headers */,
 				5423EF7623DE697D002E7C6B /* serializer.h in Headers */,
 				543BE49C23D2B06E0014178D /* citadelDef.h in Headers */,
 				5423EF7C23DE6B5E002E7C6B /* json-forwards.h in Headers */,
+				5423EF8F23DFC207002E7C6B /* tickable.h in Headers */,
 				543BE49B23D2B06E0014178D /* citadelGame.h in Headers */,
 				5423EF7023DE63A7002E7C6B /* JSONSerializable.h in Headers */,
 				5423EF7223DE63A7002E7C6B /* windowProperties.h in Headers */,
+				5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,11 +244,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5423EF8623DE711C002E7C6B /* ResourcePath.mm in Sources */,
+				5423EF8623DE711C002E7C6B /* resourcePath.mm in Sources */,
+				5423EF9223DFC23D002E7C6B /* cTime.cpp in Sources */,
 				5423EF7E23DE6B5E002E7C6B /* jsoncpp.cpp in Sources */,
 				543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */,
 				5423EF7523DE697D002E7C6B /* serializer.cpp in Sources */,
 				543BE4AA23D2B8CE0014178D /* gameConfig.cpp in Sources */,
+				5423EF9F23DFCE3B002E7C6B /* clock.cpp in Sources */,
 				5423EF7123DE63A7002E7C6B /* windowProperties.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
