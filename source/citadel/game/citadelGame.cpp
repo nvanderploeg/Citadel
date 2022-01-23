@@ -25,6 +25,25 @@
 using namespace std;
 namespace citadel {
 
+void initGL(int width, int height) {
+    
+
+    //Set the viewport
+//    glViewport( 0.f, 0.f, width, height );
+
+//    //Initialize Projection Matrix
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho( 0.0, width, height, 0.0, 1.0, -1.0 );
+
+    //Initialize Modelview Matrix
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+
+    //Initialize clear color
+    glClearColor( 0.f, 0.f, 0.f, 1.f );
+}
+
 CitadelGame::CitadelGame() {
     ready = false;
     gameConfig = make_shared<GameConfig>("game.config");
@@ -49,9 +68,11 @@ int CitadelGame::run() {
     glfwSetKeyCallback(window, [](GLFWwindow* window,int key, int scancode, int action, int mods){
         cout << "Key Callback" << endl << key << "," << scancode << "," << action << "," << mods << endl;
     });
-
+    
+    glfwMakeContextCurrent(window);
+    initGL(gameConfig->windowProperties->width, gameConfig->windowProperties->height);
     // Keep running until term
-    static  Time frameTime = Time::seconds(1.f/60.f);
+    static  Time frameTime = Time::seconds(1.f/30.f);
     Time frameTimer = Time::getCurrentTime();
     clock.restart();
     while (!glfwWindowShouldClose(window))
@@ -69,7 +90,7 @@ int CitadelGame::run() {
         
         auto fTime = clock.getElapsedTime();
         if(fTime < frameTime) {
-            usleep((frameTime - fTime).asMicroseconds());
+            usleep((unsigned int)(frameTime - fTime).asMicroseconds());
         }
     }
     

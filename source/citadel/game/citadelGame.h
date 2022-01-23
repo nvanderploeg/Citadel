@@ -20,11 +20,11 @@ public:
     int run();
     
     
-private:
+protected:
     bool ready;
     Clock clock;
     std::shared_ptr<GameConfig> gameConfig;
-    void Tick(Time &deltaTime);
+    virtual void Tick(Time &deltaTime);
 };
 
 } //namespace citadel.

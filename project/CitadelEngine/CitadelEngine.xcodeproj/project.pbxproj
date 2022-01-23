@@ -20,11 +20,11 @@
 		5423EF8F23DFC207002E7C6B /* tickable.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF8E23DFC207002E7C6B /* tickable.h */; };
 		5423EF9223DFC23D002E7C6B /* cTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF9023DFC23D002E7C6B /* cTime.cpp */; };
 		5423EF9323DFC23D002E7C6B /* cTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9123DFC23D002E7C6B /* cTime.h */; };
-		5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9423DFC44F002E7C6B /* citadelSystem.h */; };
+		5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9423DFC44F002E7C6B /* citadelSystem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5423EF9723DFC493002E7C6B /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9623DFC493002E7C6B /* types.h */; };
 		5423EF9E23DFCE3B002E7C6B /* clock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5423EF9C23DFCE3B002E7C6B /* clock.h */; };
 		5423EF9F23DFCE3B002E7C6B /* clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5423EF9D23DFCE3B002E7C6B /* clock.cpp */; };
-		543BE49923D2B06E0014178D /* citadel.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49323D2B06E0014178D /* citadel.h */; };
+		543BE49923D2B06E0014178D /* citadel.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49323D2B06E0014178D /* citadel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		543BE49A23D2B06E0014178D /* citadelGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 543BE49523D2B06E0014178D /* citadelGame.cpp */; };
 		543BE49B23D2B06E0014178D /* citadelGame.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49623D2B06E0014178D /* citadelGame.h */; };
 		543BE49C23D2B06E0014178D /* citadelDef.h in Headers */ = {isa = PBXBuildFile; fileRef = 543BE49823D2B06E0014178D /* citadelDef.h */; };
@@ -169,10 +169,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				543BE49923D2B06E0014178D /* citadel.h in Headers */,
+				5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */,
 				5423EF7D23DE6B5E002E7C6B /* json.h in Headers */,
 				543BE4AB23D2B8CE0014178D /* gameConfig.h in Headers */,
 				5423EF9723DFC493002E7C6B /* types.h in Headers */,
-				543BE49923D2B06E0014178D /* citadel.h in Headers */,
 				5423EF9323DFC23D002E7C6B /* cTime.h in Headers */,
 				5423EF8723DE711C002E7C6B /* resourcePath.h in Headers */,
 				5423EF9E23DFCE3B002E7C6B /* clock.h in Headers */,
@@ -183,7 +184,6 @@
 				543BE49B23D2B06E0014178D /* citadelGame.h in Headers */,
 				5423EF7023DE63A7002E7C6B /* JSONSerializable.h in Headers */,
 				5423EF7223DE63A7002E7C6B /* windowProperties.h in Headers */,
-				5423EF9523DFC44F002E7C6B /* citadelSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,7 +213,7 @@
 		543BE47823D2AF170014178D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "Floating Citadel Games";
 				TargetAttributes = {
 					543BE47F23D2AF170014178D = {
@@ -284,6 +284,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -308,10 +309,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DGL_SILENCE_DEPRECATION",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -342,6 +347,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -360,9 +366,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DGL_SILENCE_DEPRECATION",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;

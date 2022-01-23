@@ -14,6 +14,7 @@
 		543BE4A323D2B6880014178D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A223D2B6880014178D /* CoreGraphics.framework */; };
 		543BE4A523D2B6A40014178D /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A423D2B6A40014178D /* IOKit.framework */; };
 		543BE4A723D2B6C10014178D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 543BE4A623D2B6C10014178D /* AppKit.framework */; };
+		F40C5B14279DA458006025C0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C5B13279DA458006025C0 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		543BE4A223D2B6880014178D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		543BE4A423D2B6A40014178D /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		543BE4A623D2B6C10014178D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F40C5B13279DA458006025C0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40C5B14279DA458006025C0 /* OpenGL.framework in Frameworks */,
 				543BE4A723D2B6C10014178D /* AppKit.framework in Frameworks */,
 				543BE4A523D2B6A40014178D /* IOKit.framework in Frameworks */,
 				543BE4A323D2B6880014178D /* CoreGraphics.framework in Frameworks */,
@@ -104,6 +107,7 @@
 		543BE48D23D2AF240014178D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F40C5B13279DA458006025C0 /* OpenGL.framework */,
 				543BE4A623D2B6C10014178D /* AppKit.framework */,
 				543BE4A423D2B6A40014178D /* IOKit.framework */,
 				543BE4A223D2B6880014178D /* CoreGraphics.framework */,
@@ -138,7 +142,7 @@
 		543BE45C23D2A50D0014178D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "Floating Citadel Games";
 				TargetAttributes = {
 					543BE46323D2A50D0014178D = {
@@ -218,6 +222,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -246,7 +251,7 @@
 					../source,
 					../external/jsoncpp,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -280,6 +285,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -302,7 +308,7 @@
 					../source,
 					../external/jsoncpp,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -316,6 +322,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -328,6 +335,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
