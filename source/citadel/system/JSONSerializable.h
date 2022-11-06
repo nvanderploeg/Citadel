@@ -2,6 +2,7 @@
 #ifndef __N0_IJSONSerializable_H__
 #define __N0_IJSONSerializable_H__
 #include "json/json.h"
+#include <functional>
 
 namespace citadel {
 
