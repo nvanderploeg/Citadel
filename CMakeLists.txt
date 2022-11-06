@@ -14,17 +14,14 @@ add_subdirectory(external/glfw)
 
 add_dependencies(citadel glfw)
 
-target_link_libraries(citadel PUBLIC
-    glfw
-)
+target_link_libraries(citadel PUBLIC glfw)
+
 if(APPLE) 
-target_link_libraries(citadel PUBLIC
-    OpenGL::GL
-)
+    target_link_libraries(citadel PUBLIC OpenGL::GL)
+elseif(MSVC)
+    target_link_libraries(citadel PUBLIC ${OPENGL_gl_LIBRARY})
 else()
-target_link_libraries(citadel PUBLIC
-    OpenGL
-)
+    target_link_libraries(citadel PUBLIC OpenGL)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
