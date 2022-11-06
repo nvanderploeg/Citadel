@@ -10,7 +10,8 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <iostream>
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 //lib includes
 #include "GLFW/glfw3.h"
@@ -90,7 +91,7 @@ int CitadelGame::run() {
         
         auto fTime = clock.getElapsedTime();
         if(fTime < frameTime) {
-            usleep((unsigned int)(frameTime - fTime).asMicroseconds());
+            std::this_thread::sleep_for(std::chrono::microseconds((unsigned int)(frameTime - fTime).asMicroseconds()));
         }
     }
     
