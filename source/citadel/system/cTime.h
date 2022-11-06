@@ -57,7 +57,6 @@ namespace citadel
 		/// \brief Default constructor.
 		/// Sets the time value to zero.
 		Time();
-		virtual ~Time() = default;
 		
 		/// \brief Construct the time from a seconds value.
 		explicit Time(f32 seconds);

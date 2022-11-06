@@ -14,8 +14,19 @@ add_subdirectory(external/glfw)
 
 add_dependencies(citadel glfw)
 
+target_link_libraries(citadel PUBLIC
+    glfw
+)
+if(APPLE) 
+target_link_libraries(citadel PUBLIC
+    OpenGL::GL
+)
+else()
+target_link_libraries(citadel PUBLIC
+    OpenGL
+)
+endif()
 
-target_include_directories(${PROJECT_NAME}
-PUBLIC
+target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
 )
