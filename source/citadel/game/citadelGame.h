@@ -9,9 +9,12 @@
 #ifndef citadelGame_h
 #define citadelGame_h
 
+class GLFWwindow;
+
 namespace citadel {
 
 class GameConfig;
+class InputRouter;
 
 class CitadelGame {
 public:
@@ -23,8 +26,17 @@ public:
 protected:
     bool ready;
     Clock clock;
-    std::shared_ptr<GameConfig> gameConfig;
+    std::shared_ptr<GameConfig> m_gameConfig;
+    std::shared_ptr<InputRouter> m_inputRouter;
     virtual void Tick(Time &deltaTime);
+
+private:
+    GLFWwindow* m_window;
+    void Setup();
+    void TearDown();
+
+    bool Running();
+
 };
 
 } //namespace citadel.

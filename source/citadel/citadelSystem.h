@@ -20,5 +20,6 @@
 #include "system/cTime.h"
 #include "system/tickable.h"
 #include "system/clock.h"
+#include "system/errorCodes.h"
 
 #endif // __N0_SYSTEM_H__

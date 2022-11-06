@@ -5,6 +5,9 @@ PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_subdirectory(game)
-add_subdirectory(input)
-add_subdirectory(system)
+
+target_sources(${PROJECT_NAME}
+PRIVATE
+inputRouter.cpp
+inputRouter.h
+)
