@@ -1,17 +1,14 @@
 #pragma once
 
-class GLFWwindow;
+#include "GLFW/glfw3.h"
 
-namespace citadel {
+namespace citadel
+{
+    class InputRouter
+    {
+    public:
+        InputRouter();
 
-class InputRouter {
-
-public:
-InputRouter();
-
-void BindToGLFW(GLFWwindow* window);
-
-
-};
-    
+        void BindToGLFW(GLFWwindow* window);
+    };    
 }

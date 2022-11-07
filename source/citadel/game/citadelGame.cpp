@@ -108,7 +108,7 @@ void CitadelGame::Setup()
     //Create and bind the input router for event handling
     m_inputRouter = std::make_shared<InputRouter>();
     // TODO: fix this in windows; it's not linking
-    //m_inputRouter->BindToGLFW(m_window);
+    m_inputRouter->BindToGLFW(m_window);
 
     glfwMakeContextCurrent(m_window);
     initGL(width, height);
