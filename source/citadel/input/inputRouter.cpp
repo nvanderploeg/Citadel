@@ -16,12 +16,15 @@ namespace citadel
             std::cout << "Key Callback" << std::endl << key << "," << scancode << "," << action << "," << mods << std::endl;
         });
 
-        glfwSetCursorPosCallback(window, [](GLFWwindow* window,double x, double y) {
-            // std::cout << "MousePos Callback" << std::endl << x << " , " << y << std::endl;
+        glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+            std::cout << "MousePos Callback" << std::endl << "(" << x << ", " << y << ")" << std::endl;
         });
 
         glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
             std::cout << "Click Callback" << std::endl << button << "," << action << "," << mods << std::endl;
+        });
+        glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
+            std::cout << "MouseScroll Callback" << std::endl << "(" << xoffset << ", " << yoffset << ")" << std::endl;
         });
     }
 }
