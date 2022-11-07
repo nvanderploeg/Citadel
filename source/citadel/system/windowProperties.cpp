@@ -3,10 +3,16 @@
 #include "JSONSerializable.h"
 #include "windowProperties.h"
 
-namespace citadel {
+namespace
+{
+	const uint32_t DEFAULT_WIDTH = 640;
+	const uint32_t DEFAULT_HEIGHT = 480;
+	const std::string DEFAULT_TITLE = "citadel game";
+	const uint32_t DEFAULT_MAXFPS = 60;
+}
 
-	const std::string WindowProperties::DEFAULT_TITLE = "citadel game";
-
+namespace citadel
+{
 	WindowProperties::WindowProperties()
 		: width(DEFAULT_WIDTH)
 		, height(DEFAULT_HEIGHT)
@@ -22,7 +28,11 @@ namespace citadel {
 		, title(_title)
 		, maxFPS(_maxFPS)
 	{
+		if (_title.empty())
+			title = DEFAULT_TITLE;
 
+		if (_maxFPS == 0)
+			maxFPS = DEFAULT_MAXFPS;
 	}
 
 	void WindowProperties::serialize(Json::Value& jValue)
