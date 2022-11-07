@@ -24,7 +24,7 @@ public:
     std::string dataPath;
 
 public:
-    GameConfig(const std::string& path);
+    GameConfig(const std::filesystem::path& path);
 
     virtual void serialize(Json::Value& jValue);
     virtual void deserialize(const Json::Value& jValue);

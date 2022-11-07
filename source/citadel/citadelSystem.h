@@ -8,6 +8,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 // externals
 #include "json/json.h"

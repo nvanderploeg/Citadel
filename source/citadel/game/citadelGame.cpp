@@ -13,6 +13,7 @@
 #include <chrono>
 #include <thread>
 #include <cassert>
+#include <filesystem>
 
 //lib includes
 #include "GLFW/glfw3.h"
@@ -26,6 +27,12 @@
 #include "input/inputRouter.h"
 
 using namespace std;
+
+namespace
+{
+    const std::string DEFAULT_CONFIGURATIONFILENAME = "game.cfg";
+}
+
 namespace citadel {
 
 void initGL(int width, int height) {
@@ -46,18 +53,45 @@ void initGL(int width, int height) {
 }
 
 CitadelGame::CitadelGame() {
-    ready = false;
-    m_gameConfig = make_shared<GameConfig>("game.config");
-    if (!glfwInit()) {
-        // Initialization failed
-        cout << "Failed to init glfw" << endl;
-    }
-    else {
-        ready = true;
-    }
+    Init(DEFAULT_CONFIGURATIONFILENAME);
 }
 
-void CitadelGame::Setup() {
+CitadelGame::CitadelGame(filesystem::path& configPath)
+{
+    if (!configPath.has_filename())
+    {
+        // TODO logging
+        cout << "WARNING: Configuration file not specified; using \"" << DEFAULT_CONFIGURATIONFILENAME<< "\"." << endl;
+        configPath.replace_filename(DEFAULT_CONFIGURATIONFILENAME);
+    }
+
+    Init(configPath);
+}
+
+bool CitadelGame::Init(const filesystem::path& configPath)
+{
+    // TODO use a logging system
+    cout << "== INIT ==\n";
+    m_ready = true;
+    m_gameConfig = make_shared<GameConfig>(configPath);
+    
+    if (!glfwInit())
+    {
+        // Initialization failed
+        m_ready = false;
+        // TODO use a logging system
+        cout << "ERROR: Failed to init glfw\n";
+    }
+
+    // TODO use a logging system
+    cout << "ok." << endl;
+    return m_ready;
+}
+
+void CitadelGame::Setup()
+{
+    // TODO use a logging system
+    cout << "== SETUP ==\n";
 
     auto width = m_gameConfig->windowProperties->width;
     auto height = m_gameConfig->windowProperties->height;
@@ -67,21 +101,33 @@ void CitadelGame::Setup() {
                                           m_gameConfig->windowProperties->title.c_str(), NULL, NULL);
 
     if (!m_window) {
+        // TODO use a logging system
         throw(std::runtime_error("Couldn't make window!"));
     }
 
     //Create and bind the input router for event handling
     m_inputRouter = std::make_shared<InputRouter>();
-    m_inputRouter->BindToGLFW(m_window);
+    // TODO: fix this in windows; it's not linking
+    //m_inputRouter->BindToGLFW(m_window);
 
     glfwMakeContextCurrent(m_window);
     initGL(width, height);
+
+    // TODO use a logging system
+    cout << "ok." << endl;
+
 }
 
 void CitadelGame::TearDown() {
-    assert(m_window); 
+    // TODO: logging
+    cout << "== TEAR DOWN ==" << endl;
+
+    assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
+
+    // TODO: logging
+    cout << "ok." << endl;
 }
 
 bool CitadelGame::Running() {
@@ -89,22 +135,26 @@ bool CitadelGame::Running() {
 }
 
 int CitadelGame::run() {
-    if (!ready) {
+    if (!m_ready) {
         return 500; //Failed to init
     }
 
     Setup();
+
+    // TODO: logging
+    cout << "== RUNNING ==" << endl;
+
     // Keep running until term
-    static  Time frameTime = Time::seconds(1.f/30.f);
+    static  Time frameTime = Time::seconds(1.f/m_gameConfig->windowProperties->maxFPS);
     Time frameTimer = Time::getCurrentTime();
-    clock.restart();
+    m_clock.restart();
     while (Running())
     {
         //Do Tick(Update objects)
-        auto delta = clock.restart();
+        auto delta = m_clock.restart();
         
         if (delta.asSeconds() > 0.1) { // Just too long, lets reset
-            delta = clock.restart();
+            delta = m_clock.restart();
         }
 
         Tick(delta);
@@ -112,11 +162,15 @@ int CitadelGame::run() {
         glfwSwapBuffers(m_window);
         glfwPollEvents();
         
-        auto fTime = clock.getElapsedTime();
+        auto fTime = m_clock.getElapsedTime();
         if(fTime < frameTime) {
             std::this_thread::sleep_for(std::chrono::microseconds((unsigned int)(frameTime - fTime).asMicroseconds()));
         }
     }
+
+    // TODO: logging
+    cout << "run complete." << endl;
+
 
     TearDown();
     

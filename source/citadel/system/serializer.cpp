@@ -3,9 +3,10 @@
 
 namespace citadel {
 
-    Json::Value Serializer::loadFile(std::string filePath)
+    Json::Value Serializer::loadFile(const std::filesystem::path & filePath)
     {
-        std::ifstream stream(getResourcePath() + filePath , std::ifstream::binary);
+		// TODO: is getResourcePath necessary with std::filesystem?
+        std::ifstream stream(getResourcePath() + filePath.string(), std::ifstream::binary);
         if (!stream)
         {
             return Json::nullValue;
@@ -22,9 +23,11 @@ namespace citadel {
         
         return jRoot;
     }
-    bool Serializer::serialize(IJSONSerializable * pObject, const std::string & filepath)
+
+    bool Serializer::serialize(IJSONSerializable * pObject, const std::filesystem::path & filepath)
     {
-        std::ofstream stream(getResourcePath() + filepath);
+		// TODO: is getResourcePath necessary with std::filesystem?
+        std::ofstream stream(getResourcePath() + filepath.string());
 		return serialize(pObject, stream);
     }
 
@@ -46,9 +49,10 @@ namespace citadel {
 		return true;
 	}
     
-    bool Serializer::deserialize(IJSONSerializable *& pObject, const std::string & filepath)
+    bool Serializer::deserialize(IJSONSerializable *& pObject, const std::filesystem::path & filepath)
     {
-        std::ifstream stream(getResourcePath() + filepath, std::ifstream::binary);
+		// TODO: is getResourcePath necessary with std::filesystem?
+        std::ifstream stream(getResourcePath() + filepath.string(), std::ifstream::binary);
 		return deserialize(pObject, stream);
     }
 

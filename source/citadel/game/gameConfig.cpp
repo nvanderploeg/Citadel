@@ -6,19 +6,39 @@
 //  Copyright © 2020 Floating Citadel Games. All rights reserved.
 //
 
+#include <iostream>
 #include <memory>
 #include <cstdlib>
+#include <filesystem>
 #include "gameConfig.h"
 #include "serializer.h"
 #include "windowProperties.h"
 
+namespace
+{
+    const std::string DEFAULT_TEXTUREPATH = "textures/";
+    const std::string DEFAULT_FONTPATH = "fonts/";
+    const std::string DEFAULT_DATAPATH = "data/";
+}
+
 namespace citadel {
 
-GameConfig::GameConfig(const std::string & path)
+GameConfig::GameConfig(const std::filesystem::path& path)
 {
     windowProperties = std::make_shared<WindowProperties>();
     Json::Value jConfig = Serializer::loadFile(path);
-    if(jConfig != Json::nullValue) {
+    if (jConfig == Json::nullValue)
+    {
+        texturePath = DEFAULT_TEXTUREPATH;
+        fontPath = DEFAULT_FONTPATH;
+        dataPath = DEFAULT_DATAPATH;
+        // TODO: logger
+        std::cout << "WARNING: Configuration file not found; using default values." << std::endl;
+        Serializer::serialize(this, path);
+        std::cout << "INFO: Generated default game config at: " << path << std::endl;
+    }
+    else
+    {
         deserialize(jConfig);
     }
 }
@@ -34,8 +54,8 @@ void GameConfig::serialize(Json::Value& jValue)
 void GameConfig::deserialize(const Json::Value& jValue)
 {
     windowProperties->deserialize(jValue["windowProperties"]);
-    texturePath = jValue.get("texturePath", "textures/").asString();
-    fontPath = jValue.get("fontPath", "fonts/").asString();
-    dataPath = jValue.get("dataPath", "data/").asString();
+    texturePath = jValue.get("texturePath", DEFAULT_TEXTUREPATH).asString();
+    fontPath = jValue.get("fontPath", DEFAULT_FONTPATH).asString();
+    dataPath = jValue.get("dataPath", DEFAULT_DATAPATH).asString();
 }
 } //namespace citadel
