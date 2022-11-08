@@ -82,6 +82,10 @@ bool CitadelGame::Init(const filesystem::path& configPath)
         // TODO use a logging system
         cout << "ERROR: Failed to init glfw\n";
     }
+    else
+    {
+        Setup();
+    }
 
     // TODO use a logging system
     cout << "ok." << endl;
@@ -138,8 +142,6 @@ int CitadelGame::run() {
     if (!m_ready) {
         return 500; //Failed to init
     }
-
-    Setup();
 
     // TODO: logging
     cout << "== RUNNING ==" << endl;

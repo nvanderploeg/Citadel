@@ -28,7 +28,7 @@ protected:
     bool m_ready;
     Clock m_clock;
     std::shared_ptr<GameConfig> m_gameConfig;
-    std::shared_ptr<InputRouter> m_inputRouter;
+public: std::shared_ptr<InputRouter> m_inputRouter;
     virtual void Tick(Time &deltaTime);
 
 private:
