@@ -41,5 +41,5 @@ target_link_libraries(CitaDemo
 
 target_sources(CitaDemo
 PRIVATE
-demo_app/main.cpp
+citaDemo/main.cpp
 )
