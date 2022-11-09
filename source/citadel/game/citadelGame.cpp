@@ -82,10 +82,6 @@ bool CitadelGame::Init(const filesystem::path& configPath)
         // TODO use a logging system
         cout << "ERROR: Failed to init glfw\n";
     }
-    else
-    {
-        Setup();
-    }
 
     // TODO use a logging system
     cout << "ok." << endl;
@@ -111,8 +107,15 @@ void CitadelGame::Setup()
 
     //Create and bind the input router for event handling
     m_inputRouter = std::make_shared<InputRouter>();
-    // TODO: fix this in windows; it's not linking
     m_inputRouter->BindToGLFW(m_window);
+
+    // TODO: this is a test of the current input mapping
+    KeyEvent keyEvent{ GLFW_KEY_H,GLFW_PRESS,0 };
+    m_inputRouter->MapKey(keyEvent, [](InputEventData data) {
+        cout << "my key callback\n";
+        return true;
+    });
+
 
     glfwMakeContextCurrent(m_window);
     initGL(width, height);
@@ -143,10 +146,19 @@ int CitadelGame::run() {
         return 500; //Failed to init
     }
 
+    Setup();
+
     // TODO: logging
     cout << "== RUNNING ==" << endl;
 
-    m_inputRouter->MapKey(GLFW_KEY_ESCAPE, [this](InputEventData& data) { 
+    KeyEvent keyEvent
+    {
+        GLFW_KEY_ESCAPE,
+        GLFW_PRESS,
+        0
+    };
+
+    m_inputRouter->MapKey(keyEvent, [this](InputEventData& data) { 
         cout << "Esccape pressed, Terminating..." << endl;
         glfwSetWindowShouldClose(m_window, true);
         return true;

@@ -2,12 +2,43 @@
 
 #include <variant>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include "GLFW/glfw3.h"
 
 namespace citadel
 {
-    struct KeyEvent
+    class KeyEvent
+    {
+    public:
+        int keycode;
+        int action;
+        int modifiers;
+
+        bool operator==(const KeyEvent& other) const
+        {
+            return (keycode == other.keycode && action == other.action && modifiers == other.modifiers);
+        }
+    };
+
+    struct KeyEventHasher
+    {
+        std::size_t operator()(const KeyEvent& k) const
+        {
+            using std::size_t;
+            using std::hash;
+            using std::string;
+
+            // Compute individual hash values for first,
+            // second and third and combine them using XOR
+            // and bit shifting:
+
+            return ((hash<int>()(k.keycode)
+                ^ (hash<int>()(k.action) << 1)) >> 1)
+                ^ (hash<int>()(k.modifiers) << 1);
+        }
+    };
+
+    struct KeyEventData
     {
         int code;
         bool alt;
@@ -16,7 +47,7 @@ namespace citadel
         bool system;
     };
 
-    struct MouseButtonEvent
+    struct MouseButtonEventData
     {
         int code;
         bool alt;
@@ -25,32 +56,32 @@ namespace citadel
         bool system;
     };
 
-    struct MouseMoveEvent
+    struct MouseMoveEventData
     {
         int xPosition;
         int yPosition;
     };
 
-    struct MouseScrollEvent
+    struct MouseScrollEventData
     {
         double xOffset;
         double yOffset;
     };
 
-    typedef std::variant<KeyEvent, MouseButtonEvent, MouseMoveEvent, MouseScrollEvent> InputEventData;
+    typedef std::variant<KeyEventData, MouseButtonEventData, MouseMoveEventData, MouseScrollEventData> InputEventData;
     typedef std::function<bool(InputEventData&)> InputEventCallback;
 
     class InputRouter
     {
     public:
-        std::map<int, InputEventCallback> keyInputMap;
+        std::unordered_map<KeyEvent, InputEventCallback, KeyEventHasher> keyInputMap;
 
     public:
         InputRouter();
 
         void BindToGLFW(GLFWwindow* window);
 
-        void MapKey(int key, InputEventCallback callback);
+        void MapKey(KeyEvent keyEvent, InputEventCallback callback);
 
 
     };    

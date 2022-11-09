@@ -10,47 +10,54 @@ namespace citadel
 
     }
 
-    void InputRouter::BindToGLFW(GLFWwindow* window )
+    void InputRouter::BindToGLFW(GLFWwindow* window)
     {
-        //Binding the inputRouter to the window, This must not be overwritten by anyone else or these
+        // NOTE: Binding the inputRouter to the window.
+        // This must not be overwritten by anyone else or these callbacks won't work.
         glfwSetWindowUserPointer(window, this);
-        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-            auto router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
-            auto itr = router->keyInputMap.find(key);
+
+        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            // Grab a reference to ourselves from the window; set previously, above.
+            InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+
+            KeyEvent keyEvent = { key, action, mods };
+
+            // If there is a key mapping for this key, call it's callback.
+            auto itr = router->keyInputMap.find(keyEvent);
             if (itr != router->keyInputMap.end())
             {
-                InputEventData eventData = KeyEvent(key, 
+                InputEventData eventData = KeyEventData(key, 
                                                     mods | GLFW_MOD_ALT, 
                                                     mods | GLFW_MOD_CONTROL, 
                                                     mods | GLFW_MOD_SHIFT, 
                                                     mods | GLFW_MOD_SUPER);
-                auto keyCallback = itr->second;
+                InputEventCallback keyCallback = itr->second;
                 keyCallback(eventData);
-                std::cout << "This is your key!!\n";
             }
-            std::cout << "Key Callback" << std::endl << key << "," << scancode << "," << action << "," << mods << std::endl;
+            //std::cout << "Key Callback" << std::endl << key << "," << scancode << "," << action << "," << mods << std::endl;
         });
 
         glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
-            auto router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+            InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
             // std::cout << "MousePos Callback" << std::endl << "(" << x << ", " << y << ")" << std::endl;
         });
 
         glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
-            auto router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+            InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
             std::cout << "Click Callback" << std::endl << button << "," << action << "," << mods << std::endl;
         });
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
-            auto router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+            InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
             std::cout << "MouseScroll Callback" << std::endl << "(" << xoffset << ", " << yoffset << ")" << std::endl;
         });
     }
 
-    void InputRouter::MapKey(int key, InputEventCallback callback)
+    void InputRouter::MapKey(KeyEvent keyEvent, InputEventCallback callback)
     {
-        if (keyInputMap.find(key) == keyInputMap.end())
+        if (keyInputMap.find(keyEvent) == keyInputMap.end())
         {
-            keyInputMap[key] = callback;
+            keyInputMap[keyEvent] = callback;
         }
     }
 }
