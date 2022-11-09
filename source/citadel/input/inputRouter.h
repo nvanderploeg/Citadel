@@ -2,8 +2,13 @@
 
 #include <variant>
 #include <functional>
+#include <map>
 #include <unordered_map>
+#include <filesystem>
+
 #include "GLFW/glfw3.h"
+
+#include "JSONSerializable.h"
 
 namespace citadel
 {
@@ -24,19 +29,30 @@ namespace citadel
     {
         std::size_t operator()(const KeyEvent& k) const
         {
-            using std::size_t;
             using std::hash;
-            using std::string;
-
-            // Compute individual hash values for first,
-            // second and third and combine them using XOR
-            // and bit shifting:
 
             return ((hash<int>()(k.keycode)
                 ^ (hash<int>()(k.action) << 1)) >> 1)
                 ^ (hash<int>()(k.modifiers) << 1);
         }
     };
+
+    class InputContext : public IJSONSerializable
+    {
+    public:
+        std::unordered_map<KeyEvent, std::list<std::string>, KeyEventHasher> keyEventMap;
+
+    public:
+        InputContext();
+        InputContext(const Json::Value& jValue);
+        InputContext(const std::filesystem::path& path);
+
+        void AddKeyBind(const KeyEvent& keyEvent, const std::string& label);
+
+        virtual void serialize(Json::Value& jValue);
+        virtual void deserialize(const Json::Value& jValue);
+    };
+
 
     struct KeyEventData
     {
@@ -74,15 +90,17 @@ namespace citadel
     class InputRouter
     {
     public:
-        std::unordered_map<KeyEvent, InputEventCallback, KeyEventHasher> keyInputMap;
+        std::map<std::string, std::list<InputEventCallback> > keyInputMap;
+        std::shared_ptr<InputContext> inputContext;
 
     public:
         InputRouter();
 
         void BindToGLFW(GLFWwindow* window);
 
-        void MapKey(KeyEvent keyEvent, InputEventCallback callback);
+        void AddKeyBind(const std::string& label, const KeyEvent& keyEvent, InputEventCallback callback);
+        void SetKeyCallback(const std::string& label, InputEventCallback callback);
 
-
+        void SetInputContext(const Json::Value& jValue);
     };    
 }

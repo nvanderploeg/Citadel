@@ -109,13 +109,14 @@ void CitadelGame::Setup()
     m_inputRouter = std::make_shared<InputRouter>();
     m_inputRouter->BindToGLFW(m_window);
 
-    // TODO: this is a test of the current input mapping
-    KeyEvent keyEvent{ GLFW_KEY_H,GLFW_PRESS,0 };
-    m_inputRouter->MapKey(keyEvent, [](InputEventData data) {
-        cout << "my key callback\n";
+    Json::Value jContext = Serializer::loadFile(m_gameConfig->inputContext);
+    m_inputRouter->SetInputContext(jContext);
+
+    m_inputRouter->SetKeyCallback("moveUp", [this](InputEventData data)
+    {
+        std::cout << "movin' on up!\n";
         return true;
     });
-
 
     glfwMakeContextCurrent(m_window);
     initGL(width, height);
@@ -158,11 +159,12 @@ int CitadelGame::run() {
         0
     };
 
-    m_inputRouter->MapKey(keyEvent, [this](InputEventData& data) { 
+    m_inputRouter->AddKeyBind("terminate", { GLFW_KEY_ESCAPE, GLFW_PRESS, 0 }, [this](InputEventData& data) {
         cout << "Esccape pressed, Terminating..." << endl;
         glfwSetWindowShouldClose(m_window, true);
         return true;
     });
+
     // Keep running until term
     static  Time frameTime = Time::seconds(1.f/m_gameConfig->windowProperties->maxFPS);
     Time frameTimer = Time::getCurrentTime();

@@ -22,6 +22,7 @@ public:
     std::string texturePath;
     std::string fontPath;
     std::string dataPath;
+    std::string inputContext;
 
 public:
     GameConfig(const std::filesystem::path& path);
