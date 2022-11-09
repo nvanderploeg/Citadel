@@ -24,8 +24,12 @@ public:
     std::string dataPath;
     std::string inputContext;
 
+    std::filesystem::path filepath;
+
 public:
     GameConfig(const std::filesystem::path& path);
+
+    bool Save();
 
     virtual void serialize(Json::Value& jValue);
     virtual void deserialize(const Json::Value& jValue);

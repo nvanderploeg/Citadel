@@ -8,6 +8,9 @@ PUBLIC
 
 target_sources(${PROJECT_NAME}
 PRIVATE
+input.h
+inputContext.h
+inputContext.cpp
 inputRouter.cpp
 inputRouter.h
 )

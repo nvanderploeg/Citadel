@@ -1,6 +1,9 @@
 #ifndef __SERIALIZER_H__
 #define __SERIALIZER_H__
 
+#include <filesystem>
+#include "JSONSerializable.h"
+
 namespace citadel {
     
     class Serializer

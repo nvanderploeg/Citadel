@@ -109,10 +109,12 @@ void CitadelGame::Setup()
     m_inputRouter = std::make_shared<InputRouter>();
     m_inputRouter->BindToGLFW(m_window);
 
+    // load the input mappings from a file defined in the gameConfig
     Json::Value jContext = Serializer::loadFile(m_gameConfig->inputContext);
     m_inputRouter->SetInputContext(jContext);
 
-    m_inputRouter->SetKeyCallback("moveUp", [this](InputEventData data)
+    // bind a callback (lambda in this case) to an event label
+    m_inputRouter->BindCallbackToLabel("moveUp", [this](InputEventData data)
     {
         std::cout << "movin' on up!\n";
         return true;
@@ -129,6 +131,14 @@ void CitadelGame::Setup()
 void CitadelGame::TearDown() {
     // TODO: logging
     cout << "== TEAR DOWN ==" << endl;
+
+    // save out the current configurations
+    bool savedInputContext = m_inputRouter->Save();
+    cout << "Saving InputContext.. ";
+    cout << (savedInputContext ? "ok." : "error.") << endl;
+    cout << "Saving GameConfig.. ";
+    bool savedGameConfig = m_gameConfig->Save();
+    cout << (savedGameConfig ? "ok." : "error.") << endl;
 
     assert(m_window);
     glfwDestroyWindow(m_window);
@@ -152,15 +162,9 @@ int CitadelGame::run() {
     // TODO: logging
     cout << "== RUNNING ==" << endl;
 
-    KeyEvent keyEvent
-    {
-        GLFW_KEY_ESCAPE,
-        GLFW_PRESS,
-        0
-    };
-
-    m_inputRouter->AddKeyBind("terminate", { GLFW_KEY_ESCAPE, GLFW_PRESS, 0 }, [this](InputEventData& data) {
-        cout << "Esccape pressed, Terminating..." << endl;
+    // bind a termination request to the escape key
+    m_inputRouter->AddEventWithCallback("terminate", { GLFW_KEY_ESCAPE, GLFW_PRESS, 0 }, [this](InputEventData& data) {
+        cout << "Escape pressed, Terminating..." << endl;
         glfwSetWindowShouldClose(m_window, true);
         return true;
     });
