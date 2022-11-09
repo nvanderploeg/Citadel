@@ -146,6 +146,11 @@ int CitadelGame::run() {
     // TODO: logging
     cout << "== RUNNING ==" << endl;
 
+    m_inputRouter->MapKey(GLFW_KEY_ESCAPE, [this](InputEventData& data) { 
+        cout << "Esccape pressed, Terminating..." << endl;
+        glfwSetWindowShouldClose(m_window, true);
+        return true;
+    });
     // Keep running until term
     static  Time frameTime = Time::seconds(1.f/m_gameConfig->windowProperties->maxFPS);
     Time frameTimer = Time::getCurrentTime();
