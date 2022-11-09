@@ -5,7 +5,8 @@ PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_subdirectory(game)
-add_subdirectory(graphics)
-add_subdirectory(input)
-add_subdirectory(system)
+target_sources(${PROJECT_NAME}
+PRIVATE
+graphics.h
+graphics.cpp
+)

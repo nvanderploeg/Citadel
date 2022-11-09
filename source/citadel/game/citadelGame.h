@@ -15,6 +15,7 @@ namespace citadel {
 
 class GameConfig;
 class InputRouter;
+class VulkanGraphics;
 
 class CitadelGame {
 public:
@@ -28,8 +29,10 @@ protected:
     bool m_ready;
     Clock m_clock;
     std::shared_ptr<GameConfig> m_gameConfig;
+    std::shared_ptr<VulkanGraphics> m_graphics;
 public: std::shared_ptr<InputRouter> m_inputRouter;
     virtual void Tick(Time &deltaTime);
+    virtual void Draw();
 
 private:
     GLFWwindow* m_window;

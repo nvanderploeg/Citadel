@@ -17,11 +17,13 @@
 
 //lib includes
 #include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
 
 //Citadel includes
 #include "citadelSystem.h"
 #include "citadelGame.h"
 #include "gameConfig.h"
+#include "graphics.h"
 #include "windowProperties.h"
 
 #include "input/inputRouter.h"
@@ -39,17 +41,20 @@ void initGL(int width, int height) {
     //Set the viewport
 //    glViewport( 0.f, 0.f, width, height );
 
+    glm::mat4 matrix;
+    glm::vec4 vec;
+    auto test = matrix * vec;
 //    //Initialize Projection Matrix
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, width, height, 0.0, 1.0, -1.0 );
+    // glMatrixMode( GL_PROJECTION );
+    // glLoadIdentity();
+    // glOrtho( 0.0, width, height, 0.0, 1.0, -1.0 );
 
-    //Initialize Modelview Matrix
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
+    // //Initialize Modelview Matrix
+    // glMatrixMode( GL_MODELVIEW );
+    // glLoadIdentity();
 
-    //Initialize clear color
-    glClearColor( 0.f, 0.f, 0.f, 1.f );
+    // //Initialize clear color
+    // glClearColor( 0.f, 0.f, 0.f, 1.f );
 }
 
 CitadelGame::CitadelGame() {
@@ -74,6 +79,9 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     cout << "== INIT ==\n";
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
+    m_graphics = make_shared<VulkanGraphics>();
+
+    m_graphics->InitVulkan();
     
     if (!glfwInit())
     {
@@ -128,7 +136,8 @@ void CitadelGame::Setup()
 
 }
 
-void CitadelGame::TearDown() {
+void CitadelGame::TearDown() 
+{
     // TODO: logging
     cout << "== TEAR DOWN ==" << endl;
 
@@ -140,6 +149,7 @@ void CitadelGame::TearDown() {
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
+    m_graphics->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -148,11 +158,13 @@ void CitadelGame::TearDown() {
     cout << "ok." << endl;
 }
 
-bool CitadelGame::Running() {
+bool CitadelGame::Running() 
+{
     return !glfwWindowShouldClose(m_window);
 }
 
-int CitadelGame::run() {
+int CitadelGame::run() 
+{
     if (!m_ready) {
         return 500; //Failed to init
     }
@@ -203,8 +215,13 @@ int CitadelGame::run() {
 }
 
 
-void CitadelGame::Tick(Time &deltaTime) {
+void CitadelGame::Tick(Time &deltaTime) 
+{
     // std::cout << deltaTime.asSeconds() << std::endl;
 }
 
+void CitadelGame::Draw() 
+{
+
+}
 } //namespace citadel
