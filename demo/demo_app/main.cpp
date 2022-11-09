@@ -19,3 +19,11 @@ int main(int argc, const char * argv[]) {
     //Run the game
     return game.run();
 }
+
+
+//getResourcePath is meant to help in crossplatform and sandbox situations
+//For example on iOS, files are in a sandbox and need help to be found
+//This main not be true of all platforms
+std::string getResourcePath(void) {
+    return "";
+}
