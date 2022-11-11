@@ -9,7 +9,12 @@ Everything will initially be build for Mac OSX and later support for Windows, Li
 
 Stay tuned.
 
-
+To build on Mac OSX you will need to install MoltenVK and set VULKAN_SDK_PATH as an environemnt variable 
+ex.
+```
+export VULKAN_SDK_PATH='~/VulkanSDK/1.3.231.1' in .zprofile
+```
+(.bash profile/.zprofile if running cmake from command line)
 
 ## Authors
 -------

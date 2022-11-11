@@ -17,10 +17,17 @@ add_dependencies(citadel glfw glm)
 
 target_link_libraries(citadel PUBLIC glfw glm vulkan)
 
+set(VULKAN_SDK_DIR $ENV{VULKAN_SDK_PATH})
 if(APPLE) 
-    target_link_libraries(citadel PUBLIC OpenGL::GL)
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${VULKAN_SDK_DIR}/macOS/include
+    )
+
+    target_link_directories(${PROJECT_NAME} PUBLIC
+        ${VULKAN_SDK_DIR}/macOS/lib
+    )
 elseif(MSVC)
-    target_link_libraries(citadel PUBLIC ${OPENGL_gl_LIBRARY})
+    # target_link_libraries(citadel PUBLIC ${OPENGL_gl_LIBRARY})
 else()
     # target_link_libraries(citadel PUBLIC vulkan)
 endif()
