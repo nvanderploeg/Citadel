@@ -8,7 +8,6 @@ PUBLIC
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-citadelDef.h
 clock.cpp
 clock.h
 cTime.cpp

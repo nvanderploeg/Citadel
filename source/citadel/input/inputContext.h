@@ -3,13 +3,15 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-11-09.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 
 #ifndef __INPUT_CONTEXT_H__
 #define __INPUT_CONTEXT_H__
 
 #include <filesystem>
+#include <unordered_map>
+#include <list>
 
 #include "JSONSerializable.h"
 

@@ -3,7 +3,7 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-11-09.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 
 #include <iostream>
@@ -62,7 +62,7 @@ namespace citadel
             for (Json::Value::const_iterator keyEventItr = (*labelListItr).begin(); keyEventItr != (*labelListItr).end(); ++keyEventItr)
             {
                 Json::Value jBinding = (*keyEventItr);
-                KeyEvent keyEvent(jBinding["key"].asInt(), jBinding["action"].asInt(), jBinding["modifiers"].asInt());
+                KeyEvent keyEvent = {jBinding["key"].asInt(), jBinding["action"].asInt(), jBinding["modifiers"].asInt()};
                 AddKeyBind(keyEvent, label);
             }
         }

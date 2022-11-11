@@ -3,7 +3,7 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-11-09.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 
 #ifndef __INPUT_H__
@@ -14,7 +14,7 @@
 
 namespace citadel
 {
-    class KeyEvent
+    struct KeyEvent
     {
     public:
         int keycode;

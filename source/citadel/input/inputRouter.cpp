@@ -31,11 +31,11 @@ namespace citadel
             auto labelListItr = router->inputContext->keyEventMap.find(keyEvent);
             if (labelListItr != router->inputContext->keyEventMap.end())
             {
-                InputEventData eventData = KeyEventData(key, 
-                                                    mods | GLFW_MOD_ALT, 
-                                                    mods | GLFW_MOD_CONTROL, 
-                                                    mods | GLFW_MOD_SHIFT, 
-                                                    mods | GLFW_MOD_SUPER);
+                KeyEventData keyData = {key, static_cast<bool>(mods | GLFW_MOD_ALT),
+                                            static_cast<bool>(mods | GLFW_MOD_CONTROL),
+                                            static_cast<bool>(mods | GLFW_MOD_SHIFT),
+                                            static_cast<bool>(mods | GLFW_MOD_SUPER)};
+                InputEventData eventData = keyData;
                 // go through each label
                 for (auto labelItr = labelListItr->second.begin(); labelItr != labelListItr->second.end(); ++labelItr)
                 {
