@@ -80,8 +80,6 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
     m_graphics = make_shared<VulkanGraphics>();
-
-    m_graphics->InitVulkan();
     
     if (!glfwInit())
     {
@@ -105,6 +103,8 @@ void CitadelGame::Setup()
     auto height = m_gameConfig->windowProperties->height;
 
     //Make the App window!
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     m_window = glfwCreateWindow(width, height, 
                                           m_gameConfig->windowProperties->title.c_str(), NULL, NULL);
 
@@ -129,7 +129,7 @@ void CitadelGame::Setup()
     });
 
     glfwMakeContextCurrent(m_window);
-    initGL(width, height);
+    m_graphics->InitVulkan(m_window);
 
     // TODO use a logging system
     cout << "ok." << endl;
