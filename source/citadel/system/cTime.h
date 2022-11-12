@@ -2,6 +2,7 @@
 #ifndef __TIME_H__
 #define __TIME_H__
 
+#include "types.h"
 #include "JSONSerializable.h"
 
 namespace citadel
