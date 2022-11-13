@@ -45,6 +45,21 @@ class VulkanGraphics {
     VkExtent2D swapChainExtent;
     std::vector<VkImageView> swapChainImageViews;
 
+    //Pipeline!
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+
+    //Framebuffers
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+
+    VkCommandPool commandPool;
+    VkCommandBuffer commandBuffer;
+
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
+
     //Creates and binds the instance
     void CreateInstance();
     //Scans Physical devices and picks one
@@ -56,18 +71,28 @@ class VulkanGraphics {
 
     void CreateSwapChain();
     void CreateImageViews(); 
-
-    VkShaderModule CreateShaderModule(const std::vector<char>& code);
+    void CreateRenderPass();
     void CreateGraphicsPipeline();
+
+    void CreateFramebuffers();
+    void CreateCommandPool();
+    void CreateCommandBuffer();
+
+    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+    void CreateSyncObjects();
 
     //Helper Methods
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+    VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
 public:
     //Called to setup Vulkan for use
     void InitVulkan(GLFWwindow* window);
+
+    void DrawFrame();
 
     //Called when we are all done with rendering
     void Cleanup();

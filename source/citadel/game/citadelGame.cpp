@@ -194,10 +194,10 @@ int CitadelGame::run()
             delta = m_clock.restart();
         }
 
-        Tick(delta);
         
-        glfwSwapBuffers(m_window);
+        Tick(delta);
         glfwPollEvents();
+        Draw();
         
         auto fTime = m_clock.getElapsedTime();
         if(fTime < frameTime) {
@@ -218,10 +218,15 @@ int CitadelGame::run()
 void CitadelGame::Tick(Time &deltaTime) 
 {
     // std::cout << deltaTime.asSeconds() << std::endl;
+    
+    //Update game objects!
 }
 
 void CitadelGame::Draw() 
 {
+    //Compile frame
 
+    //Tell the graphics engine to render it!
+    m_graphics->DrawFrame();
 }
 } //namespace citadel
