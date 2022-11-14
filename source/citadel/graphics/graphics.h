@@ -54,11 +54,15 @@ class VulkanGraphics {
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
     VkCommandPool commandPool;
-    VkCommandBuffer commandBuffer;
+    
+    uint32_t currentFrame = 0;
+    std::vector<VkCommandBuffer> commandBuffers;
 
-    VkSemaphore imageAvailableSemaphore;
-    VkSemaphore renderFinishedSemaphore;
-    VkFence inFlightFence;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    
+    bool framebufferResized = false;
 
     //Creates and binds the instance
     void CreateInstance();
@@ -74,9 +78,13 @@ class VulkanGraphics {
     void CreateRenderPass();
     void CreateGraphicsPipeline();
 
+    void CleanupSwapChain();
+
+    void RecreateSwapChain();
+
     void CreateFramebuffers();
     void CreateCommandPool();
-    void CreateCommandBuffer();
+    void CreateCommandBuffers();
 
     void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
@@ -91,6 +99,8 @@ class VulkanGraphics {
 public:
     //Called to setup Vulkan for use
     void InitVulkan(GLFWwindow* window);
+
+    void HandleResize();
 
     void DrawFrame();
 

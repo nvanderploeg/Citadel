@@ -104,7 +104,7 @@ void CitadelGame::Setup()
 
     //Make the App window!
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
     m_window = glfwCreateWindow(width, height, 
                                           m_gameConfig->windowProperties->title.c_str(), NULL, NULL);
 
@@ -130,6 +130,10 @@ void CitadelGame::Setup()
 
     glfwMakeContextCurrent(m_window);
     m_graphics->InitVulkan(m_window);
+
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
+        //TODO: magic a way to call the graphics that a resize happened
+    });
 
     // TODO use a logging system
     cout << "ok." << endl;
@@ -182,7 +186,7 @@ int CitadelGame::run()
     });
 
     // Keep running until term
-    static  Time frameTime = Time::seconds(1.f/m_gameConfig->windowProperties->maxFPS);
+    static Time frameTime = Time::seconds(1.f/m_gameConfig->windowProperties->maxFPS);
     Time frameTimer = Time::getCurrentTime();
     m_clock.restart();
     while (Running())
