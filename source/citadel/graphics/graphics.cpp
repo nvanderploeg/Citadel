@@ -14,6 +14,9 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
+#include "vertex.h"
+
+
 namespace {
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -31,6 +34,13 @@ namespace {
 
         return buffer;
     }
+
+    // sample triangle hardcode for VBO testing
+    const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
 }
 
 namespace citadel
@@ -81,6 +91,21 @@ namespace citadel
         createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         createInfo.pfnUserCallback = debugCallback;
     }
+
+
+    uint32_t VulkanGraphics::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
+    {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
 
     void VulkanGraphics::CreateInstance() 
     {
@@ -421,6 +446,31 @@ namespace citadel
 
     }
 
+    void VulkanGraphics::CleanupSwapChain()
+    {
+        for (size_t i = 0; i < swapChainFramebuffers.size(); i++) {
+            vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
+        }
+
+        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+            vkDestroyImageView(device, swapChainImageViews[i], nullptr);
+        }
+
+        vkDestroySwapchainKHR(device, swapChain, nullptr);
+
+    }
+
+    void VulkanGraphics::RecreateSwapChain()
+    {
+        vkDeviceWaitIdle(device);
+
+        CleanupSwapChain();
+
+        CreateSwapChain();
+        CreateImageViews();
+        CreateFramebuffers();
+    }
+
     void VulkanGraphics::CreateImageViews() {
         swapChainImageViews.resize(swapChainImages.size());
 
@@ -488,10 +538,15 @@ namespace citadel
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+        auto bindingDescription = Vertex::getBindingDescription();
+        auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -711,6 +766,10 @@ namespace citadel
             scissor.extent = swapChainExtent;
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+            VkBuffer vertexBuffers[] = {vertexBuffer};
+            VkDeviceSize offsets[] = {0};
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
             vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
@@ -742,8 +801,39 @@ namespace citadel
     }
 
 
-    #pragma mark - Base functions
+    void VulkanGraphics::CreateVertexBuffer() 
+    {
+       VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+        bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
+        if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create vertex buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(device, vertexBuffer, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate vertex buffer memory!");
+        }
+
+        vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+
+        void* data;
+        vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+            memcpy(data, vertices.data(), (size_t) bufferInfo.size);
+        vkUnmapMemory(device, vertexBufferMemory);
+    }
+
+    #pragma mark - Base functions
 
     void VulkanGraphics::CreateSurface()
     {
@@ -759,7 +849,6 @@ namespace citadel
         window = win;
         //Base setup for Vulkan
         CreateInstance();
-        //TutorialdebugMessanger
         CreateSurface();
         //picking devices 
         PickPhysicalDevice();
@@ -771,33 +860,38 @@ namespace citadel
         CreateGraphicsPipeline();
         CreateFramebuffers();
         CreateCommandPool();
+        CreateVertexBuffer();
         CreateCommandBuffers();
         CreateSyncObjects();
     }
 
-    void VulkanGraphics::CleanupSwapChain()
+    void VulkanGraphics::Cleanup()
     {
-        for (size_t i = 0; i < swapChainFramebuffers.size(); i++) {
-            vkDestroyFramebuffer(device, swapChainFramebuffers[i], nullptr);
-        }
-
-        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-            vkDestroyImageView(device, swapChainImageViews[i], nullptr);
-        }
-
-        vkDestroySwapchainKHR(device, swapChain, nullptr);
-
-    }
-
-    void VulkanGraphics::RecreateSwapChain()
-    {
-        vkDeviceWaitIdle(device);
-
         CleanupSwapChain();
 
-        CreateSwapChain();
-        CreateImageViews();
-        CreateFramebuffers();
+        vkDestroyPipeline(device, graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(device, renderPass, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer, nullptr);
+        vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(device, inFlightFences[i], nullptr);
+        }
+
+        vkDestroyCommandPool(device, commandPool, nullptr);
+
+        vkDestroyDevice(device, nullptr);
+
+        if (enableValidationLayers) {
+            DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+        }
+
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyInstance(instance, nullptr);
     }
 
     void VulkanGraphics::HandleResize()
@@ -867,35 +961,6 @@ namespace citadel
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-    }
-
-    void VulkanGraphics::Cleanup()
-    {
-
-        CleanupSwapChain();
-        
-        vkDestroyPipeline(device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
-
-        vkDeviceWaitIdle(device);
-
-         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(device, inFlightFences[i], nullptr);
-        }
-        
-        vkDestroyCommandPool(device, commandPool, nullptr);
-        
-        vkDestroyDevice(device, nullptr);
-        
-        if (enableValidationLayers) {
-            DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-        }
-
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
     }
 
 }

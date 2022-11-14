@@ -52,7 +52,6 @@ class VulkanGraphics {
 
     //Framebuffers
     std::vector<VkFramebuffer> swapChainFramebuffers;
-
     VkCommandPool commandPool;
     
     uint32_t currentFrame = 0;
@@ -61,6 +60,9 @@ class VulkanGraphics {
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
+
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
     
     bool framebufferResized = false;
 
@@ -90,11 +92,15 @@ class VulkanGraphics {
 
     void CreateSyncObjects();
 
+
+    void CreateVertexBuffer();
+
     //Helper Methods
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     VkShaderModule CreateShaderModule(const std::vector<char>& code);
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 public:
     //Called to setup Vulkan for use
