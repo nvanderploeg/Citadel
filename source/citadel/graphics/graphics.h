@@ -3,6 +3,13 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#define GLFW_INCLUDE_VULKAN
+#define GLM_FORCE_RADIANS
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
 class GLFWwindow;
 
 namespace citadel
@@ -23,6 +30,12 @@ struct QueueFamilyIndices {
     bool isComplete() {
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
+};
+
+struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
 };
 
 class VulkanGraphics {
@@ -47,6 +60,7 @@ class VulkanGraphics {
 
     //Pipeline!
     VkRenderPass renderPass;
+    VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
@@ -63,37 +77,51 @@ class VulkanGraphics {
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+    std::vector<void*> uniformBuffersMapped;
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
     
     bool framebufferResized = false;
 
-    //Creates and binds the instance
+    //Basic setup
     void CreateInstance();
-    //Scans Physical devices and picks one
     void PickPhysicalDevice();
-    //Creates the logical device based on the physical one
     void CreateLogicalDevice();
-    //Creates the surface binding (helped by GLFW)
     void CreateSurface();
 
-    void CreateSwapChain();
+    //Setup pipeline
     void CreateImageViews(); 
     void CreateRenderPass();
+    void CreateDescriptorSetLayout();
     void CreateGraphicsPipeline();
 
+    //Setup swapchains
+    void CreateSwapChain();
     void CleanupSwapChain();
-
     void RecreateSwapChain();
 
     void CreateFramebuffers();
     void CreateCommandPool();
     void CreateCommandBuffers();
-
-    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-
     void CreateSyncObjects();
 
-
+    void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
     void CreateVertexBuffer();
+    void CreateIndexBuffer();
+
+    void CreateUniformBuffers();
+    void UpdateUniformBuffer(uint32_t currentImage);
+    void CreateDescriptorPool();
+    void CreateDescriptorSets();
+
+    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
     //Helper Methods
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
