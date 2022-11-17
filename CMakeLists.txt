@@ -33,5 +33,6 @@ else()
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    # ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/stb
+
 )

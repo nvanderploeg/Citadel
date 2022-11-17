@@ -43,3 +43,10 @@ target_sources(CitaDemo
 PRIVATE
 citaDemo/main.cpp
 )
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/textures
+                                                           ${CMAKE_BINARY_DIR}/textures)
+
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/shaders
+                                                           ${CMAKE_BINARY_DIR}/shaders)

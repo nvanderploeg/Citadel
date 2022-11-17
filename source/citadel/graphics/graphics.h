@@ -1,6 +1,7 @@
 #pragma once
 #include <optional>
 #include <vector>
+#include <string>
 #include <vulkan/vulkan.h>
 
 #define GLFW_INCLUDE_VULKAN
@@ -10,11 +11,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
+
 class GLFWwindow;
 
-namespace citadel
-{
-
+namespace citadel {
 
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -86,7 +86,16 @@ class VulkanGraphics {
     std::vector<void*> uniformBuffersMapped;
     VkDescriptorPool descriptorPool;
     std::vector<VkDescriptorSet> descriptorSets;
-    
+
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
+
     bool framebufferResized = false;
 
     //Basic setup
@@ -122,6 +131,17 @@ class VulkanGraphics {
     void CreateDescriptorSets();
 
     void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+    void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+    void CreateTextureImage(std::string path);
+    VkImageView CreateImageView(VkImage image, VkFormat format);
+    void CreateTextureImageView();
+    void CreateTextureSampler();
+
+    VkCommandBuffer BeginSingleTimeCommands();
+    void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+    void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
     //Helper Methods
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
