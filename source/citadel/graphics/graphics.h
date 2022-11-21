@@ -96,6 +96,10 @@ class VulkanGraphics {
     VkImageView textureImageView;
     VkSampler textureSampler;
 
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
     bool framebufferResized = false;
 
     //Basic setup
@@ -134,9 +138,11 @@ class VulkanGraphics {
 
     void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     void CreateTextureImage(std::string path);
-    VkImageView CreateImageView(VkImage image, VkFormat format);
+    VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
     void CreateTextureImageView();
     void CreateTextureSampler();
+
+    void CreateDepthResources();
 
     VkCommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
@@ -149,7 +155,8 @@ class VulkanGraphics {
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     VkShaderModule CreateShaderModule(const std::vector<char>& code);
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
+    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat FindDepthFormat();
 public:
     //Called to setup Vulkan for use
     void InitVulkan(GLFWwindow* window);
