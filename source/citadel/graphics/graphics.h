@@ -11,6 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
+#include "vertex.h"
+
+
 
 class GLFWwindow;
 
@@ -51,6 +54,7 @@ class VulkanGraphics {
     //Presentation
     VkSurfaceKHR surface;
     VkQueue presentQueue;
+
     //Swap chain
     VkSwapchainKHR swapChain;
     std::vector<VkImage> swapChainImages;
@@ -77,9 +81,11 @@ class VulkanGraphics {
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+    std::vector<Vertex> vertices;
 
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
+    std::vector<uint32_t> indices;
 
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
@@ -91,14 +97,20 @@ class VulkanGraphics {
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
+    uint32_t m_mipLevels;
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
     VkImageView textureImageView;
     VkSampler textureSampler;
+    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
 
     bool framebufferResized = false;
 
@@ -136,20 +148,26 @@ class VulkanGraphics {
 
     void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-    void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+    void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     void CreateTextureImage(std::string path);
-    VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+
+    VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
     void CreateTextureImageView();
     void CreateTextureSampler();
+    void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
+    void LoadModel(std::string path);
+
+    void CreateColorResources();
     void CreateDepthResources();
 
     VkCommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
-    void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
     void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
     //Helper Methods
+    VkSampleCountFlagBits GetMaxUsableSampleCount();
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

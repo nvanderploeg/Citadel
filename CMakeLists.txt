@@ -12,10 +12,11 @@ add_subdirectory(source)
 add_subdirectory(external/jsoncpp)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)
+add_subdirectory(external/tinyobjloader)
 
-add_dependencies(citadel glfw glm)
+add_dependencies(citadel glfw glm tinyobjloader)
 
-target_link_libraries(citadel PUBLIC glfw glm vulkan)
+target_link_libraries(citadel PUBLIC glfw glm vulkan tinyobjloader)
 
 set(VULKAN_SDK_DIR $ENV{VULKAN_SDK_PATH})
 if(APPLE) 
