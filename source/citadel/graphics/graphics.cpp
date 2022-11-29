@@ -21,6 +21,9 @@
 namespace {
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
+    const std::string DEFAULT_VERT_SHADER = "shaders/vert.spv";
+    const std::string DEFAULT_FRAG_SHADER = "shaders/frag.spv";
+        
     const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
     const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
 }
@@ -495,22 +498,21 @@ namespace citadel
     #pragma mark - Graphics Pipeline
 
 
-    void VulkanGraphics::CreateGraphicsPipeline()
+    VkPipeline VulkanGraphics::CreateGraphicsPipeline(const VkDevice aDevice, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples)
     {
-        Shader vert(device, "shaders/vert.spv");
-        Shader frag(device, "shaders/frag.spv");
-        
+        Shader vert(aDevice, vertShader);
+        Shader frag(aDevice, fragShader);
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertShaderStageInfo.module = vert.shaderModule;
+        vertShaderStageInfo.module = vert.module;
         vertShaderStageInfo.pName = "main";
 
         VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragShaderStageInfo.module = frag.shaderModule;
+        fragShaderStageInfo.module = frag.module;
         fragShaderStageInfo.pName = "main";
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
@@ -549,7 +551,7 @@ namespace citadel
         VkPipelineMultisampleStateCreateInfo multisampling{};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_TRUE; // enable sample shading in the pipeline
-        multisampling.rasterizationSamples = msaaSamples;
+        multisampling.rasterizationSamples = aaSamples;
         multisampling.minSampleShading = .2f; // min fraction for sample shading; closer to one i
 
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -581,7 +583,7 @@ namespace citadel
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 
-        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(aDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -610,9 +612,12 @@ namespace citadel
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
         pipelineInfo.pDepthStencilState = &depthStencil;
 
-        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+        VkPipeline pipeline;
+        if (vkCreateGraphicsPipelines(aDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
+
+        return pipeline;
     }
 
     void VulkanGraphics::CreateRenderPass()
@@ -1483,7 +1488,7 @@ namespace citadel
         CreateImageViews();
         CreateRenderPass();
         CreateDescriptorSetLayout();
-        CreateGraphicsPipeline();
+        graphicsPipeline = CreateGraphicsPipeline(device, DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER, msaaSamples);
         CreateCommandPool();
         CreateColorResources();
         CreateDepthResources();

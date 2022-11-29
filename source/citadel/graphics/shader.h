@@ -13,10 +13,10 @@ void CreateShaderModule(const std::vector<char>& code);
 VkDevice m_device;
 
 public:
-Shader(VkDevice device, std::string path);
+Shader(const VkDevice& device, std::string path);
 ~Shader();
 
-VkShaderModule shaderModule;
+VkShaderModule module;
 };
 
 

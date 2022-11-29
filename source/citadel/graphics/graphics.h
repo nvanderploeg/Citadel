@@ -124,7 +124,7 @@ class VulkanGraphics {
     void CreateImageViews(); 
     void CreateRenderPass();
     void CreateDescriptorSetLayout();
-    void CreateGraphicsPipeline();
+    VkPipeline CreateGraphicsPipeline(const VkDevice device, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples = VK_SAMPLE_COUNT_1_BIT);
 
     //Setup swapchains
     void CreateSwapChain();
