@@ -23,6 +23,7 @@
 #include "citadelSystem.h"
 #include "citadelGame.h"
 #include "gameConfig.h"
+#include "camera.h"
 #include "graphics.h"
 #include "windowProperties.h"
 
@@ -36,26 +37,6 @@ namespace
 }
 
 namespace citadel {
-
-void initGL(int width, int height) {
-    //Set the viewport
-//    glViewport( 0.f, 0.f, width, height );
-
-    glm::mat4 matrix;
-    glm::vec4 vec;
-    auto test = matrix * vec;
-//    //Initialize Projection Matrix
-    // glMatrixMode( GL_PROJECTION );
-    // glLoadIdentity();
-    // glOrtho( 0.0, width, height, 0.0, 1.0, -1.0 );
-
-    // //Initialize Modelview Matrix
-    // glMatrixMode( GL_MODELVIEW );
-    // glLoadIdentity();
-
-    // //Initialize clear color
-    // glClearColor( 0.f, 0.f, 0.f, 1.f );
-}
 
 CitadelGame::CitadelGame() {
     Init(DEFAULT_CONFIGURATIONFILENAME);
@@ -80,7 +61,8 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
     m_graphics = make_shared<VulkanGraphics>();
-    
+    m_camera = make_shared<Camera>();
+
     if (!glfwInit())
     {
         // Initialization failed
@@ -130,13 +112,25 @@ void CitadelGame::Setup()
 
     glfwMakeContextCurrent(m_window);
     m_graphics->InitVulkan(m_window);
+    m_graphics->SetFoV(fieldOfView);
+
+    // TODO use a logging system
+    cout << "ok." << endl;
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
         //TODO: magic a way to call the graphics that a resize happened
     });
-
-    // TODO use a logging system
-    cout << "ok." << endl;
+    
+    m_inputRouter->BindCallbackToLabel("MouseScroll", [this](InputEventData data) {
+        auto& scrollData = std::get<MouseScrollEventData>(data);
+        if (scrollData.yOffset != 0) {
+               
+            fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
+            m_graphics->SetFoV(fieldOfView);
+            return true;
+        }
+        return false;
+    });
 
 }
 
@@ -198,7 +192,6 @@ int CitadelGame::run()
             delta = m_clock.restart();
         }
 
-        
         Tick(delta);
         glfwPollEvents();
         Draw();
@@ -208,10 +201,8 @@ int CitadelGame::run()
             std::this_thread::sleep_for(std::chrono::microseconds((unsigned int)(frameTime - fTime).asMicroseconds()));
         }
     }
-
     // TODO: logging
     cout << "run complete." << endl;
-
 
     TearDown();
     
@@ -229,7 +220,7 @@ void CitadelGame::Tick(Time &deltaTime)
 void CitadelGame::Draw() 
 {
     //Compile frame
-
+    m_graphics->SetViewMatrix(m_camera->GetViewMatrix());
     //Tell the graphics engine to render it!
     m_graphics->DrawFrame();
 }

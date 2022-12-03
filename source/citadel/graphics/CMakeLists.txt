@@ -7,8 +7,7 @@ PUBLIC
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-graphics.h
 graphics.cpp
-shader.h
 shader.cpp
+camera.cpp
 )

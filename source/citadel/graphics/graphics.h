@@ -10,10 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 #include "vertex.h"
-
-
 
 class GLFWwindow;
 
@@ -28,7 +25,6 @@ struct SwapChainSupportDetails {
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
-
 
     bool isComplete() {
         return graphicsFamily.has_value() && presentFamily.has_value();
@@ -114,6 +110,8 @@ class VulkanGraphics {
 
     bool framebufferResized = false;
 
+    UniformBufferObject m_ubo;
+
     //Basic setup
     void CreateInstance();
     void PickPhysicalDevice();
@@ -180,13 +178,13 @@ public:
     void InitVulkan(GLFWwindow* window);
 
     void HandleResize();
-
     void DrawFrame();
+
+    void SetViewMatrix(glm::mat4 matrix);
+    void SetFoV(float radians);
 
     //Called when we are all done with rendering
     void Cleanup();
-
-
 };
 
 }
