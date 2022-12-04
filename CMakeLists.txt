@@ -16,10 +16,9 @@ add_subdirectory(external/tinyobjloader)
 
 add_dependencies(citadel glfw glm tinyobjloader)
 
-target_link_libraries(citadel PUBLIC glfw glm vulkan tinyobjloader)
-
-set(VULKAN_SDK_DIR $ENV{VULKAN_SDK_PATH})
 if(APPLE) 
+    target_link_libraries(citadel PUBLIC glfw glm vulkan tinyobjloader)
+    set(VULKAN_SDK_DIR $ENV{VULKAN_SDK_PATH})
     target_include_directories(${PROJECT_NAME} PUBLIC
         ${VULKAN_SDK_DIR}/macOS/include
     )
@@ -28,8 +27,17 @@ if(APPLE)
         ${VULKAN_SDK_DIR}/macOS/lib
     )
 elseif(MSVC)
-    # target_link_libraries(citadel PUBLIC ${OPENGL_gl_LIBRARY})
+    target_link_libraries(citadel PUBLIC glfw glm vulkan-1 tinyobjloader)
+    set(VULKAN_SDK_DIR $ENV{VK_SDK_PATH})
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${VULKAN_SDK_DIR}/Include
+    )
+
+    target_link_directories(${PROJECT_NAME} PUBLIC
+        ${VULKAN_SDK_DIR}/Lib
+    )
 else()
+    target_link_libraries(citadel PUBLIC glfw glm vulkan tinyobjloader)
     # target_link_libraries(citadel PUBLIC vulkan)
 endif()
 
