@@ -22,8 +22,8 @@ add_executable(CitaDemo)
 #COMPILE_FLAGS "-DBUILD_RESOURCE_PATH=1")
 
 #adding Citadel engine
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/.. [binary_dir])
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_BINARY_DIR}/citadel)
+                                                
 # We need to build citadel for Elementia to build!
 add_dependencies(CitaDemo citadel)
 
@@ -53,4 +53,4 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/s
 
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/models
-${CMAKE_BINARY_DIR}/models)
+                                                           ${CMAKE_BINARY_DIR}/models)
