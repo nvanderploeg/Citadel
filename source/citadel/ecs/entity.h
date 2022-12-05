@@ -4,17 +4,21 @@
 #include <memory>
 #include <string>
 
-#include "component.h"
+namespace citadel 
+{
+    class Component;
 
-namespace citadel {
+    class Entity: public std::enable_shared_from_this<Entity> 
+    {
+    protected:
+        std::vector<std::unique_ptr<Component> > m_components;
+    public:
+        virtual ~Entity() = default;
+        bool hasComponent(std::string type) const;
+        std::vector<Component*>  getComponents(std::string type) const;
 
-class Entity {
-protected:
-    std::vector<std::shared_ptr<Component> > m_components;
-public:
-    virtual ~Entity() = default;
-    bool hasComponent(std::string type) const;
-    std::vector<std::shared_ptr<Component> >  getComponents(std::string type) const;
-};
+        void attachComponent(std::unique_ptr<Component>& component);
+        void detachComponent(Component* component);
+    };
 
 }
