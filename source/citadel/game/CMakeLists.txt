@@ -11,4 +11,6 @@ citadelGame.cpp
 citadelGame.h
 gameConfig.cpp
 gameConfig.h
+gameObject.cpp
+gameObject.h
 )

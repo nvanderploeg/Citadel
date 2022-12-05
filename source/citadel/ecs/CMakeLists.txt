@@ -11,5 +11,4 @@ PRIVATE
 entity.h
 entity.cpp
 component.h
-component.cpp
 )
