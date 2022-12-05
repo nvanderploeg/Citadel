@@ -2,12 +2,12 @@
 
 #include <stdexcept>
 
-#include "component.h";
+#include "component.h"
 
 namespace citadel 
 {
 
-    bool Entity::hasComponent(std::string type) const
+    bool Entity::HasComponent(std::string type) const
     {
         for (auto& component : m_components) {
             if (component->getType() == type) {
@@ -17,7 +17,7 @@ namespace citadel
         return false;
     }
         
-    std::vector<Component*> Entity::getComponents(std::string type) const
+    std::vector<Component*> Entity::GetComponents(std::string type) const
     {
         std::vector<Component*> matchedComponents;
         for (auto& component : m_components) {
@@ -29,7 +29,7 @@ namespace citadel
         return matchedComponents;
     }
 
-    void Entity::attachComponent(std::unique_ptr<Component>& component)
+    void Entity::AttachComponent(const std::shared_ptr<Component>& component)
     {
         if (auto owner = component->owner.lock()) {
             throw std::runtime_error("Tried to attach component to entity while it already had an owner");
@@ -38,7 +38,7 @@ namespace citadel
         m_components.emplace_back(component);
     }
 
-    void Entity::detachComponent(Component* component)
+    void Entity::DetachComponent(const std::shared_ptr<Component>& component)
     {
         auto owner = component->owner.lock();
         if (owner.get() != this) {
@@ -46,7 +46,7 @@ namespace citadel
         }
         auto it = m_components.begin();
         for (; it != m_components.end(); ++it) {
-            if (component == it->get()) { break; }
+            if (component == *it) { break; }
         }
 
         if (it == m_components.end()) {

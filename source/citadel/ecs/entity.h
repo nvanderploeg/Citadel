@@ -11,14 +11,14 @@ namespace citadel
     class Entity: public std::enable_shared_from_this<Entity> 
     {
     protected:
-        std::vector<std::unique_ptr<Component> > m_components;
+        std::vector<std::shared_ptr<Component> > m_components;
     public:
         virtual ~Entity() = default;
-        bool hasComponent(std::string type) const;
-        std::vector<Component*>  getComponents(std::string type) const;
+        bool HasComponent(std::string type) const;
+        std::vector<Component*>  GetComponents(std::string type) const;
 
-        void attachComponent(std::unique_ptr<Component>& component);
-        void detachComponent(Component* component);
+        void AttachComponent(const std::shared_ptr<Component>& component);
+        void DetachComponent(const std::shared_ptr<Component>& component);
     };
 
 }

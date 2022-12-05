@@ -2,27 +2,37 @@
 
 namespace citadel 
 {
-    void GameObject::onStart() 
+    void GameObject::onEnteredScene()
     {
-        //Find all systems 
-
+        //Use this opportunity to load data and configure components before first use
+        
         //Finally we are ready to use by the rest of the game systems
         m_initilized = true;
     }
 
-    void GameObject::onDestroy() 
+    void GameObject::onDestroyed() 
     {
         //Mark ourself unavailable to other game systems
         m_initilized = false;
 
-        //
+        //Use this opportunity to teardown components or save data.
     }
 
-    void GameObject::update(const Time &delta)
+    void GameObject::Update(const Time &delta)
     {
-        for (auto& child : m_children) {
-            child->update(delta);
+        if (!isActive()) {
+            return;
         }
+
+        for (auto& child : m_children) {
+            child->Update(delta);
+        }
+    }
+
+    bool GameObject::isActive() const {
+        if (!m_active) { return false; }
+        if (m_parent) { return m_parent->isActive(); }
+        return true;
     }
 
 }

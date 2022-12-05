@@ -13,4 +13,6 @@ gameConfig.cpp
 gameConfig.h
 gameObject.cpp
 gameObject.h
+scene.cpp
+scene.h
 )

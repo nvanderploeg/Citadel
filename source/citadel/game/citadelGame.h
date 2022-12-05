@@ -17,6 +17,7 @@ class GameConfig;
 class InputRouter;
 class VulkanGraphics;
 class Camera;
+class Scene;
 
 class CitadelGame {
 public:
@@ -32,6 +33,8 @@ protected:
     std::shared_ptr<GameConfig> m_gameConfig;
     std::shared_ptr<VulkanGraphics> m_graphics;
     std::shared_ptr<Camera> m_camera;
+
+    std::shared_ptr<Scene> m_currentScene;
     float fieldOfView = 90.f;
 public: 
     std::shared_ptr<InputRouter> m_inputRouter;
