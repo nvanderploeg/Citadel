@@ -89,7 +89,7 @@ namespace citadel
                     }
                 }
             }
-            std::cout << "Click Callback" << std::endl << button << "," << action << "," << mods << std::endl;
+            //std::cout << "Click Callback" << std::endl << button << "," << action << "," << mods << std::endl;
         });
 
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
