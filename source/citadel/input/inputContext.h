@@ -23,6 +23,7 @@ namespace citadel
     {
     public:
         std::unordered_map<KeyEvent, std::list<std::string>, KeyEventHasher> keyEventMap;
+        std::unordered_map<MouseButtonEvent, std::list<std::string>, MouseButtonEventHasher> mouseButtonEventMap;
         std::filesystem::path filepath;
 
     public:
@@ -31,6 +32,7 @@ namespace citadel
         InputContext(const std::filesystem::path& path);
 
         void AddKeyBind(const KeyEvent& keyEvent, const std::string& label);
+        void AddMouseButtonBind(const MouseButtonEvent& mouseButtonEvent, const std::string& label);
 
         bool Save();
 

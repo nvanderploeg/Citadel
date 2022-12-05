@@ -40,6 +40,11 @@ namespace citadel
         keyEventMap[keyEvent].push_back(label);
     }
 
+    void InputContext::AddMouseButtonBind(const MouseButtonEvent& mouseButtonEvent, const std::string& label)
+    {
+        mouseButtonEventMap[mouseButtonEvent].push_back(label);
+    }
+
     bool InputContext::Save()
     {
         return false;
@@ -54,8 +59,9 @@ namespace citadel
 
     void InputContext::deserialize(const Json::Value& jValue)
     {
-        // loop through each member in the json object
-        for (Json::Value::const_iterator labelListItr = jValue.begin(); labelListItr != jValue.end(); ++labelListItr)
+        // KEYBOARD
+        const Json::Value jKeyEvents = jValue["keyEvents"];
+        for (Json::Value::const_iterator labelListItr = jKeyEvents.begin(); labelListItr != jKeyEvents.end(); ++labelListItr)
         {
             // each member name is our event label; loop through each keyEvent to bind to this label
             std::string label = labelListItr.memberName();
@@ -66,35 +72,70 @@ namespace citadel
                 AddKeyBind(keyEvent, label);
             }
         }
+
+        // MOUSE
+        const Json::Value jMouseButtonEvents = jValue["mouseButtonEvents"];
+        for (Json::Value::const_iterator labelListItr = jMouseButtonEvents.begin(); labelListItr != jMouseButtonEvents.end(); ++labelListItr)
+        {
+            std::string label = labelListItr.memberName();
+            Json::Value jBinding = (*labelListItr);
+            MouseButtonEvent buttonEvent = { jBinding["button"].asInt(), jBinding["action"].asInt(), jBinding["modifiers"].asInt() };
+            AddMouseButtonBind(buttonEvent, label);
+        }
     }
 }
 /* NOTE: Below is a sample inputContext.cfg file. The (de)serializers should follow this pattern.
 {
-    "moveUp" :
-    [
+    "keyEvents":
+    {
+        "moveRight" :
+        [
+
+            {
+                "action" : 1,
+                "key" : 68,
+                "modifiers" : 0
+            },
+
+            {
+                "action" : 1,
+                "key" : 262,
+                "modifiers" : 0
+            }
+        ],
+        "moveUp" :
+        [
+
+            {
+                "action" : 1,
+                "key" : 87,
+                "modifiers" : 0
+            },
+
+            {
+                "action" : 1,
+                "key" : 265,
+                "modifiers" : 0
+            }
+        ],
+        "terminate" :
+        [
+
+            {
+                "action" : 1,
+                "key" : 256,
+                "modifiers" : 0
+            }
+        ]
+    },
+    "mouseButtonEvents":
+    {
+        "mouseClick" :
         {
-            "key" : 87,
-            "action": 1,
-            "modifiers": 0
-        },
-        {
-            "key" : 265,
+            "button": 0,
             "action": 1,
             "modifiers": 0
         }
-    ],
-    "moveRight" :
-    [
-        {
-            "key" : 68,
-            "action": 1,
-            "modifiers": 0
-        },
-        {
-            "key" : 262,
-            "action": 1,
-            "modifiers": 0
-        }
-    ]
+    }
 }
 */

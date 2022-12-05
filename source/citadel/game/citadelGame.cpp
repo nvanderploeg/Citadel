@@ -110,6 +110,13 @@ void CitadelGame::Setup()
         return true;
     });
 
+    // test binding for mouse click
+    m_inputRouter->BindCallbackToLabel("mouseClick", [this](InputEventData data)
+    {
+        std::cout << "mouse button up\n";
+        return true;
+    });
+
     glfwMakeContextCurrent(m_window);
     m_graphics->InitVulkan(m_window);
     m_graphics->SetFoV(fieldOfView);

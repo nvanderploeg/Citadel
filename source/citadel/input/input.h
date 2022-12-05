@@ -48,6 +48,31 @@ namespace citadel
         bool system;
     };
 
+    struct MouseButtonEvent
+    {
+    public:
+        int button;
+        int action;
+        int modifiers;
+
+        bool operator==(const MouseButtonEvent& other) const
+        {
+            return (button == other.button && action == other.action && modifiers == other.modifiers);
+        }
+    };
+
+    struct MouseButtonEventHasher
+    {
+        std::size_t operator()(const MouseButtonEvent& m) const
+        {
+            using std::hash;
+
+            return ((hash<int>()(m.button)
+                ^ (hash<int>()(m.action) << 1)) >> 1)
+                ^ (hash<int>()(m.modifiers) << 1);
+        }
+    };
+
     struct MouseButtonEventData
     {
         int code;

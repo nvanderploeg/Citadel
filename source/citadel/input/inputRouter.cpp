@@ -61,9 +61,37 @@ namespace citadel
         });
 
         glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
-            InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+            // Grab a reference to ourselves from the window; set previously, above.
+            InputRouter* router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
+            MouseButtonEvent buttonEvent = { button, action, mods };
+            // get a list of all labels bound to this key event
+            auto labelListItr = router->inputContext->mouseButtonEventMap.find(buttonEvent);
+            if (labelListItr != router->inputContext->mouseButtonEventMap.end())
+            {
+                MouseButtonEventData buttonData = { button, static_cast<bool>(mods | GLFW_MOD_ALT),
+                                            static_cast<bool>(mods | GLFW_MOD_CONTROL),
+                                            static_cast<bool>(mods | GLFW_MOD_SHIFT),
+                                            static_cast<bool>(mods | GLFW_MOD_SUPER) };
+                InputEventData eventData = buttonData;
+                // go through each label
+                for (auto labelItr = labelListItr->second.begin(); labelItr != labelListItr->second.end(); ++labelItr)
+                {
+                    // get a list of callbacks bound to this label
+                    auto callbackListItr = router->callbackMap.find(*labelItr);
+                    if (callbackListItr != router->callbackMap.end())
+                    {
+                        // call each callback, passing back the key event data
+                        for (auto callbackItr = callbackListItr->second.begin(); callbackItr != callbackListItr->second.end(); ++callbackItr)
+                        {
+                            InputEventCallback buttonCallback = *callbackItr;
+                            buttonCallback(eventData);
+                        }
+                    }
+                }
+            }
             std::cout << "Click Callback" << std::endl << button << "," << action << "," << mods << std::endl;
         });
+
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
             InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
             std::cout << "MouseScroll Callback" << std::endl << "(" << xoffset << ", " << yoffset << ")" << std::endl;
