@@ -11,7 +11,7 @@
 
 #include <filesystem>
 #include <unordered_map>
-#include <list>
+#include <set>
 
 #include "JSONSerializable.h"
 
@@ -22,8 +22,8 @@ namespace citadel
     class InputContext : public IJSONSerializable
     {
     public:
-        std::unordered_map<KeyEvent, std::list<std::string>, KeyEventHasher> keyEventMap;
-        std::unordered_map<MouseButtonEvent, std::list<std::string>, MouseButtonEventHasher> mouseButtonEventMap;
+        std::unordered_map<KeyEvent, std::set<std::string>, KeyEventHasher> keyEventMap;
+        std::unordered_map<MouseButtonEvent, std::set<std::string>, MouseButtonEventHasher> mouseButtonEventMap;
         std::filesystem::path filepath;
 
     public:

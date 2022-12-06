@@ -37,19 +37,19 @@ namespace citadel
 
     void InputContext::AddKeyBind(const KeyEvent& keyEvent, const std::string& label)
     {
-        keyEventMap[keyEvent].push_back(label);
+        keyEventMap[keyEvent].insert(label);
     }
 
     void InputContext::AddMouseButtonBind(const MouseButtonEvent& mouseButtonEvent, const std::string& label)
     {
-        mouseButtonEventMap[mouseButtonEvent].push_back(label);
+        mouseButtonEventMap[mouseButtonEvent].insert(label);
     }
 
     bool InputContext::Save()
     {
         return false;
         // TODO: enable this line once serialize() is implemented;
-        return Serializer::serialize(this, filepath);
+        //return Serializer::serialize(this, filepath);
     }
 
     void InputContext::serialize(Json::Value& jValue)
