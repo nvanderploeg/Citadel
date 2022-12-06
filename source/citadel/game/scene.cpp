@@ -17,6 +17,7 @@ namespace citadel
     void Scene::AddGameObject(const std::shared_ptr<GameObject>&  gameObject)
     {
         m_gameObjects.emplace_back(gameObject);
+        gameObject->onEnteredScene();
     }
 
     void Scene::RemoveGameObject(const std::shared_ptr<GameObject>&  gameObject)
@@ -55,7 +56,9 @@ namespace citadel
 
     void Scene::Tick(Time &deltaTime)
     {
-        std::cout << "TODO!" << std::endl;
+        for (auto& gameObject : m_gameObjects) {
+            gameObject->Update(deltaTime);
+        }
     }
 
     void Scene::Draw() const

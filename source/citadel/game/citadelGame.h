@@ -18,6 +18,7 @@ class InputRouter;
 class VulkanGraphics;
 class Camera;
 class Scene;
+class GameObject;
 
 class CitadelGame {
 public:
@@ -48,6 +49,9 @@ private:
     void TearDown();
 
     bool Running();
+
+    GameObject* pGameObject;
+    Time timer;
 
 };
 

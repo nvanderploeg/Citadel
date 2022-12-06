@@ -29,6 +29,11 @@
 
 #include "input/inputRouter.h"
 
+#include "scene.h"
+#include "gameObject.h"
+#include "component.h"
+#include "transformComponent.h"
+
 using namespace std;
 
 namespace
@@ -62,6 +67,7 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     m_gameConfig = make_shared<GameConfig>(configPath);
     m_graphics = make_shared<VulkanGraphics>();
     m_camera = make_shared<Camera>();
+    m_currentScene = make_shared<Scene>();
 
     if (!glfwInit())
     {
@@ -176,6 +182,10 @@ int CitadelGame::run()
 
     Setup();
 
+    auto gameObj = std::make_shared<GameObject>();
+    pGameObject = gameObj.get();
+    m_currentScene->AddGameObject(gameObj);
+
     // TODO: logging
     cout << "== RUNNING ==" << endl;
 
@@ -221,7 +231,26 @@ void CitadelGame::Tick(Time &deltaTime)
 {
     // std::cout << deltaTime.asSeconds() << std::endl;
     
+    auto transform = static_cast<TransformComponent*>(pGameObject->GetComponent("transform"));
+
+    timer += deltaTime;
+    if (timer.asSeconds() > 1)
+        timer -= Time::seconds(1) ;
+
+    auto angle = lerp((f32)0, (f32)1, timer.asSeconds()) * (f32)360;
+
+    auto X = cos(angle) * 10;
+    auto Y = sin(angle) * 10;
+
+    if (transform)
+    {
+        transform->position.x = X;
+        transform->position.y = Y;
+    }
+
     //Update game objects!
+    if (m_currentScene)
+        m_currentScene->Tick(deltaTime);
 }
 
 void CitadelGame::Draw() 

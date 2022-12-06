@@ -5,13 +5,11 @@
 #include <memory>
 #include <optional>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
-
 #include "cTime.h"
 
 #include "entity.h"
+
+#include "transformComponent.h"
 
 namespace citadel 
 {
@@ -25,12 +23,14 @@ namespace citadel
 
         //Object's children, must not be null
         std::vector<GameObject*> m_children;
+
+        std::shared_ptr<TransformComponent> m_transform;
         
         //Position in 3D space relative to parent
-        glm::vec3 m_position = {0,0,0};
+        //glm::vec3 m_position = {0,0,0};
         
         //Rotations
-        glm::quat m_rotation = glm::identity<glm::quat>();
+        //glm::quat m_rotation = glm::identity<glm::quat>();
         
 
         bool m_initilized = false;

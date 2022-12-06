@@ -7,7 +7,7 @@
 namespace citadel 
 {
 
-    bool Entity::HasComponent(std::string type) const
+    bool Entity::HasComponent(const std::string& type) const
     {
         for (auto& component : m_components) {
             if (component->getType() == type) {
@@ -16,8 +16,17 @@ namespace citadel
         }
         return false;
     }
-        
-    std::vector<Component*> Entity::GetComponents(std::string type) const
+    
+    Component* Entity::GetComponent(const std::string& type) const
+    {
+        for (auto& component : m_components) {
+            if (component->getType() == type) {
+                return component.get();
+            }
+        }
+    }
+
+    std::vector<Component*> Entity::GetComponents(const std::string& type) const
     {
         std::vector<Component*> matchedComponents;
         for (auto& component : m_components) {
