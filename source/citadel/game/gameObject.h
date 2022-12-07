@@ -45,7 +45,7 @@ namespace citadel
         //bool m_dirty();
         //void make_dirty(); //Also dirties children.
     public:
-        GameObject() = default;
+        GameObject();
         virtual ~GameObject() = default;
         
         //Called once on the first frame after the entity is added to the scene
