@@ -59,6 +59,8 @@ namespace citadel
         //Use this method to teardown components or finalize data.
         virtual void onDestroyed();
 
+        bool isInitialized() const { return m_initilized; }
+
         //returns the active flag of this object
         bool isActiveSelf() const { return m_active; }
 
