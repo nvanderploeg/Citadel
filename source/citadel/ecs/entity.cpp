@@ -9,12 +9,16 @@ namespace citadel
 
     bool Entity::HasComponent(const std::string& type) const
     {
+        // GetComponent is doing the same thing, let's use that instead
+        /*
         for (auto& component : m_components) {
             if (component->getType() == type) {
                 return true;
             }
         }
         return false;
+        */
+        return (GetComponent(type) != nullptr);
     }
     
     Component* Entity::GetComponent(const std::string& type) const
@@ -24,6 +28,7 @@ namespace citadel
                 return component.get();
             }
         }
+        return nullptr;
     }
 
     std::vector<Component*> Entity::GetComponents(const std::string& type) const
