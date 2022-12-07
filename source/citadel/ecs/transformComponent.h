@@ -24,10 +24,13 @@ namespace citadel
 		virtual inline std::string getType() const { return "transform"; }
 
 		//Position in 3D space relative to parent
-		glm::vec3 position = {0, 0, 0};
+		glm::vec3 position = { 0, 0, 0 };
 
 		//Rotations
 		glm::quat rotation = glm::identity<glm::quat>();
+
+		//Scale
+		glm::vec3 scale = { 1, 1, 1 };
 
 	};
 
