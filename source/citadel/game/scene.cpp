@@ -12,12 +12,12 @@ namespace citadel
     {
         std::cout << "TODO!" << std::endl;
     }
-
     
     void Scene::AddGameObject(const std::shared_ptr<GameObject>&  gameObject)
     {
+        std::lock_guard<std::mutex> guard(m_uninitializedGameObjectsMutex);
+        m_uninitializedGameObjects.emplace_back(gameObject);
         m_gameObjects.emplace_back(gameObject);
-        gameObject->onEnteredScene();
     }
 
     void Scene::RemoveGameObject(const std::shared_ptr<GameObject>&  gameObject)
@@ -54,9 +54,23 @@ namespace citadel
     }
     
 
+    void Scene::initializeGameObjects()
+    {
+        std::lock_guard<std::mutex> guard(m_uninitializedGameObjectsMutex);
+        for (auto& gameObject : m_uninitializedGameObjects)
+        {
+            gameObject->onEnteredScene();
+        }
+
+        m_uninitializedGameObjects.clear();
+    }
+
     void Scene::Tick(Time &deltaTime)
     {
-        for (auto& gameObject : m_gameObjects) {
+        initializeGameObjects();
+
+        for (auto& gameObject : m_gameObjects)
+        {
             gameObject->Update(deltaTime);
         }
     }
