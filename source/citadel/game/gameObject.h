@@ -24,7 +24,7 @@ namespace citadel
         //Object's children, must not be null
         std::vector<GameObject*> m_children;
 
-        std::shared_ptr<TransformComponent> m_transform;
+        TransformComponent* m_transform;
         
         //Position in 3D space relative to parent
         //glm::vec3 m_position = {0,0,0};

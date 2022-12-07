@@ -4,12 +4,21 @@
 
 namespace citadel 
 {
+    GameObject::GameObject()
+        : m_parent(nullptr)
+        , m_transform(nullptr)
+        , m_initilized(false)
+        , m_active(false)
+    {
+        auto transform = std::make_shared<TransformComponent>();
+        m_transform = transform.get();
+
+        AttachComponent(std::dynamic_pointer_cast<Component>(transform));
+    }
+
     void GameObject::onEnteredScene()
     {
         //Use this opportunity to load data and configure components before first use
-
-        m_transform = std::make_shared<TransformComponent>();
-        AttachComponent(std::dynamic_pointer_cast<Component>(m_transform));
         
         //Finally we are ready to use by the rest of the game systems
         m_initilized = true;
