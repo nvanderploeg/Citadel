@@ -19,14 +19,23 @@ class VulkanGraphics;
 class Camera;
 class Scene;
 class GameObject;
+class CitadelGame;
 
-class CitadelGame {
+class CitadelGameDelegate 
+{
 public:
-    CitadelGame();
-    CitadelGame(std::filesystem::path& configPath);
+    virtual ~CitadelGameDelegate() = default;
+    virtual void OnGameDidFinishInitialization(CitadelGame* game) = 0;
+};
+
+class CitadelGame
+{
+public:
+    CitadelGame(const std::filesystem::path& configPath, const std::shared_ptr<CitadelGameDelegate>& delegate);
     ~CitadelGame() = default;
     int run();
     
+    void SetScene(const std::shared_ptr<Scene>& scene);
     
 protected:
     bool m_ready;
@@ -34,6 +43,7 @@ protected:
     std::shared_ptr<GameConfig> m_gameConfig;
     std::shared_ptr<VulkanGraphics> m_graphics;
     std::shared_ptr<Camera> m_camera;
+    std::shared_ptr<CitadelGameDelegate> m_delegate;
 
     std::shared_ptr<Scene> m_currentScene;
     float fieldOfView = 90.f;
@@ -49,10 +59,6 @@ private:
     void TearDown();
 
     bool Running();
-
-    GameObject* pGameObject;
-    Time timer;
-
 };
 
 } //namespace citadel.

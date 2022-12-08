@@ -8,13 +8,16 @@
 
 #include "citadel/citadel.h"
 
+#include "demoGame.h"
+
 using namespace citadel;
 
 int main(int argc, const char * argv[]) {
     //Automatically looks for game.config and builds from there
     //You can instead pass in a path to the main game config file
-    // or pass in a GameBuilder Object
-    CitadelGame game;
+    //
+    auto demo = std::make_shared<DemoGame>();
+    CitadelGame game("", demo);
 
     //Run the game
     return game.run();

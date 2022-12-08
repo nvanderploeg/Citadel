@@ -43,20 +43,18 @@ namespace
 
 namespace citadel {
 
-CitadelGame::CitadelGame() {
-    Init(DEFAULT_CONFIGURATIONFILENAME);
-}
-
-CitadelGame::CitadelGame(filesystem::path& configPath)
+CitadelGame::CitadelGame(const filesystem::path& configPath, const std::shared_ptr<CitadelGameDelegate>& delegate)
+:m_delegate(delegate)
 {
-    if (!configPath.has_filename())
+    if (configPath.has_filename())
     {
+        Init(configPath);
+       
+    } else {
         // TODO logging
         cout << "WARNING: Configuration file not specified; using \"" << DEFAULT_CONFIGURATIONFILENAME<< "\"." << endl;
-        configPath.replace_filename(DEFAULT_CONFIGURATIONFILENAME);
+        Init(DEFAULT_CONFIGURATIONFILENAME);
     }
-
-    Init(configPath);
 }
 
 bool CitadelGame::Init(const filesystem::path& configPath)
@@ -67,7 +65,6 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     m_gameConfig = make_shared<GameConfig>(configPath);
     m_graphics = make_shared<VulkanGraphics>();
     m_camera = make_shared<Camera>();
-    m_currentScene = make_shared<Scene>();
 
     if (!glfwInit())
     {
@@ -78,7 +75,7 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     }
 
     // TODO use a logging system
-    cout << "ok." << endl;
+    cout << "Init: ok." << endl;
     return m_ready;
 }
 
@@ -127,8 +124,6 @@ void CitadelGame::Setup()
     m_graphics->InitVulkan(m_window);
     m_graphics->SetFoV(fieldOfView);
 
-    // TODO use a logging system
-    cout << "ok." << endl;
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
         //TODO: magic a way to call the graphics that a resize happened
@@ -139,12 +134,20 @@ void CitadelGame::Setup()
         if (scrollData.yOffset != 0) {
                
             fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
+            fieldOfView = std::max(45.f, fieldOfView);
+            fieldOfView = std::min(120.f, fieldOfView);
             m_graphics->SetFoV(fieldOfView);
             return true;
         }
         return false;
     });
 
+    // TODO use a logging system
+    cout << "SETUP ok." << endl;
+
+    if (m_delegate) {
+        m_delegate->OnGameDidFinishInitialization(this);
+    }
 }
 
 void CitadelGame::TearDown() 
@@ -169,6 +172,11 @@ void CitadelGame::TearDown()
     cout << "ok." << endl;
 }
 
+void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
+{
+    m_currentScene = scene;
+}
+
 bool CitadelGame::Running() 
 {
     return !glfwWindowShouldClose(m_window);
@@ -181,11 +189,7 @@ int CitadelGame::run()
     }
 
     Setup();
-
-    auto gameObj = std::make_shared<GameObject>();
-    pGameObject = gameObj.get();
-    m_currentScene->AddGameObject(gameObj);
-
+    
     // TODO: logging
     cout << "== RUNNING ==" << endl;
 
@@ -229,34 +233,21 @@ int CitadelGame::run()
 
 void CitadelGame::Tick(Time &deltaTime) 
 {
-    // std::cout << deltaTime.asSeconds() << std::endl;
-    
-    auto transform = static_cast<TransformComponent*>(pGameObject->GetComponent("transform"));
-
-    timer += deltaTime;
-    if (timer.asSeconds() > 1)
-        timer -= Time::seconds(1) ;
-
-    auto angle = lerp((f32)0, (f32)1, timer.asSeconds()) * (f32)360;
-
-    auto X = cos(angle) * 10;
-    auto Y = sin(angle) * 10;
-
-    if (transform)
-    {
-        transform->position.x = X;
-        transform->position.y = Y;
-    }
-
-    //Update game objects!
-    if (m_currentScene)
+    //Update game scenes!
+    if (m_currentScene) {
         m_currentScene->Tick(deltaTime);
+    }
 }
 
 void CitadelGame::Draw() 
 {
     //Compile frame
     m_graphics->SetViewMatrix(m_camera->GetViewMatrix());
+
+    if (m_currentScene) {
+        m_currentScene->Draw();
+    }
+
     //Tell the graphics engine to render it!
     m_graphics->DrawFrame();
 }

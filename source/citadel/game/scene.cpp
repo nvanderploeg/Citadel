@@ -73,11 +73,17 @@ namespace citadel
         {
             gameObject->Update(deltaTime);
         }
+
+        for (auto& system : m_systems)
+        {
+            system->Update(deltaTime);
+        }
     }
 
     void Scene::Draw() const
     {
-        std::cout << "TODO!" << std::endl;
+        // std::cout << "TODO!" << std::endl;
+        // Determine if base Scene should do anything
     }
 
 }

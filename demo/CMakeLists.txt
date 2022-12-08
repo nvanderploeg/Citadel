@@ -42,6 +42,8 @@ target_link_libraries(CitaDemo
 target_sources(CitaDemo
 PRIVATE
 citaDemo/main.cpp
+citaDemo/demoGame.cpp
+citaDemo/demoScene.cpp
 )
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/textures
