@@ -14,7 +14,7 @@
 namespace citadel 
 {
 
-    class GameObject : public Entity 
+    class GameObject// : public Entity 
     {
     protected:
         //Heirachy

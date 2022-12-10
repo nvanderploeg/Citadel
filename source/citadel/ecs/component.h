@@ -1,23 +1,34 @@
+//
+//  component.h
+//  CitadelEngine
+//
+//  Created by Stephanie Barrett on 2022-12-09.
+//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//
 #pragma once
 
-#include <string>
-#include <memory>
+#include <cstdint>
 
 namespace citadel
 {
-
-    class Entity;
-
-    struct Component
+    namespace ecs
     {
-        //We hold a backreference to the entity we are attached to
-        //Component may not be attached to more than one entity.
-        //As a weak pointer, if the owner deallocates, then this component is no longer valid
-        //so owner may used for validation
-        std::weak_ptr<Entity> owner;
-        virtual ~Component() = default;
-        virtual std::string getType() const = 0;
-    };
+        using ComponentID = uint64_t;
 
+        namespace Component
+        {
+
+            extern ComponentID s_componentTypeCounter;
+
+            // Each time this is called on a new component type you’ll get a new unique ID, because static magic.
+            template <class T>
+            ComponentID GetID()
+            {
+                static ComponentID s_componentTypeCounter = s_componentTypeCounter++;
+                return s_componentTypeCounter;
+            }
+
+        } // namespace Component
+    } // namespace ecs
 } // namespace citadel
 

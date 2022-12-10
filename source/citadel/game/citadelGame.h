@@ -35,7 +35,7 @@ public:
     ~CitadelGame() = default;
     int run();
     
-    void SetScene(const std::shared_ptr<Scene>& scene);
+    //void SetScene(const std::shared_ptr<Scene>& scene);
     
 protected:
     bool m_ready;
@@ -45,7 +45,7 @@ protected:
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<CitadelGameDelegate> m_delegate;
 
-    std::shared_ptr<Scene> m_currentScene;
+    //std::shared_ptr<Scene> m_currentScene;
     float fieldOfView = 90.f;
 public: 
     std::shared_ptr<InputRouter> m_inputRouter;

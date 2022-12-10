@@ -19,7 +19,7 @@
 namespace citadel
 {
 
-	struct TransformComponent : public Component
+	struct TransformComponent// : public Component
 	{
 		virtual inline std::string getType() const { return "transform"; }
 

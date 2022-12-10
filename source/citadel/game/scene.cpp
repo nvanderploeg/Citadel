@@ -1,13 +1,41 @@
+//
+//  scene.cpp
+//  CitadelEngine
+//
+//  Created by Stephanie Barrett on 2022-12-09.
+//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//
+
 #include "scene.h"
-
-#include <iostream>
-
-#include "system.h"
-#include "gameObject.h"
 
 namespace citadel
 {
+    EntityID Scene::CreateEntity()
+    {
+        if (!freeEntities.empty())
+        {
+            EntityIndex newIndex = freeEntities.back();
+            freeEntities.pop_back();
+            EntityVersion newVersion = Entity::GetEntityVersion(entities[newIndex].id);
+            EntityID newId = Entity::CreateEntityID(newIndex, newVersion);
+            entities[newIndex].id = newId;
+            return entities[newIndex].id;
+        }
 
+        entities.push_back({ entities.size(), ComponentMask() });
+        return entities.back().id;
+    }
+
+    void Scene::DestroyEntity(EntityID id)
+    {
+        // set the id to -1 and add 1 to the version to invalidate any references to this entity
+        EntityID newId = Entity::CreateEntityID(EntityIndex(-1), Entity::GetEntityVersion(id) + 1);
+        EntityIndex entityIndex = Entity::GetEntityIndex(id);
+        entities[entityIndex].id = newId;
+        entities[entityIndex].mask.reset();
+        freeEntities.push_back(entityIndex);
+    }
+    /*
     void Scene::Load(std::string path)
     {
         std::cout << "TODO!" << std::endl;
@@ -85,5 +113,5 @@ namespace citadel
         // std::cout << "TODO!" << std::endl;
         // Determine if base Scene should do anything
     }
-
+    */
 }
