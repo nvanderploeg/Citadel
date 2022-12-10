@@ -23,22 +23,25 @@ namespace citadel
 
     class Scene
     {
-    protected:
+    private:
         std::vector<Entity> entities;
         std::vector<EntityIndex> freeEntities;
-        std::vector<ComponentPool> componentPools;
+        std::vector<ComponentPool*> componentPools;
 
     public:
+        virtual void Tick(Time& deltaTime) = 0;
+        virtual void Draw() = 0;
+
         EntityID CreateEntity();
         void DestroyEntity(EntityID id);
 
         template<typename T>
-        inline void AddComponent(EntityID id)
+        inline T* AddComponent(EntityID id)
         {
             EntityIndex entityIndex = Entity::GetEntityIndex(id);
             
             if (entities[entityIndex].id != id)
-                return;
+                return nullptr;
             
             ComponentID componentId = Component::GetID<T>();
 
@@ -69,7 +72,7 @@ namespace citadel
             EntityIndex entityIndex = Entity::GetEntityIndex(id);
 
             if (entities[entityIndex].id != id)
-                return;
+                return nullptr;
 
             ComponentID componentId = Component::GetID<T>();
 

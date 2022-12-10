@@ -12,7 +12,7 @@ namespace citadel
 {
 	namespace ecs
 	{
-		ComponentPool::ComponentPool(EntityID size)
+		ComponentPool::ComponentPool(EntityIndex size)
 		{
 			m_size = size;
 			m_pData = new char[size * MAX_ENTITIES];

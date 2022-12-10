@@ -22,7 +22,7 @@ namespace citadel
 			EntityID m_size{ 0 };
 
 		public:
-			ComponentPool(EntityID size);
+			ComponentPool(EntityIndex size);
 			~ComponentPool();
 
 			inline void* get(EntityID id)

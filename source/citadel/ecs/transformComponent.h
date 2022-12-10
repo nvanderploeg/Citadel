@@ -16,8 +16,8 @@
 
 #include <string>
 
-namespace citadel
-{
+//namespace citadel
+//{
 
 	struct TransformComponent// : public Component
 	{
@@ -34,6 +34,6 @@ namespace citadel
 
 	};
 
-} // namespace citadel
+//} // namespace citadel
 
 #endif // __TRANSFORM_COMPONENT_H__

@@ -173,10 +173,10 @@ void CitadelGame::TearDown()
     cout << "ok." << endl;
 }
 
-//void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
-//{
-//    m_currentScene = scene;
-//}
+void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
+{
+    m_currentScene = scene;
+}
 
 bool CitadelGame::Running() 
 {
@@ -235,9 +235,9 @@ int CitadelGame::run()
 void CitadelGame::Tick(Time &deltaTime) 
 {
     //Update game scenes!
-    //if (m_currentScene) {
-    //    m_currentScene->Tick(deltaTime);
-    //}
+    if (m_currentScene) {
+        m_currentScene->Tick(deltaTime);
+    }
 }
 
 void CitadelGame::Draw() 
@@ -245,9 +245,9 @@ void CitadelGame::Draw()
     //Compile frame
     m_graphics->SetViewMatrix(m_camera->GetViewMatrix());
 
-    //if (m_currentScene) {
-    //    m_currentScene->Draw();
-    //}
+    if (m_currentScene) {
+        m_currentScene->Draw();
+    }
 
     //Tell the graphics engine to render it!
     m_graphics->DrawFrame();
