@@ -640,69 +640,6 @@ namespace citadel
         vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
     }
 
-
-    void VulkanGraphics::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
-    {
-
-        // std::cout << "RecordCommandBuffer" << std::endl;
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
-        }
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
-        renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = swapChain.extent;
-
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-        clearValues[1].depthStencil = {1.0f, 0};
-
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        auto& extent = swapChain.extent;
-
-        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-            VkViewport viewport{};
-            viewport.x = 0.0f;
-            viewport.y = 0.0f;
-            viewport.width = (float) extent.width;
-            viewport.height = (float) extent.height;
-            viewport.minDepth = 0.0f;
-            viewport.maxDepth = 1.0f;
-            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkRect2D scissor{};
-            scissor.offset = {0, 0};
-            scissor.extent = extent;
-            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
-
-            VkBuffer vertexBuffers[] = {vertexBuffer};
-            VkDeviceSize offsets[] = {0};
-            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, 
-            pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-        vkCmdEndRenderPass(commandBuffer);
-
-        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
-        }
-    }
-
     void VulkanGraphics::CreateSyncObjects()
     {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -1417,12 +1354,12 @@ namespace citadel
         RecreateSwapChain();
     }
 
-    void VulkanGraphics::DrawFrame()
-    {
-        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-        uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    void VulkanGraphics::StartDraw()
+    {
+
+        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+        auto result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             RecreateSwapChain();
@@ -1436,8 +1373,81 @@ namespace citadel
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
         vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-        RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
+        StartCommandBuffer(commandBuffers[currentFrame], imageIndex);
+
+    }
+
+
+    void VulkanGraphics::StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex)
+    {
+
+        // std::cout << "RecordCommandBuffer" << std::endl;
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+            throw std::runtime_error("failed to begin recording command buffer!");
+        }
+
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = renderPass;
+        renderPassInfo.framebuffer = swapChainFramebuffers[_imageIndex];
+        renderPassInfo.renderArea.offset = {0, 0};
+        renderPassInfo.renderArea.extent = swapChain.extent;
+
+        std::array<VkClearValue, 2> clearValues{};
+        clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+        clearValues[1].depthStencil = {1.0f, 0};
+
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        auto& extent = swapChain.extent;
+
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
+            VkViewport viewport{};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = (float) extent.width;
+            viewport.height = (float) extent.height;
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            VkRect2D scissor{};
+            scissor.offset = {0, 0};
+            scissor.extent = extent;
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
+
+
+    }
+
+    void VulkanGraphics::AddToDraw(const RenderPayload& payload)
+    {
+        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ vertexBuffer};
+        VkDeviceSize offsets[] = {payload.offset};
+        vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
+
+        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/indexBuffer, 0, payload.indexBufferFormat);
+
+        vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
+        pipelineLayout, 0, 1, /*&payload.descriptorSet*/ &descriptorSets[currentFrame], 0, nullptr);
+
+        vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    }
+
+    void VulkanGraphics::SubmitDraw()
+    {
+        vkCmdEndRenderPass(commandBuffers[currentFrame]);
+
+        if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to record command buffer!");
+        }
+        
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -1470,7 +1480,7 @@ namespace citadel
 
         presentInfo.pImageIndices = &imageIndex;
 
-        result = vkQueuePresentKHR(presentQueue, &presentInfo);
+        auto result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
             framebufferResized = false;

@@ -42,11 +42,15 @@ void DemoScene::Tick(citadel::Time &deltaTime)
     }
 }
 
-void DemoScene::Draw() const
+void DemoScene::Draw(std::shared_ptr<citadel::VulkanGraphics> graphics) const
 {
-    citadel::Scene::Draw();  
+    citadel::Scene::Draw(graphics);  
     auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
     if (transform) {
         std::cout << "\"Drawing\" Object at " << transform->position.x << " , " << transform->position.y << std::endl; 
     }
+
+    citadel::RenderPayload payload;
+
+    graphics->AddToDraw(payload);
 }

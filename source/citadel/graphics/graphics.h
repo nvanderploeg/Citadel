@@ -16,16 +16,28 @@
 
 class GLFWwindow;
 
-namespace citadel {
+namespace citadel 
+{
 
-struct UniformBufferObject {
+struct UniformBufferObject 
+{
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 proj;
 };
 
-class VulkanGraphics {
+struct RenderPayload
+{
+    VkBuffer vertexBuffer;
+    VkDeviceSize offset = 0;
+    VkBuffer indexBuffer;
+    
+    VkIndexType indexBufferFormat = VK_INDEX_TYPE_UINT32;
+    VkDescriptorSet descriptorSet;
+};
 
+class VulkanGraphics 
+{
     GLFWwindow* window;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -39,6 +51,7 @@ class VulkanGraphics {
     VkQueue presentQueue;
 
     SwapChain swapChain;
+    uint32_t imageIndex;
 
     //Pipeline!
     VkRenderPass renderPass;
@@ -126,7 +139,7 @@ class VulkanGraphics {
     void CreateDescriptorPool();
     void CreateDescriptorSets();
 
-    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
     void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     void CreateTextureImage(std::string path);
@@ -157,7 +170,9 @@ public:
     void Init(GLFWwindow* window);
 
     void HandleResize();
-    void DrawFrame();
+    void StartDraw();
+    void AddToDraw(const RenderPayload& payload);
+    void SubmitDraw();
 
     void SetViewMatrix(glm::mat4 matrix);
     void SetFoV(float radians);

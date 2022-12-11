@@ -6,6 +6,7 @@
 #include <mutex>
 
 #include "cTime.h"
+#include "graphics.h"
 
 namespace citadel 
 {
@@ -34,7 +35,7 @@ namespace citadel
         void initializeGameObjects();
 
         virtual void Tick(Time &deltaTime);
-        virtual void Draw() const;
+        virtual void Draw(std::shared_ptr<VulkanGraphics> graphics) const;
     };
 
 }

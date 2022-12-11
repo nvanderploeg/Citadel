@@ -243,12 +243,12 @@ void CitadelGame::Draw()
 {
     //Compile frame
     m_graphics->SetViewMatrix(m_camera->GetViewMatrix());
+    m_graphics->StartDraw();
 
     if (m_currentScene) {
-        m_currentScene->Draw();
+        m_currentScene->Draw(m_graphics);
     }
-
     //Tell the graphics engine to render it!
-    m_graphics->DrawFrame();
+    m_graphics->SubmitDraw();
 }
 } //namespace citadel
