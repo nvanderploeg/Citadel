@@ -95,6 +95,8 @@ class VulkanGraphics {
     UniformBufferObject m_ubo;
 
     //Basic setup
+
+    void SetupDebugMessenger();
     void CreateInstance();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
@@ -152,7 +154,7 @@ class VulkanGraphics {
     VkFormat FindDepthFormat();
 public:
     //Called to setup Vulkan for use
-    void InitVulkan(GLFWwindow* window);
+    void Init(GLFWwindow* window);
 
     void HandleResize();
     void DrawFrame();

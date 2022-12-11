@@ -36,29 +36,19 @@ namespace citadel
     const uint32_t WIDTH = 800;
     const uint32_t HEIGHT = 600;
 
-#pragma mark - Debug and validation
+#   pragma mark - Debug and validation
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
 
-     #ifdef NDEBUG
-    const bool enableValidationLayers = false;
-    #else
+    #ifdef VULKAN_VALIDATION
     const bool enableValidationLayers = true;
+    #else
+    const bool enableValidationLayers = false;
     #endif
-
-
     
-    bool hasStencilComponent(VkFormat format) {
-       return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-    }
-
-
-    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
-            VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
-            void* pUserData) 
-    {
-        // std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+        std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
         return VK_FALSE;
     }
@@ -78,13 +68,30 @@ namespace citadel
             func(instance, debugMessenger, pAllocator);
         }
     }
-
+     
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
         createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         createInfo.pfnUserCallback = debugCallback;
+    }
+
+    bool hasStencilComponent(VkFormat format) {
+       return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
+
+    void VulkanGraphics::SetupDebugMessenger()
+    {
+        if (!enableValidationLayers) return;
+
+        VkDebugUtilsMessengerCreateInfoEXT createInfo;
+        populateDebugMessengerCreateInfo(createInfo);
+
+        if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
+            throw std::runtime_error("failed to set up debug messenger!");
+        }
     }
 
     uint32_t VulkanGraphics::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
@@ -165,6 +172,10 @@ namespace citadel
 
         for(uint32_t i = 0; i < glfwExtensionCount; i++) {
             requiredExtensions.emplace_back(glfwExtensions[i]);
+        }
+        
+        if (enableValidationLayers) {
+            requiredExtensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
         
 #ifdef __APPLE__ //If we are running on an APPLE device, this means we need to use Metal, or MoltenVK compatbility
@@ -1324,18 +1335,18 @@ namespace citadel
         }
     }
 
-    void VulkanGraphics::InitVulkan(GLFWwindow* win)
+    void VulkanGraphics::Init(GLFWwindow* _window)
     {
-        window = win;
+        window = _window;
         //Base setup for Vulkan
         CreateInstance();
-        // setupDebugMessenger();
+        SetupDebugMessenger();
         CreateSurface();
         //picking devices 
         PickPhysicalDevice();
         CreateLogicalDevice();
         //Setting up presentation stuff
-        swapChain = SwapChain::Create(window, device, physicalDevice, surface);
+        swapChain = SwapChain::Create(_window, device, physicalDevice, surface);
         CreateRenderPass();
         CreateDescriptorSetLayout();
         graphicsPipeline = CreateGraphicsPipeline(device, DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER, msaaSamples);
@@ -1392,12 +1403,11 @@ namespace citadel
 
         vkDestroyCommandPool(device, commandPool, nullptr);
 
-        vkDestroyDevice(device, nullptr);
-
         if (enableValidationLayers) {
             DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
         }
 
+        vkDestroyDevice(device, nullptr);
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
     }

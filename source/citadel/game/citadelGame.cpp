@@ -121,7 +121,7 @@ void CitadelGame::Setup()
     });
 
     glfwMakeContextCurrent(m_window);
-    m_graphics->InitVulkan(m_window);
+    m_graphics->Init(m_window);
     m_graphics->SetFoV(fieldOfView);
 
 
