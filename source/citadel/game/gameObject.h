@@ -9,8 +9,6 @@
 
 #include "entity.h"
 
-#include "transformComponent.h"
-
 namespace citadel 
 {
 
@@ -24,7 +22,7 @@ namespace citadel
         //Object's children, must not be null
         std::vector<GameObject*> m_children;
 
-        TransformComponent* m_transform;
+        //TransformComponent* m_transform;
         
         //Position in 3D space relative to parent
         //glm::vec3 m_position = {0,0,0};

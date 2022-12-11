@@ -1,15 +1,12 @@
 //
-//  Citadel.h
-//  Floating Citadel Demo app
+//  citadel.h
+//  CitadelEngine
 //
 //  Created by Norman van der Ploeg on 2020-01-17.
 //  Copyright © 2020 Floating Citadel Games. All rights reserved.
 //
-
-#ifndef Citadel_h
-#define Citadel_h
+#pragma once
 
 #include "citadelSystem.h"
+#include "citadelECS.h"
 #include "game/citadelGame.h"
-
-#endif /* Citadel_h */

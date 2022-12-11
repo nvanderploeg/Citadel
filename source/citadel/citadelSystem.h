@@ -1,6 +1,11 @@
-
-#ifndef __N0_SYSTEM_H__
-#define __N0_SYSTEM_H__
+//
+//  citadelSystem.h
+//  CitadelEngine
+//
+//  Created by Norman van der Ploeg.
+//  Copyright © 2020 Floating Citadel Games. All rights reserved.
+//
+#pragma once
 
 #include <memory>
 #include <string>
@@ -22,5 +27,3 @@
 #include "system/tickable.h"
 #include "system/clock.h"
 #include "system/errorCodes.h"
-
-#endif // __N0_SYSTEM_H__

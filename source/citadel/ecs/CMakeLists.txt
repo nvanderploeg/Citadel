@@ -9,6 +9,10 @@ PUBLIC
 target_sources(${PROJECT_NAME}
 PRIVATE
 entity.h
-entity.cpp
 component.h
+componentPool.h
+componentPool.cpp
+filter.h
+registry.h
+registry.cpp
 )

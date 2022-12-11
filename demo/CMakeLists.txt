@@ -44,6 +44,7 @@ PRIVATE
 citaDemo/main.cpp
 citaDemo/demoGame.cpp
 citaDemo/demoScene.cpp
+citaDemo/transformComponent.h
 )
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/textures

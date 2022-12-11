@@ -6,36 +6,25 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "citadelSystem.h"
+#include "citadelECS.h"
 
-//#include "ecs/sceneView.h"
-#include "ecs/transformComponent.h"
-#include "gameObject.h"
+#include "transformComponent.h"
 
 using namespace std;
 
 DemoScene::DemoScene()
-//:Scene()
+    :Scene()
 {
-    entity = CreateEntity();
-    auto transform = AddComponent<TransformComponent>(entity);
-    //pGameObject = std::make_shared<citadel::GameObject>();
-    //AddGameObject(pGameObject);
+    m_entity = registry.CreateEntity();
+    auto transform = registry.AddComponent<TransformComponent>(m_entity);
 }
 
 
-void DemoScene::Tick(citadel::Time &deltaTime)
+void DemoScene::Tick(const citadel::Time &deltaTime)
 {
-    //citadel::Scene::Tick(deltaTime);
-
-    //auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
-    
-    
-    //auto transform = GetComponent<TransformComponent>(entity);
-
-    // NOTE: don't use SceneView, it's not working atm. also, there's a circular dependancy.
-    //for (citadel::ecs::EntityID entity : citadel::ecs::SceneView<TransformComponent>(this))
+    //for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent>(this))
     {
-        TransformComponent* transform = GetComponent<TransformComponent>(entity);
+        TransformComponent* transform = registry.GetComponent<TransformComponent>(m_entity);
 
         //if (transform == nullptr)
             //continue;
@@ -56,9 +45,7 @@ void DemoScene::Tick(citadel::Time &deltaTime)
 
 void DemoScene::Draw()
 {
-    //citadel::Scene::Draw();  
-    //auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
-    TransformComponent * transform = GetComponent<TransformComponent>(entity);
+    TransformComponent * transform = registry.GetComponent<TransformComponent>(m_entity);
     if (transform) {
         std::cout << "\"Drawing\" Object at " << transform->position.x << " , " << transform->position.y << std::endl; 
     }

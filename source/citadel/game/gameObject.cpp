@@ -7,8 +7,8 @@ namespace citadel
     void GameObject::onEnteredScene()
     {
         //Use this opportunity to load data and configure components before first use
-        auto transform = std::make_shared<TransformComponent>();
-        m_transform = transform.get();
+        //auto transform = std::make_shared<TransformComponent>();
+        //m_transform = transform.get();
         //AttachComponent(transform);
         //Finally we are ready to use by the rest of the game systems
         m_initilized = true;

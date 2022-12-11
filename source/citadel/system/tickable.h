@@ -2,15 +2,17 @@
 #ifndef __UPDATEABLE_H__
 #define __UPDATEABLE_H__
 
+#include "cTime.h"
+
 namespace citadel
 {
     
     class ITickable
     {
     public:
-        virtual void tick(const Time & deltaTime) = 0;
+        virtual void Tick(const Time & deltaTime) = 0;
         
-    }; // class IUpdateable
+    }; // class ITickable
     
 }; // namespace citadel
 

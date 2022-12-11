@@ -30,10 +30,6 @@
 #include "input/inputRouter.h"
 
 #include "scene.h"
-#include "ecs/entity.h"
-#include "ecs/component.h"
-#include "ecs/componentPool.h"
-#include "ecs/transformComponent.h"
 
 using namespace std;
 
