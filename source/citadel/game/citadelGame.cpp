@@ -60,7 +60,6 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     cout << "== INIT ==\n";
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
-    m_graphics = make_shared<VulkanGraphics>();
     m_camera = make_shared<Camera>();
 
     if (!glfwInit())
@@ -118,8 +117,8 @@ void CitadelGame::Setup()
     });
 
     glfwMakeContextCurrent(m_window);
-    m_graphics->InitVulkan(m_window);
-    m_graphics->SetFoV(fieldOfView);
+    VulkanGraphics::Instance()->Init(m_window);
+    VulkanGraphics::Instance()->SetFoV(fieldOfView);
 
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
@@ -133,7 +132,7 @@ void CitadelGame::Setup()
             fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
             fieldOfView = std::max(45.f, fieldOfView);
             fieldOfView = std::min(120.f, fieldOfView);
-            m_graphics->SetFoV(fieldOfView);
+            VulkanGraphics::Instance()->SetFoV(fieldOfView);
             return true;
         }
         return false;
@@ -160,7 +159,7 @@ void CitadelGame::TearDown()
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
-    m_graphics->Cleanup();
+    VulkanGraphics::Instance()->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -238,14 +237,15 @@ void CitadelGame::Tick(Time &deltaTime)
 
 void CitadelGame::Draw() 
 {
+
     //Compile frame
-    m_graphics->SetViewMatrix(m_camera->GetViewMatrix());
+    VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
+    VulkanGraphics::Instance()->StartDraw();
 
     if (m_currentScene) {
         m_currentScene->Draw();
     }
-
     //Tell the graphics engine to render it!
-    m_graphics->DrawFrame();
+    VulkanGraphics::Instance()->SubmitDraw();
 }
 } //namespace citadel

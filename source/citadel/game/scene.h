@@ -3,14 +3,17 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-12-11.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 #pragma once
 
 #include "tickable.h"
 #include "ecs/registry.h"
 
-namespace citadel
+#include "cTime.h"
+#include "graphics.h"
+
+namespace citadel 
 {
 
     class Scene : public ITickable

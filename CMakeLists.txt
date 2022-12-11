@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(citadel VERSION 0.1 
-                DESCRIPTION "Engine for making 2D Games"
+                DESCRIPTION "Engine for making Games"
                 LANGUAGES CXX)
 
 # find_package(vulkan REQUIRED)

@@ -5,9 +5,24 @@ PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(files
+camera.cpp
+camera.h
+graphics.cpp
+graphics.h
+queueFamily.cpp
+queueFamily.h
+shader.cpp
+shader.h
+swapchain.cpp
+swapchain.h
+vertex.h
+CMakeLists.txt
+)
+
 target_sources(${PROJECT_NAME}
 PRIVATE
-graphics.cpp
-shader.cpp
-camera.cpp
+${files}
 )
+
+source_group(graphics FILES ${files})

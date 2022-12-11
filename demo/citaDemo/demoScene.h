@@ -10,4 +10,6 @@ public:
 
 private:
     citadel::Time timer;
+
+    std::vector<citadel::RenderPayload> m_objects;
 };
