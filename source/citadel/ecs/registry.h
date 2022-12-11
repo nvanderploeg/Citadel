@@ -3,7 +3,7 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-12-11.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 #pragma once
 
@@ -14,12 +14,13 @@
 
 #include "entity.h"
 #include "componentPool.h"
-#include "filter.h"
 
 namespace citadel 
 {
     namespace ecs
     {
+        template<typename...> class Filter;
+
         class Registry
         {
         private:
