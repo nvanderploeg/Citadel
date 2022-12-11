@@ -42,9 +42,9 @@ void DemoScene::Tick(citadel::Time &deltaTime)
     }
 }
 
-void DemoScene::Draw(std::shared_ptr<citadel::VulkanGraphics> graphics) const
+void DemoScene::Draw() const
 {
-    citadel::Scene::Draw(graphics);  
+    citadel::Scene::Draw();  
     auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
     if (transform) {
         std::cout << "\"Drawing\" Object at " << transform->position.x << " , " << transform->position.y << std::endl; 
@@ -56,9 +56,9 @@ void DemoScene::Draw(std::shared_ptr<citadel::VulkanGraphics> graphics) const
     citadel::RenderPayload payload;
 
     payload.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    graphics->AddToDraw(payload);
+    citadel::VulkanGraphics::Instance()->AddToDraw(payload);
 
     payload.model = glm::translate(glm::mat4(1.0f), glm::vec3(1,0,0));
     payload.model = glm::rotate(payload.model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    graphics->AddToDraw(payload);
+    citadel::VulkanGraphics::Instance()->AddToDraw(payload);
 }

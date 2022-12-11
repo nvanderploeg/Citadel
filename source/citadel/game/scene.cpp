@@ -80,7 +80,7 @@ namespace citadel
         }
     }
 
-    void Scene::Draw(std::shared_ptr<VulkanGraphics> graphics) const
+    void Scene::Draw() const
     {
         // std::cout << "TODO!" << std::endl;
         // Determine if base Scene should do anything

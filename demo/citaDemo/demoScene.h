@@ -7,7 +7,7 @@ public:
     DemoScene();
 
     void Tick(citadel::Time &deltaTime) override;
-    void Draw(std::shared_ptr<citadel::VulkanGraphics> graphics) const override;
+    void Draw() const override;
 
 private:
     std::shared_ptr<citadel::GameObject> pGameObject;

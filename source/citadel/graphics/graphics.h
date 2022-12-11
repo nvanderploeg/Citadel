@@ -167,6 +167,7 @@ class VulkanGraphics
     VkFormat FindDepthFormat();
 public:
     //Called to setup Vulkan for use
+    static VulkanGraphics* Instance();
     void Init(GLFWwindow* window);
 
     void HandleResize();

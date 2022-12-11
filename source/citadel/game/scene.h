@@ -35,7 +35,7 @@ namespace citadel
         void initializeGameObjects();
 
         virtual void Tick(Time &deltaTime);
-        virtual void Draw(std::shared_ptr<VulkanGraphics> graphics) const;
+        virtual void Draw() const;
     };
 
 }

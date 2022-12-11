@@ -1285,6 +1285,14 @@ namespace citadel
         }
     }
 
+    namespace {
+        VulkanGraphics s_instance;
+    }
+    VulkanGraphics* VulkanGraphics::Instance()
+    {
+        return &s_instance;
+    }
+
     void VulkanGraphics::Init(GLFWwindow* _window)
     {
         window = _window;
