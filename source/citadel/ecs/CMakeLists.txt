@@ -10,6 +10,7 @@ target_sources(${PROJECT_NAME}
 PRIVATE
 entity.h
 component.h
+component.cpp
 componentPool.h
 componentPool.cpp
 filter.h

@@ -24,8 +24,8 @@ namespace citadel
             template <class T>
             ComponentID GetID()
             {
-                static ComponentID s_componentTypeCounter = s_componentTypeCounter++;
-                return s_componentTypeCounter;
+                static ComponentID s_componentTypeId = s_componentTypeCounter++;
+                return s_componentTypeId;
             }
 
         } // namespace Component

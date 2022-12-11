@@ -35,19 +35,19 @@ DemoScene::DemoScene()
     auto mesh = registry.AddComponent<citadel::MeshData>(entity);
     *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
 
-    // auto entity2 = registry.CreateEntity();
-    // auto transform2 = registry.AddComponent<TransformComponent>(entity2);
-    // auto mesh2 = registry.AddComponent<citadel::MeshData>(entity2);
-    // *mesh2 = *mesh;
+     auto entity2 = registry.CreateEntity();
+     auto transform2 = registry.AddComponent<TransformComponent>(entity2);
+     auto mesh2 = registry.AddComponent<citadel::MeshData>(entity2);
+     *mesh2 = *mesh;
 
-    // auto entity3 = registry.CreateEntity();
-    // auto transform3 = registry.AddComponent<TransformComponent>(entity3);
-    // auto mesh3 = registry.AddComponent<citadel::MeshData>(entity3);
+     auto entity3 = registry.CreateEntity();
+     auto transform3 = registry.AddComponent<TransformComponent>(entity3);
+     auto mesh3 = registry.AddComponent<citadel::MeshData>(entity3);
 
-    // mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
+     mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
 
-    // mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
-    // mesh3->indexCount = indices.size();
+     mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
+     mesh3->indexCount = indices.size();
 
     std::cout << "DemoScene() finish" << std::endl;
 }
