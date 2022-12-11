@@ -25,7 +25,8 @@ namespace citadel
                 return entities[newIndex].id;
             }
 
-            entities.push_back({ entities.size(), ComponentMask() });
+            EntityID newId = Entity::CreateEntityID(entities.size(), 0);
+            entities.push_back({ newId, ComponentMask() });
             return entities.back().id;
         }
 
