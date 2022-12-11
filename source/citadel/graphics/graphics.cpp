@@ -93,7 +93,7 @@ namespace citadel
         }
     }
 
-    uint32_t VulkanGraphics::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
+    uint32_t VulkanGraphics::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
     {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -106,7 +106,7 @@ namespace citadel
         throw std::runtime_error("failed to find suitable memory type!");
     }
 
-    VkSampleCountFlagBits VulkanGraphics::GetMaxUsableSampleCount() {
+    VkSampleCountFlagBits VulkanGraphics::GetMaxUsableSampleCount() const {
         VkPhysicalDeviceProperties physicalDeviceProperties;
         vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 
@@ -621,7 +621,7 @@ namespace citadel
         }
     }
 
-    VkCommandBuffer VulkanGraphics::BeginSingleTimeCommands() 
+    VkCommandBuffer VulkanGraphics::BeginSingleTimeCommands() const
     {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -641,7 +641,7 @@ namespace citadel
         return commandBuffer;
     }
 
-    void VulkanGraphics::EndSingleTimeCommands(VkCommandBuffer commandBuffer) 
+    void VulkanGraphics::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
     {
         vkEndCommandBuffer(commandBuffer);
 
@@ -688,7 +688,7 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+    void VulkanGraphics::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) const {
         
         std::cout << "CreateBuffer" << std::endl;
         VkBufferCreateInfo bufferInfo{};
@@ -715,6 +715,8 @@ namespace citadel
         }
 
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
+
+        std::cout << "CreateBuffer done" << std::endl;
     }
 
 
@@ -805,7 +807,7 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::CreateDescriptorSetLayout()
+    void VulkanGraphics::CreateDescriptorSetLayout() 
     {
         std::cout << "CreateDescriptorSetLayout" << std::endl;
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -845,14 +847,14 @@ namespace citadel
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+        poolInfo.maxSets = 1024 * static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
         if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor pool!");
         }
     }
     
-    void VulkanGraphics::CreateDescriptorSets() 
+    void VulkanGraphics::CreateDescriptorSets(Texture& _texture) const
     {
         std::cout << "CreateDescriptorSets" << std::endl;
         std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
@@ -862,8 +864,9 @@ namespace citadel
         allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         allocInfo.pSetLayouts = layouts.data();
 
-        descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-        if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+        
+        _texture.descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+        if (vkAllocateDescriptorSets(device, &allocInfo, _texture.descriptorSets.data()) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
 
@@ -875,13 +878,13 @@ namespace citadel
 
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = textureImageView;
-            imageInfo.sampler = textureSampler;
+            imageInfo.imageView = _texture.imageView;
+            imageInfo.sampler = _texture.sampler;
 
             std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[0].dstSet = descriptorSets[i];
+            descriptorWrites[0].dstSet = _texture.descriptorSets[i];
             descriptorWrites[0].dstBinding = 0;
             descriptorWrites[0].dstArrayElement = 0;
             descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -889,7 +892,7 @@ namespace citadel
             descriptorWrites[0].pBufferInfo = &bufferInfo;
 
             descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[1].dstSet = descriptorSets[i];
+            descriptorWrites[1].dstSet = _texture.descriptorSets[i];
             descriptorWrites[1].dstBinding = 1;
             descriptorWrites[1].dstArrayElement = 0;
             descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -902,8 +905,9 @@ namespace citadel
 
     #pragma mark - textures
 
-    void VulkanGraphics::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) 
+    void VulkanGraphics::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) const 
     {
+        std::cout << "CreateImage" << std::endl;
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -939,7 +943,13 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels) {
+    void VulkanGraphics::TransitionImageLayout(VkImage image, 
+                                               VkFormat format, 
+                                               VkImageLayout oldLayout, 
+                                               VkImageLayout newLayout, 
+                                               uint32_t mipLevels) const 
+    {
+        std::cout << "TransitionImageLayout" << std::endl;
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
@@ -988,8 +998,9 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) 
+    void VulkanGraphics::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) const
     {
+        std::cout << "CopyBufferToImage" << std::endl;
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
@@ -1062,18 +1073,23 @@ namespace citadel
 
     }
 
-    void VulkanGraphics::CreateTextureImage(std::string path)
+    void VulkanGraphics::CreateTextureImage(std::string path, Texture& _texture) const
     {
+        std::cout << "CreateTextureImage" << std::endl;
+        constexpr int bytesPerPixel = 4;
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-
+        
         if (!pixels) {
             throw std::runtime_error("failed to load texture image!");
         }
 
-        m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+        VkDeviceSize imageSize = texWidth * texHeight * bytesPerPixel;
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+
+        _texture.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
         CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
         
@@ -1083,22 +1099,28 @@ namespace citadel
         vkUnmapMemory(device, stagingBufferMemory);
 
         stbi_image_free(pixels);
-        CreateImage(texWidth, texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+        CreateImage(texWidth, texHeight, _texture.mipLevels,
+                     VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, 
+                     VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+                     _texture.image, 
+                     _texture.imageMemory);
         
-        TransitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_mipLevels);
-        CopyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        TransitionImageLayout(_texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, _texture.mipLevels);
+        CopyBufferToImage(stagingBuffer, _texture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
         //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
         // TransitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_mipLevels);
-        GenerateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, m_mipLevels);
+        GenerateMipmaps(_texture.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, _texture.mipLevels);
         
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
 
     }
 
-    VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) 
+    VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
     {
+        std::cout << "CreateImageView" << std::endl;
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = image;
@@ -1115,16 +1137,19 @@ namespace citadel
             throw std::runtime_error("failed to create texture image view!");
         }
 
+        std::cout << "CreateImageView done " << std::endl;
         return imageView;
     }
 
-    void VulkanGraphics::CreateTextureImageView() 
+    void VulkanGraphics::CreateTextureImageView(Texture& _texture) const
     {
-        textureImageView = CreateImageView(device, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
+        std::cout << "CreateTextureImageView" << std::endl;
+        _texture.imageView = CreateImageView(device, _texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _texture.mipLevels);
     }
     
-    void VulkanGraphics::CreateTextureSampler() 
+    void VulkanGraphics::CreateTextureSampler(Texture& _texture) const
     {
+        std::cout << "CreateTextureSampler" << std::endl;
 
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
@@ -1144,16 +1169,20 @@ namespace citadel
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
         samplerInfo.minLod = 0.0f; // Optional
-        samplerInfo.maxLod = static_cast<float>(m_mipLevels);
+        samplerInfo.maxLod = static_cast<float>(_texture.mipLevels);
         samplerInfo.mipLodBias = 0.0f; // Optional
 
-        if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &_texture.sampler) != VK_SUCCESS) {
            throw std::runtime_error("failed to create texture sampler!");
         }
     }
 
-    void VulkanGraphics::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
-        
+    void VulkanGraphics::GenerateMipmaps(VkImage image, 
+                                         VkFormat imageFormat, 
+                                         int32_t texWidth, 
+                                         int32_t texHeight, 
+                                         uint32_t mipLevels) const
+    {
         VkFormatProperties formatProperties;
         vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, &formatProperties);
 
@@ -1238,11 +1267,11 @@ namespace citadel
                 1, &barrier);
 
         EndSingleTimeCommands(commandBuffer);
-
-     
     }
 
-    VkFormat VulkanGraphics::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
+    VkFormat VulkanGraphics::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
+                                                 VkImageTiling tiling, 
+                                                 VkFormatFeatureFlags features) const
     {
         for (VkFormat format : candidates) {
             VkFormatProperties props;
@@ -1258,7 +1287,7 @@ namespace citadel
         throw std::runtime_error("failed to find supported format!");
     }
 
-    VkFormat VulkanGraphics::FindDepthFormat() {
+    VkFormat VulkanGraphics::FindDepthFormat() const {
          return FindSupportedFormat(
             {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
             VK_IMAGE_TILING_OPTIMAL,
@@ -1315,7 +1344,23 @@ namespace citadel
         mesh.indexCount = indices.size();
 
         std::cout << "Loaded: '" << modelPath << "'" << std::endl; 
+
+        if (!texturePath.empty()) {
+            mesh.texture = CreateTexture(texturePath);
+
+        }
         return mesh;
+    }
+
+    Texture VulkanGraphics::CreateTexture(std::string path)
+    {
+        Texture texture;
+        CreateTextureImage(path, texture);
+        CreateTextureImageView(texture);
+        CreateTextureSampler(texture);
+        CreateDescriptorSets(texture);
+        texture.valid = true;
+        return std::move(texture);
     }
 
     namespace {
@@ -1345,12 +1390,11 @@ namespace citadel
         CreateColorResources();
         CreateDepthResources();
         CreateFramebuffers();
-        CreateTextureImage(VIKING_TEXTURE_PATH);
-        CreateTextureImageView();
-        CreateTextureSampler();
         CreateUniformBuffers();
         CreateDescriptorPool();
-        CreateDescriptorSets();
+
+        m_baseTexture = CreateTexture(VIKING_TEXTURE_PATH);
+
         CreateCommandBuffers();
         CreateSyncObjects();
     }
@@ -1359,11 +1403,11 @@ namespace citadel
     {
         CleanupSwapChain();
 
-        vkDestroySampler(device, textureSampler, nullptr);
-        vkDestroyImageView(device, textureImageView, nullptr);
+        vkDestroySampler(device, m_baseTexture.sampler, nullptr);
+        vkDestroyImageView(device, m_baseTexture.imageView, nullptr);
 
-        vkDestroyImage(device, textureImage, nullptr);
-        vkFreeMemory(device, textureImageMemory, nullptr);
+        vkDestroyImage(device, m_baseTexture.image, nullptr);
+        vkFreeMemory(device, m_baseTexture.imageMemory, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroyBuffer(device, uniformBuffers[i], nullptr);
@@ -1467,12 +1511,27 @@ namespace citadel
             scissor.offset = {0, 0};
             scissor.extent = extent;
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
-
-
     }
         
     void VulkanGraphics::AddToDraw(const RenderPayload& payload)
     {
+        // VkPipelineLayout                            layout,
+        // uint32_t                                    firstSet,
+        // uint32_t                                    descriptorSetCount,
+        // const VkDescriptorSet*                      pDescriptorSets,
+        // uint32_t                                    dynamicOffsetCount,
+        // const uint32_t*                             pDynamicOffsets);
+
+
+        if (payload.meshData.texture.valid) {
+            vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
+            pipelineLayout, 0, 1, &payload.meshData.texture.descriptorSets[currentFrame], 0, nullptr);
+        }
+        else {
+            vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
+            pipelineLayout, 0, 1, &m_baseTexture.descriptorSets[currentFrame], 0, nullptr);
+        }
+
         //upload the model to the GPU via push constants
         vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
      
@@ -1481,9 +1540,6 @@ namespace citadel
         vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
 
         vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/payload.meshData.indexBuffer.buffer, 0, payload.meshData.indexBufferFormat);
-
-        vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
-        pipelineLayout, 0, 1, /*&payload.descriptorSet*/ &descriptorSets[currentFrame], 0, nullptr);
 
         vkCmdDrawIndexed(commandBuffers[currentFrame], payload.meshData.indexCount, 1, 0, 0, 0);
     }

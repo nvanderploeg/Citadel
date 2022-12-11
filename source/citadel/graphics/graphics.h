@@ -33,6 +33,19 @@ struct BoundBuffer
     ~BoundBuffer();
 };
 
+struct Texture
+{
+    bool valid = false;
+    int mipLevels = -1;
+    VkImage image;
+    VkDeviceMemory imageMemory;
+    VkImageView imageView;
+    VkSampler sampler;
+
+    //Is an array to hold one set per swapChain frame
+    std::vector<VkDescriptorSet> descriptorSets;
+};
+
 struct MeshData
 {
     BoundBuffer vertexBuffer;
@@ -41,6 +54,8 @@ struct MeshData
     BoundBuffer indexBuffer;
     VkIndexType indexBufferFormat = VK_INDEX_TYPE_UINT32;
     uint32_t indexCount;
+
+    Texture texture;
 };
 
 struct RenderPayload
@@ -87,17 +102,8 @@ class VulkanGraphics
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
     VkDescriptorPool descriptorPool;
-    std::vector<VkDescriptorSet> descriptorSets;
 
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-
-    uint32_t m_mipLevels;
-    VkImage textureImage;
-    VkDeviceMemory textureImageMemory;
-    VkImageView textureImageView;
-    VkSampler textureSampler;
+    Texture m_baseTexture;
     VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkImage depthImage;
@@ -135,37 +141,69 @@ class VulkanGraphics
     void CreateSyncObjects();
 
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-    void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+    void CreateBuffer(VkDeviceSize size, 
+                      VkBufferUsageFlags usage, 
+                      VkMemoryPropertyFlags properties, 
+                      VkBuffer& buffer, 
+                      VkDeviceMemory& bufferMemory) const;
 
     void CreateUniformBuffers();
     void UpdateUniformBuffer(uint32_t currentImage);
     void CreateDescriptorPool();
-    void CreateDescriptorSets();
 
     void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-    void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-    void CreateTextureImage(std::string path);
-
+    void CreateImage(uint32_t width, 
+                     uint32_t height, 
+                     uint32_t mipLevels, 
+                     VkSampleCountFlagBits numSamples, 
+                     VkFormat format, 
+                     VkImageTiling tiling, 
+                     VkImageUsageFlags usage, 
+                     VkMemoryPropertyFlags properties, 
+                     VkImage& image, 
+                     VkDeviceMemory& imageMemory) const;
+                     
+    // TODO: sort out global symbol shared with Swapchain
+    // VkImageView CreateImageView(VkDevice device, 
+    //                             VkImage image, 
+    //                             VkFormat format, 
+    //                             VkImageAspectFlags aspectFlags, 
+    //                             uint32_t mipLevels) const;
     
-    void CreateTextureImageView();
-    void CreateTextureSampler();
-    void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+    
+    void CreateTextureImage(std::string path, Texture& _texture) const;
+    void CreateTextureImageView(Texture& _texture) const;
+    void CreateDescriptorSets(Texture& _texture) const;
+
+    void CreateTextureSampler(Texture& _texture) const;
+    void GenerateMipmaps(VkImage image, 
+                         VkFormat imageFormat, 
+                         int32_t texWidth, 
+                         int32_t texHeight, 
+                         uint32_t mipLevels) const;
 
     void CreateColorResources();
     void CreateDepthResources();
 
-    VkCommandBuffer BeginSingleTimeCommands();
-    void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
-    void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-    void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+    VkCommandBuffer BeginSingleTimeCommands() const;
+    void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
+    void TransitionImageLayout(VkImage image, 
+                               VkFormat format, 
+                               VkImageLayout oldLayout, 
+                               VkImageLayout newLayout, 
+                               uint32_t mipLevels) const;
+
+    void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) const;
 
     //Helper Methods
-    VkSampleCountFlagBits GetMaxUsableSampleCount();
-    VkShaderModule CreateShaderModule(const std::vector<char>& code);
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    VkFormat FindDepthFormat();
+    VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+    VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+    VkFormat FindDepthFormat() const;
+
 public:
     //Called to setup Vulkan for use
     static VulkanGraphics* Instance();
@@ -175,6 +213,8 @@ public:
     
     BoundBuffer CreateVertexBuffer(const std::vector<Vertex>& verticies);
     BoundBuffer CreateIndexBuffer(const std::vector<uint32_t>& indices);
+
+    Texture CreateTexture(std::string path);
 
     void HandleResize();
     void StartDraw();

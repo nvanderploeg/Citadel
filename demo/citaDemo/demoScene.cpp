@@ -72,6 +72,7 @@ DemoScene::DemoScene()
 
     mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
     mesh3->indexCount = indices.size();
+    mesh3->texture = citadel::VulkanGraphics::Instance()->CreateTexture("textures/nan0.png");
 
     std::cout << "DemoScene() finish" << std::endl;
 }
