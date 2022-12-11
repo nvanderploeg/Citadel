@@ -25,7 +25,9 @@ namespace citadel
             bool m_all{ false };
 
         public:
-            SceneView(Scene& scene) : m_pScene(&scene)
+            SceneView(Scene* scene)
+                : m_pScene(scene)
+                , m_all(false)
             {
                 if (sizeof...(ComponentTypes) == 0)
                 {
@@ -34,7 +36,7 @@ namespace citadel
                 else
                 {
                     // Unpack the template parameters into an initializer list
-                    int componentIds[] = { 0, GetId<ComponentTypes>() ... };
+                    ComponentID componentIds[] = { 0, Component::GetID<ComponentTypes>() ... };
                     for (int i = 1; i < (sizeof...(ComponentTypes) + 1); ++i)
                     {
                         m_componentMask.set(componentIds[i]);
@@ -61,7 +63,10 @@ namespace citadel
 
             public:
                 Iterator(Scene* pScene, EntityIndex index, ComponentMask mask, bool all)
-                    : m_pScene(pScene), m_index(index), m_componentMask(mask), m_all(all)
+                    : m_pScene(pScene)
+                    , m_index(index)
+                    , m_componentMask(mask)
+                    , m_all(all)
                 {
                 }
 

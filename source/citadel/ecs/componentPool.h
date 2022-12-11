@@ -19,7 +19,7 @@ namespace citadel
 		{
 		protected:
 			char* m_pData{ nullptr };
-			EntityID m_size{ 0 };
+			EntityIndex m_size{ 0 };
 
 		public:
 			ComponentPool(EntityIndex size);

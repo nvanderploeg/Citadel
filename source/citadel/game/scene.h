@@ -16,6 +16,7 @@
 #include "ecs/entity.h"
 #include "ecs/component.h"
 #include "ecs/componentPool.h"
+//#include "ecs/sceneView.h"
 
 namespace citadel 
 {
@@ -23,7 +24,8 @@ namespace citadel
 
     class Scene
     {
-    private:
+        // I intended for these to be private .. but SceneView needs access to them, and I don't think I can make them friends because templates.
+    public: 
         std::vector<Entity> entities;
         std::vector<EntityIndex> freeEntities;
         std::vector<ComponentPool*> componentPools;
@@ -45,7 +47,7 @@ namespace citadel
             
             ComponentID componentId = Component::GetID<T>();
 
-            // not enought component pool
+            // not enough component pool
             if (componentPools.size() <= componentId)
             {
                 componentPools.resize(componentId + 1, nullptr);

@@ -7,7 +7,8 @@
 
 #include "citadelSystem.h"
 
-#include "transformComponent.h"
+//#include "ecs/sceneView.h"
+#include "ecs/transformComponent.h"
 #include "gameObject.h"
 
 using namespace std;
@@ -27,19 +28,27 @@ void DemoScene::Tick(citadel::Time &deltaTime)
     //citadel::Scene::Tick(deltaTime);
 
     //auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
-    auto transform = GetComponent<TransformComponent>(entity);
+    
+    
+    //auto transform = GetComponent<TransformComponent>(entity);
 
-    timer += deltaTime;
-    if (timer.asSeconds() > 1)
-        timer -= citadel::Time::seconds(1) ;
-
-    auto angle = lerp((citadel::f32)0, (citadel::f32)1, timer.asSeconds()) * (citadel::f32)360;
-
-    auto X = cos(angle) * 10;
-    auto Y = sin(angle) * 10;
-
-    if (transform)
+    // NOTE: don't use SceneView, it's not working atm. also, there's a circular dependancy.
+    //for (citadel::ecs::EntityID entity : citadel::ecs::SceneView<TransformComponent>(this))
     {
+        TransformComponent* transform = GetComponent<TransformComponent>(entity);
+
+        //if (transform == nullptr)
+            //continue;
+
+        timer += deltaTime;
+        if (timer.asSeconds() > 1)
+            timer -= citadel::Time::seconds(1);
+
+        auto angle = lerp((citadel::f32)0, (citadel::f32)1, timer.asSeconds()) * (citadel::f32)360;
+
+        auto X = cos(angle) * 10;
+        auto Y = sin(angle) * 10;
+
         transform->position.x = X;
         transform->position.y = Y;
     }
