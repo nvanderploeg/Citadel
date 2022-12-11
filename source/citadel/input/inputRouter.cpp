@@ -95,7 +95,7 @@ namespace citadel
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
             InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
             std::cout << "MouseScroll Callback" << std::endl << "(" << xoffset << ", " << yoffset << ")" << std::endl;
-            for (auto& callback : router->callbackMap["MouseScroll"]) {
+            for (auto& callback : router->callbackMap["mouseScroll"]) {
                 InputEventData data(MouseScrollEventData({xoffset,yoffset}));
                 if(callback(data)) {
                     break;

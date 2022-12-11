@@ -47,14 +47,13 @@ namespace citadel
 
     bool InputContext::Save()
     {
-        return false;
-        // TODO: enable this line once serialize() is implemented;
-        //return Serializer::serialize(this, filepath);
+        return Serializer::serialize(this, filepath);
     }
 
     void InputContext::serialize(Json::Value& jValue)
     {
         // TODO:
+        std::cout << "WARNING: InputContext::serialize is unimplemented.\n";
     }
 
     void InputContext::deserialize(const Json::Value& jValue)

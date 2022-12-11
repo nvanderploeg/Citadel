@@ -22,7 +22,6 @@ public:
     std::string texturePath;
     std::string fontPath;
     std::string dataPath;
-    std::string inputContext;
 
     std::filesystem::path filepath;
 

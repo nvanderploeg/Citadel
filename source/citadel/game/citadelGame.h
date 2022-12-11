@@ -45,7 +45,6 @@ protected:
     std::shared_ptr<CitadelGameDelegate> m_delegate;
 
     std::shared_ptr<Scene> m_currentScene;
-    float fieldOfView = 90.f;
 public: 
     std::shared_ptr<InputRouter> m_inputRouter;
     virtual void Tick(Time &deltaTime);

@@ -1,12 +1,14 @@
+
 #include "demoScene.h"
 
-#include <iostream>
+//#include <iostream>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/quaternion.hpp>
 
 #include "citadelSystem.h"
 #include "citadelECS.h"
+#include "citadel/input/inputRouter.h"
 
 #include "transformComponent.h"
 
@@ -29,16 +31,16 @@ namespace {
 
 struct Bounce 
 {
-    float speed = 3;
-    float topBound = 0.5;
-    float bottomBound = -2;
+    float speed = 1.f;
+    float topBound = 1.f;
+    float bottomBound = -1.f;
     bool goingUp = true;
 
 };
 
 struct Rotate 
 {
-    int speed = 1;
+    float speed = 1.f;
 };
 
 DemoScene::DemoScene()
@@ -47,7 +49,7 @@ DemoScene::DemoScene()
     auto entity = registry.CreateEntity();
     auto transform = registry.AddComponent<TransformComponent>(entity);
     auto rotate = registry.AddComponent<Rotate>(entity);
-    rotate->speed = 2;
+    rotate->speed = 0.5;
     auto mesh = registry.AddComponent<citadel::MeshData>(entity);
     *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
 
@@ -106,7 +108,7 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
         auto currentTime = timer.asSeconds() * rotate->speed;
         currentTime -= (int)currentTime;
 
-        auto angle = lerp(0.0, 6.28, currentTime);
+        auto angle = lerp(0.0f, 6.28f, currentTime);
 
         auto X = cos(angle);
         auto Y = sin(angle);
@@ -131,4 +133,44 @@ void DemoScene::Draw()
         citadel::VulkanGraphics::Instance()->AddToDraw(payload);
     }
  
+}
+
+void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRouter)
+{
+    // load the input mappings from a file defined in the gameConfig
+    // TODO: non-literal filename and bindings?
+    Json::Value jContext = citadel::Serializer::loadFile("config/inputContext.cfg");
+    inputRouter->SetInputContext(jContext);
+
+    // bind a callback (lambda in this case) to an event label
+    inputRouter->BindCallbackToLabel("moveUp", [this](citadel::InputEventData data)
+        {
+            std::cout << "movin' on up!\n";
+            return true;
+        });
+
+    // test binding for mouse click
+    inputRouter->BindCallbackToLabel("mouseClick", [this](citadel::InputEventData data)
+        {
+            std::cout << "mouse button up\n";
+            return true;
+        });
+
+    inputRouter->BindCallbackToLabel("mouseScroll", [this](citadel::InputEventData data) {
+        auto& scrollData = std::get<citadel::MouseScrollEventData>(data);
+        if (scrollData.yOffset != 0) {
+
+            fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
+            fieldOfView = std::max(45.f, fieldOfView);
+            fieldOfView = std::min(120.f, fieldOfView);
+            citadel::VulkanGraphics::Instance()->SetFoV(fieldOfView);
+            return true;
+        }
+        return false;
+        });
+}
+
+void DemoScene::FreeInput(const std::shared_ptr<citadel::InputRouter>& inputRouter)
+{
+    // TODO: we should probably unbind things
 }

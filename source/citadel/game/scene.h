@@ -15,6 +15,7 @@
 
 namespace citadel 
 {
+    class InputRouter;
 
     class Scene : public ITickable
     {
@@ -24,6 +25,9 @@ namespace citadel
     public:
         virtual void Tick(const Time& deltaTime) = 0;
         virtual void Draw() = 0;
+
+        virtual void BindInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
+        virtual void FreeInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
     };
 
 } // namespace citadel

@@ -5,6 +5,8 @@
 
 #include "input.h"
 
+class GLFWwindow;
+
 namespace citadel
 {
     class InputContext;

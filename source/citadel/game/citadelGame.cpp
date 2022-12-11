@@ -35,7 +35,7 @@ using namespace std;
 
 namespace
 {
-    const std::string DEFAULT_CONFIGURATIONFILENAME = "game.cfg";
+    const std::string DEFAULT_CONFIGURATIONFILENAME = "config/game.cfg";
 }
 
 namespace citadel {
@@ -86,8 +86,7 @@ void CitadelGame::Setup()
     //Make the App window!
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    m_window = glfwCreateWindow(width, height, 
-                                          m_gameConfig->windowProperties->title.c_str(), NULL, NULL);
+    m_window = glfwCreateWindow(width, height, m_gameConfig->windowProperties->title.c_str(), NULL, NULL);
 
     if (!m_window) {
         // TODO use a logging system
@@ -98,44 +97,11 @@ void CitadelGame::Setup()
     m_inputRouter = std::make_shared<InputRouter>();
     m_inputRouter->BindToGLFW(m_window);
 
-    // load the input mappings from a file defined in the gameConfig
-    Json::Value jContext = Serializer::loadFile(m_gameConfig->inputContext);
-    m_inputRouter->SetInputContext(jContext);
-
-    // bind a callback (lambda in this case) to an event label
-    m_inputRouter->BindCallbackToLabel("moveUp", [this](InputEventData data)
-    {
-        std::cout << "movin' on up!\n";
-        return true;
-    });
-
-    // test binding for mouse click
-    m_inputRouter->BindCallbackToLabel("mouseClick", [this](InputEventData data)
-    {
-        std::cout << "mouse button up\n";
-        return true;
-    });
-
     glfwMakeContextCurrent(m_window);
     VulkanGraphics::Instance()->Init(m_window);
-    VulkanGraphics::Instance()->SetFoV(fieldOfView);
-
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
         //TODO: magic a way to call the graphics that a resize happened
-    });
-    
-    m_inputRouter->BindCallbackToLabel("MouseScroll", [this](InputEventData data) {
-        auto& scrollData = std::get<MouseScrollEventData>(data);
-        if (scrollData.yOffset != 0) {
-               
-            fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
-            fieldOfView = std::max(45.f, fieldOfView);
-            fieldOfView = std::min(120.f, fieldOfView);
-            VulkanGraphics::Instance()->SetFoV(fieldOfView);
-            return true;
-        }
-        return false;
     });
 
     // TODO use a logging system
@@ -170,7 +136,11 @@ void CitadelGame::TearDown()
 
 void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
 {
+    scene->FreeInput(m_inputRouter);
     m_currentScene = scene;
+    m_currentScene->BindInput(m_inputRouter);
+    //TODO: this should go wherever the Camera class ends up
+    VulkanGraphics::Instance()->SetFoV(90.f);
 }
 
 bool CitadelGame::Running() 
