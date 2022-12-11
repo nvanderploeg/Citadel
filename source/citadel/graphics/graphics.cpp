@@ -24,8 +24,8 @@
 namespace {
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
-    const std::string DEFAULT_VERT_SHADER = "shaders/vert.spv";
-    const std::string DEFAULT_FRAG_SHADER = "shaders/frag.spv";
+    const std::string DEFAULT_VERT_SHADER = "shaders/defaultVert.spv";
+    const std::string DEFAULT_FRAG_SHADER = "shaders/defaultFrag.spv";
         
     const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
     const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
@@ -369,6 +369,8 @@ namespace citadel
         fragShaderStageInfo.module = frag.module;
         fragShaderStageInfo.pName = "main";
 
+
+
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
@@ -432,10 +434,25 @@ namespace citadel
         dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
         dynamicState.pDynamicStates = dynamicStates.data();
 
+
+	    //setup push constants
+        VkPushConstantRange push_constant;
+        //this push constant range starts at the beginning
+        push_constant.offset = 0;
+        //this push constant range takes up the size of a MeshPushConstants struct
+        push_constant.size = sizeof(glm::mat4);
+        //this push constant range is accessible only in the vertex shader
+        push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+
+        pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
 
         if (vkCreatePipelineLayout(aDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -747,11 +764,7 @@ namespace citadel
     void VulkanGraphics::UpdateUniformBuffer(uint32_t currentImage) 
     {
         // std::cout << "UpdateUniformBuffer " << currentImage <<  std::endl;
-        static auto startTime = std::chrono::high_resolution_clock::now();
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        m_ubo.model = glm::rotate(glm::mat4(1.0f), 0 * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         memcpy(uniformBuffersMapped[currentImage], &m_ubo, sizeof(m_ubo));
     }
 
@@ -1428,6 +1441,10 @@ namespace citadel
 
     void VulkanGraphics::AddToDraw(const RenderPayload& payload)
     {
+        
+        //upload the model to the GPU via push constants
+        vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
+     
         VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ vertexBuffer};
         VkDeviceSize offsets[] = {payload.offset};
         vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);

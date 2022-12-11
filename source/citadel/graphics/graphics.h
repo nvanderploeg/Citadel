@@ -21,13 +21,13 @@ namespace citadel
 
 struct UniformBufferObject 
 {
-    glm::mat4 model;
     glm::mat4 view;
     glm::mat4 proj;
 };
 
 struct RenderPayload
 {
+    glm::mat4 model;
     VkBuffer vertexBuffer;
     VkDeviceSize offset = 0;
     VkBuffer indexBuffer;
