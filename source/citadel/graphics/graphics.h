@@ -33,16 +33,20 @@ struct BoundBuffer
     ~BoundBuffer();
 };
 
-struct RenderPayload
+struct MeshData
 {
-    glm::mat4 model;
-
     BoundBuffer vertexBuffer;
     VkDeviceSize offset = 0;
 
     BoundBuffer indexBuffer;
     VkIndexType indexBufferFormat = VK_INDEX_TYPE_UINT32;
     uint32_t indexCount;
+};
+
+struct RenderPayload
+{
+    glm::mat4 model;
+    MeshData meshData;
 };
 
 class VulkanGraphics 
@@ -167,7 +171,7 @@ public:
     static VulkanGraphics* Instance();
     void Init(GLFWwindow* window);
 
-    RenderPayload Load(std::string modelPath, std::string texturePath);     
+    MeshData Load(std::string modelPath, std::string texturePath);     
     
     BoundBuffer CreateVertexBuffer(const std::vector<Vertex>& verticies);
     BoundBuffer CreateIndexBuffer(const std::vector<uint32_t>& indices);

@@ -1298,10 +1298,9 @@ namespace citadel
 
 
 
-    RenderPayload VulkanGraphics::Load(std::string modelPath, std::string texturePath)
+    MeshData VulkanGraphics::Load(std::string modelPath, std::string texturePath)
     {
-        RenderPayload payload;
-        payload.model = glm::mat4(1.0);
+        MeshData mesh;
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
 
@@ -1311,12 +1310,12 @@ namespace citadel
         std::cout << "vertex count: " << vertices.size() << std::endl
                   << "index count: " << indices.size() << std::endl; 
 
-        payload.vertexBuffer = CreateVertexBuffer(vertices);
-        payload.indexBuffer = CreateIndexBuffer(indices);
-        payload.indexCount = indices.size();
+        mesh.vertexBuffer = CreateVertexBuffer(vertices);
+        mesh.indexBuffer = CreateIndexBuffer(indices);
+        mesh.indexCount = indices.size();
 
         std::cout << "Loaded: '" << modelPath << "'" << std::endl; 
-        return payload;
+        return mesh;
     }
 
     namespace {
@@ -1477,16 +1476,16 @@ namespace citadel
         //upload the model to the GPU via push constants
         vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
      
-        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ payload.vertexBuffer.buffer};
-        VkDeviceSize offsets[] = {payload.offset};
+        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ payload.meshData.vertexBuffer.buffer};
+        VkDeviceSize offsets[] = {payload.meshData.offset};
         vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/payload.indexBuffer.buffer, 0, payload.indexBufferFormat);
+        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/payload.meshData.indexBuffer.buffer, 0, payload.meshData.indexBufferFormat);
 
         vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
         pipelineLayout, 0, 1, /*&payload.descriptorSet*/ &descriptorSets[currentFrame], 0, nullptr);
 
-        vkCmdDrawIndexed(commandBuffers[currentFrame], payload.indexCount, 1, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffers[currentFrame], payload.meshData.indexCount, 1, 0, 0, 0);
     }
 
     void VulkanGraphics::SubmitDraw()
