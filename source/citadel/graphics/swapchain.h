@@ -31,7 +31,8 @@ namespace citadel
         VkFormat imageFormat;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
-
+        std::vector<VkFramebuffer> framebuffers;
+        
         static SwapChain Create(GLFWwindow* window, VkDevice _device, VkPhysicalDevice _physicalDevice, VkSurfaceKHR _surface);
     
     };
