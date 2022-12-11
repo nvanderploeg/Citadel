@@ -4,15 +4,18 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
-set(folderName "Graphics")
 
 set(files
 camera.cpp
 camera.h
 graphics.cpp
 graphics.h
+queueFamily.cpp
+queueFamily.h
 shader.cpp
 shader.h
+swapchain.cpp
+swapchain.h
 vertex.h
 CMakeLists.txt
 )
@@ -22,4 +25,4 @@ PRIVATE
 ${files}
 )
 
-source_group($(folderName) FILES ${files})
+source_group(graphics FILES ${files})

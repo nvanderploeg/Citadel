@@ -5,31 +5,18 @@
 #include <vulkan/vulkan.h>
 
 #define GLFW_INCLUDE_VULKAN
-#define GLM_FORCE_RADIANS
 #include <GLFW/glfw3.h>
+
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "swapchain.h"
 #include "vertex.h"
 
 class GLFWwindow;
 
 namespace citadel {
-
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
-
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
-};
 
 struct UniformBufferObject {
     glm::mat4 model;
@@ -51,12 +38,7 @@ class VulkanGraphics {
     VkSurfaceKHR surface;
     VkQueue presentQueue;
 
-    //Swap chain
-    VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
-    VkFormat swapChainImageFormat;
-    VkExtent2D swapChainExtent;
-    std::vector<VkImageView> swapChainImageViews;
+    SwapChain swapChain;
 
     //Pipeline!
     VkRenderPass renderPass;
@@ -119,13 +101,11 @@ class VulkanGraphics {
     void CreateSurface();
 
     //Setup pipeline
-    void CreateImageViews(); 
     void CreateRenderPass();
     void CreateDescriptorSetLayout();
     VkPipeline CreateGraphicsPipeline(const VkDevice device, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples = VK_SAMPLE_COUNT_1_BIT);
 
     //Setup swapchains
-    void CreateSwapChain();
     void CleanupSwapChain();
     void RecreateSwapChain();
 
@@ -149,7 +129,7 @@ class VulkanGraphics {
     void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     void CreateTextureImage(std::string path);
 
-    VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+    
     void CreateTextureImageView();
     void CreateTextureSampler();
     void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
@@ -166,9 +146,6 @@ class VulkanGraphics {
 
     //Helper Methods
     VkSampleCountFlagBits GetMaxUsableSampleCount();
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     VkShaderModule CreateShaderModule(const std::vector<char>& code);
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);

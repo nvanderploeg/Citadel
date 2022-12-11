@@ -15,6 +15,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+
+#include "queueFamily.h"
 #include "shader.h"
 
 
@@ -178,38 +180,6 @@ namespace citadel
         }
     }
 
-    QueueFamilyIndices VulkanGraphics::findQueueFamilies(VkPhysicalDevice device) {
-         QueueFamilyIndices indices;
-
-        uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
-        int i = 0;
-        for (const auto& queueFamily : queueFamilies) {
-            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-                indices.graphicsFamily = i;
-            }
-
-            VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-
-            if (presentSupport) {
-                indices.presentFamily = i;
-            }
-
-            if (indices.isComplete()) {
-                break;
-            }
-
-            i++;
-        }
-
-        return indices;
-    }
-
 
     #pragma mark - Device
 
@@ -236,19 +206,19 @@ namespace citadel
     void VulkanGraphics::PickPhysicalDevice()
     {
         std::cout << "PickPhysicalDevice" << std::endl;
-        auto isDeviceSuitable = [&](VkPhysicalDevice device) {
-            QueueFamilyIndices indices = findQueueFamilies(device);
+        auto isDeviceSuitable = [&](VkPhysicalDevice candidateDevice) {
+            QueueFamilyIndices indices = findQueueFamilies(candidateDevice, surface);
 
-            bool extensionsSupported = checkDeviceExtensionSupport(device);
+            bool extensionsSupported = checkDeviceExtensionSupport(candidateDevice);
 
             bool swapChainAdequate = false;
             if (extensionsSupported) {
-                SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+                SwapChainSupportDetails swapChainSupport = querySwapChainSupport(candidateDevice, surface);
                 swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
             }
 
             VkPhysicalDeviceFeatures supportedFeatures;
-            vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+            vkGetPhysicalDeviceFeatures(candidateDevice, &supportedFeatures);
 
             std::cout << "Device suitable flags IC:" << indices.isComplete()  << " ES:" << extensionsSupported << " SC:" << swapChainAdequate << std::endl;
             return indices.isComplete() && extensionsSupported && swapChainAdequate
@@ -286,7 +256,7 @@ namespace citadel
     {
         std::cout << "CreateLogicalDevice" << std::endl;
 
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+        QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
@@ -333,125 +303,6 @@ namespace citadel
 
     #pragma mark - Swap chain
 
-
-    SwapChainSupportDetails VulkanGraphics::querySwapChainSupport(VkPhysicalDevice device) {
-        SwapChainSupportDetails details;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-        uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-        if (formatCount != 0) {
-            details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-        }
-
-        uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
-        if (presentModeCount != 0) {
-            details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
-        }
-
-        return details;
-    }
-    
-    VkExtent2D VulkanGraphics::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) 
-    {
-        if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-            return capabilities.currentExtent;
-        }
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-
-        VkExtent2D actualExtent = {
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
-
-        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-        return actualExtent;
-    }
-
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) 
-    {
-        for (const auto& availablePresentMode : availablePresentModes) {
-            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-                return availablePresentMode;
-            }
-        }
-
-        return VK_PRESENT_MODE_FIFO_KHR;
-    }
-
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) 
-    {
-        for (const auto& availableFormat : availableFormats) {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                return availableFormat;
-            }
-        }
-           
-        return availableFormats[0];
-    }
-    void VulkanGraphics::CreateSwapChain() {
-        std::cout << "CreateSwapChain" << std::endl;
-        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
-
-        VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-        VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-        VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-
-        uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-
-        if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-            imageCount = swapChainSupport.capabilities.maxImageCount;
-        }
-        VkSwapchainCreateInfoKHR createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = surface;
-
-        createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
-        createInfo.imageColorSpace = surfaceFormat.colorSpace;
-        createInfo.imageExtent = extent;
-        createInfo.imageArrayLayers = 1;
-        createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-        uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
-
-        if (indices.graphicsFamily != indices.presentFamily) {
-            createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-            createInfo.queueFamilyIndexCount = 2;
-            createInfo.pQueueFamilyIndices = queueFamilyIndices;
-        } else {
-            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            createInfo.queueFamilyIndexCount = 0; // Optional
-            createInfo.pQueueFamilyIndices = nullptr; // Optional
-        }
-
-        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        createInfo.presentMode = presentMode;
-        createInfo.clipped = VK_TRUE;
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
-        
-        if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create swap chain!");
-        }
-
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-        swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
-
-        swapChainImageFormat = surfaceFormat.format;
-        swapChainExtent = extent;
-
-    }
-
     void VulkanGraphics::CleanupSwapChain()
     {   
         vkDestroyImageView(device, colorImageView, nullptr);
@@ -462,7 +313,7 @@ namespace citadel
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        for (auto& imageview : swapChainImageViews) {
+        for (auto& imageview : swapChain.imageViews) {
             vkDestroyImageView(device, imageview, nullptr);
         }
 
@@ -470,7 +321,7 @@ namespace citadel
         vkDestroyImage(device, depthImage, nullptr);
         vkFreeMemory(device, depthImageMemory, nullptr);
 
-        vkDestroySwapchainKHR(device, swapChain, nullptr);
+        vkDestroySwapchainKHR(device, swapChain.swapChain, nullptr);
 
     }
 
@@ -480,19 +331,10 @@ namespace citadel
 
         CleanupSwapChain();
 
-        CreateSwapChain();
-        CreateImageViews();
+        swapChain = SwapChain::Create(window, device, physicalDevice, surface);
         CreateColorResources();
         CreateDepthResources();
         CreateFramebuffers();
-    }
-
-    void VulkanGraphics::CreateImageViews() {
-        swapChainImageViews.resize(swapChainImages.size());
-
-        for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-            swapChainImageViews[i] = CreateImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-        }
     }
 
     #pragma mark - Graphics Pipeline
@@ -623,7 +465,7 @@ namespace citadel
     void VulkanGraphics::CreateRenderPass()
     {
         VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = swapChainImageFormat;
+        colorAttachment.format = swapChain.imageFormat;
         colorAttachment.samples = msaaSamples;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -643,7 +485,7 @@ namespace citadel
         depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkAttachmentDescription colorAttachmentResolve{};
-        colorAttachmentResolve.format = swapChainImageFormat;
+        colorAttachmentResolve.format = swapChain.imageFormat;
         colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -698,12 +540,12 @@ namespace citadel
     #pragma mark - Framebuffers
     void VulkanGraphics::CreateFramebuffers() 
     {
-        swapChainFramebuffers.resize(swapChainImageViews.size());
-        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+        swapChainFramebuffers.resize(swapChain.imageViews.size());
+        for (size_t i = 0; i < swapChain.imageViews.size(); i++) {
             std::array<VkImageView, 3> attachments = {
                 colorImageView,
                 depthImageView,
-                swapChainImageViews[i]
+                swapChain.imageViews[i]
             };
 
             VkFramebufferCreateInfo framebufferInfo{};
@@ -711,8 +553,8 @@ namespace citadel
             framebufferInfo.renderPass = renderPass;
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
+            framebufferInfo.width = swapChain.extent.width;
+            framebufferInfo.height = swapChain.extent.height;
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
@@ -724,7 +566,7 @@ namespace citadel
 
     void VulkanGraphics::CreateCommandPool()
     {
-        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice, surface);
 
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -803,7 +645,7 @@ namespace citadel
         renderPassInfo.renderPass = renderPass;
         renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
         renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = swapChainExtent;
+        renderPassInfo.renderArea.extent = swapChain.extent;
 
         std::array<VkClearValue, 2> clearValues{};
         clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
@@ -812,6 +654,8 @@ namespace citadel
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
 
+        auto& extent = swapChain.extent;
+
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
@@ -819,14 +663,14 @@ namespace citadel
             VkViewport viewport{};
             viewport.x = 0.0f;
             viewport.y = 0.0f;
-            viewport.width = (float) swapChainExtent.width;
-            viewport.height = (float) swapChainExtent.height;
+            viewport.width = (float) extent.width;
+            viewport.height = (float) extent.height;
             viewport.minDepth = 0.0f;
             viewport.maxDepth = 1.0f;
             vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkRect2D scissor{};
             scissor.offset = {0, 0};
-            scissor.extent = swapChainExtent;
+            scissor.extent = extent;
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
 
             VkBuffer vertexBuffers[] = {vertexBuffer};
@@ -969,7 +813,7 @@ namespace citadel
 
     void VulkanGraphics::SetFoV(float radians)
     {
-        m_ubo.proj = glm::perspective(glm::radians(radians), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
+        m_ubo.proj = glm::perspective(glm::radians(radians), swapChain.extent.width / (float) swapChain.extent.height, 0.1f, 10.0f);
         m_ubo.proj[1][1] *= -1;
     }
 
@@ -1281,7 +1125,7 @@ namespace citadel
 
     }
 
-    VkImageView VulkanGraphics::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) 
+    VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) 
     {
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -1304,7 +1148,7 @@ namespace citadel
 
     void VulkanGraphics::CreateTextureImageView() 
     {
-        textureImageView = CreateImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
+        textureImageView = CreateImageView(device, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
     }
     
     void VulkanGraphics::CreateTextureSampler() 
@@ -1453,8 +1297,8 @@ namespace citadel
     void VulkanGraphics::CreateDepthResources()
     {
         VkFormat depthFormat = FindDepthFormat();
-        CreateImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-        depthImageView = CreateImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+        CreateImage(swapChain.extent.width, swapChain.extent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+        depthImageView = CreateImageView(device, depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
         
         //Optional explicit tranisition of depth image
         // TransitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -1462,10 +1306,10 @@ namespace citadel
 
     void VulkanGraphics::CreateColorResources()
     {
-         VkFormat colorFormat = swapChainImageFormat;
+         VkFormat colorFormat = swapChain.imageFormat;
 
-        CreateImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
-        colorImageView = CreateImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        CreateImage(swapChain.extent.width, swapChain.extent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
+        colorImageView = CreateImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     #pragma mark - Base functions
@@ -1490,8 +1334,7 @@ namespace citadel
         PickPhysicalDevice();
         CreateLogicalDevice();
         //Setting up presentation stuff
-        CreateSwapChain();
-        CreateImageViews();
+        swapChain = SwapChain::Create(window, device, physicalDevice, surface);
         CreateRenderPass();
         CreateDescriptorSetLayout();
         graphicsPipeline = CreateGraphicsPipeline(device, DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER, msaaSamples);
@@ -1568,7 +1411,7 @@ namespace citadel
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+        VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             RecreateSwapChain();
@@ -1610,7 +1453,7 @@ namespace citadel
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = signalSemaphores;
 
-        VkSwapchainKHR swapChains[] = {swapChain};
+        VkSwapchainKHR swapChains[] = {swapChain.swapChain};
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = swapChains;
 
