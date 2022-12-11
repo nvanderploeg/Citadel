@@ -23,7 +23,7 @@ namespace citadel
         class Registry
         {
         private:
-            friend class Filter<>;
+            template<typename...> friend class Filter;
 
             std::vector<Entity> entities;
             std::vector<EntityIndex> freeEntities;

@@ -9,6 +9,5 @@ public:
     void Draw() override;
 
 private:
-    citadel::ecs::EntityID m_entity;
     citadel::Time timer;
 };

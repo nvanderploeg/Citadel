@@ -15,19 +15,19 @@ using namespace std;
 DemoScene::DemoScene()
     :Scene()
 {
-    m_entity = registry.CreateEntity();
-    auto transform = registry.AddComponent<TransformComponent>(m_entity);
+    auto entity = registry.CreateEntity();
+    auto transform = registry.AddComponent<TransformComponent>(entity);
 }
 
 
 void DemoScene::Tick(const citadel::Time &deltaTime)
 {
-    //for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent>(this))
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent>(&registry))
     {
-        TransformComponent* transform = registry.GetComponent<TransformComponent>(m_entity);
+        TransformComponent* transform = registry.GetComponent<TransformComponent>(entity);
 
-        //if (transform == nullptr)
-            //continue;
+        if (transform == nullptr)
+            continue;
 
         timer += deltaTime;
         if (timer.asSeconds() > 1)
@@ -45,8 +45,13 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
 
 void DemoScene::Draw()
 {
-    TransformComponent * transform = registry.GetComponent<TransformComponent>(m_entity);
-    if (transform) {
-        std::cout << "\"Drawing\" Object at " << transform->position.x << " , " << transform->position.y << std::endl; 
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent>(&registry))
+    {
+        TransformComponent* transform = registry.GetComponent<TransformComponent>(entity);
+
+        if (transform == nullptr)
+            continue;
+
+        std::cout << "\"Drawing\" Object at " << transform->position.x << " , " << transform->position.y << std::endl;
     }
 }
