@@ -27,7 +27,6 @@ namespace {
     const std::string DEFAULT_VERT_SHADER = "shaders/defaultVert.spv";
     const std::string DEFAULT_FRAG_SHADER = "shaders/defaultFrag.spv";
         
-    const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
     const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
 }
 
@@ -44,7 +43,7 @@ namespace citadel
     #ifdef VULKAN_VALIDATION
     const bool enableValidationLayers = true;
     #else
-    const bool enableValidationLayers = false;
+    const bool enableValidationLayers = true;
     #endif
     
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
@@ -697,6 +696,7 @@ namespace citadel
         bufferInfo.size = size;
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        bufferInfo.pNext = nullptr;
 
         if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to create buffer!");
@@ -717,8 +717,11 @@ namespace citadel
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
 
-    void VulkanGraphics::CreateVertexBuffer() 
+
+    BoundBuffer VulkanGraphics::CreateVertexBuffer(const std::vector<Vertex>& vertices)   
     {
+        BoundBuffer buf;
+        buf.device = device;
         std::cout << "CreateVertexBuffer" << std::endl;
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
@@ -731,16 +734,20 @@ namespace citadel
             memcpy(data, vertices.data(), (size_t) bufferSize);
         vkUnmapMemory(device, stagingBufferMemory);
 
-        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buf.buffer, buf.bufferMemory);
 
-        CopyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+        CopyBuffer(stagingBuffer, buf.buffer, bufferSize);
 
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+        return buf;
     }
 
-    void VulkanGraphics::CreateIndexBuffer()
+    BoundBuffer VulkanGraphics::CreateIndexBuffer(const std::vector<uint32_t>& indices) 
     {
+        BoundBuffer buf;
+        buf.device = device;
         std::cout << "CreateIndexBuffer" << std::endl;
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
@@ -753,12 +760,15 @@ namespace citadel
         memcpy(data, indices.data(), (size_t) bufferSize);
         vkUnmapMemory(device, stagingBufferMemory);
 
-        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buf.buffer, buf.bufferMemory);
 
-        CopyBuffer(stagingBuffer, indexBuffer, bufferSize);
+        CopyBuffer(stagingBuffer, buf.buffer, bufferSize);
 
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+        return buf;
     }
 
     void VulkanGraphics::UpdateUniformBuffer(uint32_t currentImage) 
@@ -1010,7 +1020,7 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::LoadModel(std::string path)
+    void LoadModel(std::string path, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -1285,6 +1295,30 @@ namespace citadel
         }
     }
 
+
+
+
+    RenderPayload VulkanGraphics::Load(std::string modelPath, std::string texturePath)
+    {
+        RenderPayload payload;
+        payload.model = glm::mat4(1.0);
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
+
+        std::cout << "Loading: '" << modelPath << "'" << std::endl; 
+        LoadModel(modelPath, vertices, indices);
+
+        std::cout << "vertex count: " << vertices.size() << std::endl
+                  << "index count: " << indices.size() << std::endl; 
+
+        payload.vertexBuffer = CreateVertexBuffer(vertices);
+        payload.indexBuffer = CreateIndexBuffer(indices);
+        payload.indexCount = indices.size();
+
+        std::cout << "Loaded: '" << modelPath << "'" << std::endl; 
+        return payload;
+    }
+
     namespace {
         VulkanGraphics s_instance;
     }
@@ -1315,9 +1349,6 @@ namespace citadel
         CreateTextureImage(VIKING_TEXTURE_PATH);
         CreateTextureImageView();
         CreateTextureSampler();
-        LoadModel(VIKING_MODEL_PATH);
-        CreateVertexBuffer();
-        CreateIndexBuffer();
         CreateUniformBuffers();
         CreateDescriptorPool();
         CreateDescriptorSets();
@@ -1342,12 +1373,6 @@ namespace citadel
 
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-        
-        vkDestroyBuffer(device, indexBuffer, nullptr);
-        vkFreeMemory(device, indexBufferMemory, nullptr);
-
-        vkDestroyBuffer(device, vertexBuffer, nullptr);
-        vkFreeMemory(device, vertexBufferMemory, nullptr);
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
@@ -1417,7 +1442,7 @@ namespace citadel
         renderPassInfo.framebuffer = swapChainFramebuffers[_imageIndex];
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = swapChain.extent;
-
+        
         std::array<VkClearValue, 2> clearValues{};
         clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
         clearValues[1].depthStencil = {1.0f, 0};
@@ -1446,23 +1471,22 @@ namespace citadel
 
 
     }
-
+        
     void VulkanGraphics::AddToDraw(const RenderPayload& payload)
     {
-        
         //upload the model to the GPU via push constants
         vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
      
-        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ vertexBuffer};
+        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ payload.vertexBuffer.buffer};
         VkDeviceSize offsets[] = {payload.offset};
         vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/indexBuffer, 0, payload.indexBufferFormat);
+        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/payload.indexBuffer.buffer, 0, payload.indexBufferFormat);
 
         vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
         pipelineLayout, 0, 1, /*&payload.descriptorSet*/ &descriptorSets[currentFrame], 0, nullptr);
 
-        vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffers[currentFrame], payload.indexCount, 1, 0, 0, 0);
     }
 
     void VulkanGraphics::SubmitDraw()
@@ -1515,5 +1539,16 @@ namespace citadel
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    }
+
+
+    BoundBuffer::~BoundBuffer() 
+    {
+        //With these in it crashes because boundbuffer copies and this gets called
+        // probbably need to refcount buffer/buffermem
+        // right onw they are simply leaked if no longer used
+        
+        // vkDestroyBuffer(device, buffer, nullptr);
+        // vkFreeMemory(device, bufferMemory, nullptr);    
     }
 }

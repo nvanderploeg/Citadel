@@ -25,15 +25,24 @@ struct UniformBufferObject
     glm::mat4 proj;
 };
 
+struct BoundBuffer
+{
+    VkDevice device;
+    VkBuffer buffer;
+    VkDeviceMemory bufferMemory;
+    ~BoundBuffer();
+};
+
 struct RenderPayload
 {
     glm::mat4 model;
-    VkBuffer vertexBuffer;
+
+    BoundBuffer vertexBuffer;
     VkDeviceSize offset = 0;
-    VkBuffer indexBuffer;
-    
+
+    BoundBuffer indexBuffer;
     VkIndexType indexBufferFormat = VK_INDEX_TYPE_UINT32;
-    VkDescriptorSet descriptorSet;
+    uint32_t indexCount;
 };
 
 class VulkanGraphics 
@@ -69,14 +78,6 @@ class VulkanGraphics
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
-
-    VkBuffer vertexBuffer;
-    VkDeviceMemory vertexBufferMemory;
-    std::vector<Vertex> vertices;
-
-    VkBuffer indexBuffer;
-    VkDeviceMemory indexBufferMemory;
-    std::vector<uint32_t> indices;
 
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
@@ -131,8 +132,6 @@ class VulkanGraphics
 
     void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-    void CreateVertexBuffer();
-    void CreateIndexBuffer();
 
     void CreateUniformBuffers();
     void UpdateUniformBuffer(uint32_t currentImage);
@@ -148,8 +147,6 @@ class VulkanGraphics
     void CreateTextureImageView();
     void CreateTextureSampler();
     void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
-
-    void LoadModel(std::string path);
 
     void CreateColorResources();
     void CreateDepthResources();
@@ -169,6 +166,11 @@ public:
     //Called to setup Vulkan for use
     static VulkanGraphics* Instance();
     void Init(GLFWwindow* window);
+
+    RenderPayload Load(std::string modelPath, std::string texturePath);     
+    
+    BoundBuffer CreateVertexBuffer(const std::vector<Vertex>& verticies);
+    BoundBuffer CreateIndexBuffer(const std::vector<uint32_t>& indices);
 
     void HandleResize();
     void StartDraw();

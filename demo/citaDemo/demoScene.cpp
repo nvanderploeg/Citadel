@@ -12,16 +12,52 @@
 
 using namespace std;
 
+namespace {
+    const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
+}
+
 DemoScene::DemoScene()
 :Scene()
 {
     pGameObject = std::make_shared<citadel::GameObject>();
     AddGameObject(pGameObject);
+    auto obj1 = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
+    auto obj2 = obj1;
+    obj2.model = glm::translate(glm::mat4(1.0), glm::vec3(0,0,2));
+
+    m_objects.emplace_back(obj1);
+    m_objects.emplace_back(obj2);
+
+
+        glm::vec3 pos;
+        glm::vec3 color;
+        glm::vec2 texCoord;
+    citadel::RenderPayload obj3;
+    const std::vector<citadel::Vertex> vertices = {
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+    };
+    obj3.vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
+
+    const std::vector<uint32_t> indices = {
+        0, 1, 2, 2, 3, 0
+    };
+    obj3.indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
+    obj3.indexCount = indices.size();
+
+    obj3.model = glm::translate(glm::mat4(1.0), glm::vec3(0,0,-1));
+
+    
+    m_objects.emplace_back(obj3);
+    std::cout << "DemoScene() finish" << std::endl;
 }
 
 
 void DemoScene::Tick(citadel::Time &deltaTime)
 {
+    std::cout << "Tick" << std::endl;
     citadel::Scene::Tick(deltaTime);
 
     auto transform = static_cast<citadel::TransformComponent*>(pGameObject->GetComponent("transform"));
@@ -53,12 +89,10 @@ void DemoScene::Draw() const
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-    citadel::RenderPayload payload;
+     std::cout << "Try to draw object!" << std::endl;
+    for (auto& obj : m_objects) {
 
-    payload.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    citadel::VulkanGraphics::Instance()->AddToDraw(payload);
-
-    payload.model = glm::translate(glm::mat4(1.0f), glm::vec3(1,0,0));
-    payload.model = glm::rotate(payload.model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    citadel::VulkanGraphics::Instance()->AddToDraw(payload);
+        std::cout << "Try to draw object!" << std::endl;
+        citadel::VulkanGraphics::Instance()->AddToDraw(obj);
+    }
 }

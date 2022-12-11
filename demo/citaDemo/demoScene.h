@@ -12,4 +12,6 @@ public:
 private:
     std::shared_ptr<citadel::GameObject> pGameObject;
     citadel::Time timer;
+
+    std::vector<citadel::RenderPayload> m_objects;
 };

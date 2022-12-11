@@ -43,7 +43,9 @@ target_sources(CitaDemo
 PRIVATE
 citaDemo/main.cpp
 citaDemo/demoGame.cpp
+citaDemo/demoGame.h
 citaDemo/demoScene.cpp
+citaDemo/demoScene.h
 )
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/textures
