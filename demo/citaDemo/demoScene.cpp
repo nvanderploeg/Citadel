@@ -55,8 +55,8 @@ DemoScene::DemoScene()
 {
     auto entity = registry.CreateEntity();
     auto transform = registry.AddComponent<TransformComponent>(entity);
-    auto rotate = registry.AddComponent<Rotate>(entity);
-    rotate->speed = 0.5;
+    //auto rotate = registry.AddComponent<Rotate>(entity);
+    //rotate->speed = 0.5;
     auto mesh = registry.AddComponent<citadel::MeshData>(entity);
     *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
 
@@ -80,9 +80,9 @@ DemoScene::DemoScene()
     mesh3->indexCount = indices.size();
     mesh3->texture = citadel::VulkanGraphics::Instance()->CreateTexture("textures/nan0.png");
 
-    auto player = registry.CreateEntity();
-    auto playerTransform = registry.AddComponent<TransformComponent>(player);
-    auto playerInputComponent = registry.AddComponent<PlayerInputComponent>(player);
+    //auto player = registry.CreateEntity();
+    //auto playerTransform = registry.AddComponent<TransformComponent>(player);
+    auto playerInputComponent = registry.AddComponent<PlayerInputComponent>(entity);
     playerInputComponent->isGrounded = true;
     playerInputComponent->isRunning = false;
 
@@ -244,7 +244,7 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
     {
         auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
         glm::vec3 moveDirection = inputComponent->inputDirection;
-        moveDirection *= inputComponent->isRunning ? 10.0f : 4.0f;
+        inputComponent->inputDirection = glm::vec3(0);
 
         auto transform = registry.GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
