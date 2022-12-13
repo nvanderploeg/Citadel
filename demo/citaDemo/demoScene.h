@@ -16,4 +16,7 @@ private:
     citadel::Time timer;
 
     float fieldOfView = 90.f;
+
+    void PlayerInputSystem(const citadel::Time& deltaTime);
+
 };

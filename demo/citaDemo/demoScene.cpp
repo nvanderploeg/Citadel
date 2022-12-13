@@ -43,6 +43,13 @@ struct Rotate
     float speed = 1.f;
 };
 
+struct PlayerInputComponent
+{
+    glm::vec3 inputDirection;
+    bool isRunning;
+    bool isGrounded;
+};
+
 DemoScene::DemoScene()
     :Scene()
 {
@@ -67,14 +74,17 @@ DemoScene::DemoScene()
     auto transform3 = registry.AddComponent<TransformComponent>(entity3);
     auto mesh3 = registry.AddComponent<citadel::MeshData>(entity3);
     registry.AddComponent<Bounce>(entity3);
-
     transform3->position.z -= 1.5;
-
     mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
-
     mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
     mesh3->indexCount = indices.size();
     mesh3->texture = citadel::VulkanGraphics::Instance()->CreateTexture("textures/nan0.png");
+
+    auto player = registry.CreateEntity();
+    auto playerTransform = registry.AddComponent<TransformComponent>(player);
+    auto playerInputComponent = registry.AddComponent<PlayerInputComponent>(player);
+    playerInputComponent->isGrounded = true;
+    playerInputComponent->isRunning = false;
 
     std::cout << "DemoScene() finish" << std::endl;
 }
@@ -82,6 +92,8 @@ DemoScene::DemoScene()
 
 void DemoScene::Tick(const citadel::Time &deltaTime)
 {
+    PlayerInputSystem(deltaTime);
+
     timer += deltaTime;
 
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Bounce>(&registry)) 
@@ -133,7 +145,12 @@ void DemoScene::Draw()
 
         citadel::VulkanGraphics::Instance()->AddToDraw(payload);
     }
- 
+
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+    {
+        auto transform = registry.GetComponent<TransformComponent>(entity);
+        std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
+    }
 }
 
 void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRouter)
@@ -143,12 +160,57 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
     Json::Value jContext = citadel::Serializer::loadFile("config/inputContext.cfg");
     inputRouter->SetInputContext(jContext);
 
-    // bind a callback (lambda in this case) to an event label
     inputRouter->BindCallbackToLabel("moveUp", [this](citadel::InputEventData data)
         {
-            std::cout << "movin' on up!\n";
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            {
+                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                if (inputComponent->isGrounded)
+                    inputComponent->inputDirection.x = 1.0f;
+            }
             return true;
         });
+    inputRouter->BindCallbackToLabel("moveDown", [this](citadel::InputEventData data)
+        {
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            {
+                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                if (inputComponent->isGrounded)
+                    inputComponent->inputDirection.x = -1.0f;
+            }
+            return true;
+        });
+    inputRouter->BindCallbackToLabel("moveLeft", [this](citadel::InputEventData data)
+        {
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            {
+                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                if (inputComponent->isGrounded)
+                    inputComponent->inputDirection.y = -1.0f;
+            }
+            return true;
+        });
+    inputRouter->BindCallbackToLabel("moveRight", [this](citadel::InputEventData data)
+        {
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            {
+                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                if (inputComponent->isGrounded)
+                    inputComponent->inputDirection.y = 1.0f;
+            }
+            return true;
+        });
+    inputRouter->BindCallbackToLabel("runToggle", [this](citadel::InputEventData data)
+        {
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            {
+                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                if (inputComponent->isGrounded)
+                    inputComponent->isRunning = !inputComponent->isRunning;
+            }
+            return true;
+        });
+
 
     // test binding for mouse click
     inputRouter->BindCallbackToLabel("mouseClick", [this](citadel::InputEventData data)
@@ -174,4 +236,17 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
 void DemoScene::FreeInput(const std::shared_ptr<citadel::InputRouter>& inputRouter)
 {
     // TODO: we should probably unbind things
+}
+
+void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
+{
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+    {
+        auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+        glm::vec3 moveDirection = inputComponent->inputDirection;
+        moveDirection *= inputComponent->isRunning ? 10.0f : 4.0f;
+
+        auto transform = registry.GetComponent<TransformComponent>(entity);
+        transform->position += moveDirection;
+    }
 }
