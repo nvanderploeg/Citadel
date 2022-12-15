@@ -45,7 +45,7 @@ struct Rotate
 
 struct PlayerInputComponent
 {
-    glm::vec3 inputDirection;
+    glm::vec3 inputRaw;
     bool isRunning;
     bool isGrounded;
 };
@@ -162,41 +162,45 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
 
     inputRouter->BindCallbackToLabel("moveUp", [this](citadel::InputEventData data)
         {
+            auto keyData = std::get<citadel::KeyEventData>(data);
             for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputDirection.x = 1.0f;
+                    inputComponent->inputRaw.x = (keyData.action == 1 ? 1.0f : 0.0f);
             }
             return true;
         });
     inputRouter->BindCallbackToLabel("moveDown", [this](citadel::InputEventData data)
         {
+            auto keyData = std::get<citadel::KeyEventData>(data);
             for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputDirection.x = -1.0f;
+                    inputComponent->inputRaw.x = (keyData.action == 1 ? -1.0f : 0.0f);
             }
             return true;
         });
     inputRouter->BindCallbackToLabel("moveLeft", [this](citadel::InputEventData data)
         {
+            auto keyData = std::get<citadel::KeyEventData>(data);
             for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputDirection.y = -1.0f;
+                    inputComponent->inputRaw.y = (keyData.action == 1 ? -1.0f : 0.0f);
             }
             return true;
         });
     inputRouter->BindCallbackToLabel("moveRight", [this](citadel::InputEventData data)
         {
+            auto keyData = std::get<citadel::KeyEventData>(data);
             for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputDirection.y = 1.0f;
+                    inputComponent->inputRaw.y = (keyData.action == 1 ? 1.0f : 0.0f);
             }
             return true;
         });
@@ -243,8 +247,7 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
     {
         auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
-        glm::vec3 moveDirection = inputComponent->inputDirection;
-        inputComponent->inputDirection = glm::vec3(0);
+        glm::vec3 moveDirection = inputComponent->inputRaw;
 
         auto transform = registry.GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
