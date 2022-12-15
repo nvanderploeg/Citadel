@@ -42,6 +42,7 @@ namespace citadel
     struct KeyEventData
     {
         int code;
+        int action;
         bool alt;
         bool control;
         bool shift;

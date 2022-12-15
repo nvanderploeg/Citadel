@@ -31,7 +31,7 @@ namespace citadel
             auto labelListItr = router->inputContext->keyEventMap.find(keyEvent);
             if (labelListItr != router->inputContext->keyEventMap.end())
             {
-                KeyEventData keyData = {key, static_cast<bool>(mods | GLFW_MOD_ALT),
+                KeyEventData keyData = {key, action, static_cast<bool>(mods | GLFW_MOD_ALT),
                                             static_cast<bool>(mods | GLFW_MOD_CONTROL),
                                             static_cast<bool>(mods | GLFW_MOD_SHIFT),
                                             static_cast<bool>(mods | GLFW_MOD_SUPER)};
