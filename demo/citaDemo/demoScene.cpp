@@ -167,7 +167,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputRaw.x = (keyData.action == 1 ? 1.0f : 0.0f);
+                    inputComponent->inputRaw.x += (keyData.action == 1 ? 1.0f : -1.0f);
             }
             return true;
         });
@@ -178,7 +178,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputRaw.x = (keyData.action == 1 ? -1.0f : 0.0f);
+                    inputComponent->inputRaw.x += (keyData.action == 1 ? -1.0f : 1.0f);
             }
             return true;
         });
@@ -189,7 +189,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputRaw.y = (keyData.action == 1 ? -1.0f : 0.0f);
+                    inputComponent->inputRaw.y += (keyData.action == 1 ? -1.0f : 1.0f);
             }
             return true;
         });
@@ -200,7 +200,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             {
                 auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
-                    inputComponent->inputRaw.y = (keyData.action == 1 ? 1.0f : 0.0f);
+                    inputComponent->inputRaw.y += (keyData.action == 1 ? 1.0f : -1.0f);
             }
             return true;
         });
