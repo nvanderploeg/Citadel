@@ -2,6 +2,7 @@
 #include <optional>
 #include <vector>
 #include <string>
+#include <memory>
 #include <vulkan/vulkan.h>
 
 #define GLFW_INCLUDE_VULKAN
@@ -11,9 +12,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "imageView.h"
 #include "swapchain.h"
 #include "vertex.h"
-#include "renderer.h"
+// #include "renderer.h"
 
 class GLFWwindow;
 
@@ -26,12 +28,12 @@ struct UniformBufferObject
     glm::mat4 proj;
 };
 
-
 class VulkanGraphics 
 {
     GLFWwindow* window;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
+
     //Vulkan Device(GPU) setup
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device;
@@ -81,6 +83,7 @@ class VulkanGraphics
 
     UniformBufferObject m_ubo;
 
+    // std::unique_ptr<Renderer> m_renderer;
     //Basic setup
 
     void SetupDebugMessenger();
@@ -127,14 +130,6 @@ class VulkanGraphics
                      VkMemoryPropertyFlags properties, 
                      VkImage& image, 
                      VkDeviceMemory& imageMemory) const;
-                     
-    // TODO: sort out global symbol shared with Swapchain
-    // VkImageView CreateImageView(VkDevice device, 
-    //                             VkImage image, 
-    //                             VkFormat format, 
-    //                             VkImageAspectFlags aspectFlags, 
-    //                             uint32_t mipLevels) const;
-    
     
     void CreateTextureImage(std::string path, Texture& _texture) const;
     void CreateTextureImageView(Texture& _texture) const;
@@ -164,12 +159,11 @@ class VulkanGraphics
     VkSampleCountFlagBits GetMaxUsableSampleCount() const;
     VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
-    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
-    VkFormat FindDepthFormat() const;
 
 public:
     //Called to setup Vulkan for use
     static VulkanGraphics* Instance();
+    // inline Renderer* getRenderer() { return m_renderer.get(); }
     void Init(GLFWwindow* window);
 
     MeshData Load(std::string modelPath, std::string texturePath);     

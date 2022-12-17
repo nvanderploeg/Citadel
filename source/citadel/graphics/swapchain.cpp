@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "queueFamily.h"
+#include "imageView.h"
 
 namespace {
 

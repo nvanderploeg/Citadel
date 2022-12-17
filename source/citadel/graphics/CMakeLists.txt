@@ -8,8 +8,12 @@ PUBLIC
 set(files
 camera.cpp
 camera.h
+formatSupport.cpp
+formatSupport.h
 graphics.cpp
 graphics.h
+imageView.cpp
+imageView.h
 meshData.h
 queueFamily.cpp
 queueFamily.h

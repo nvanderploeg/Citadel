@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "meshData.h"
+#include "swapchain.h"
 
 namespace citadel
 {
@@ -17,14 +18,24 @@ struct RenderPayload
     MeshData meshData;
 };
 
-
 class Renderer
 {
+    VkDevice device; 
+    VkPhysicalDevice physicalDevice;
+    VkCommandPool commandPool;
+
+    uint32_t imageIndex;
+    SwapChain swapChain;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    void CreateRenderPass(VkSampleCountFlagBits samples);
+
+    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 public:
-    Renderer();
+    Renderer(VkDevice _device, VkPhysicalDevice _physicalDevice, VkCommandPool _commandPool);
     virtual ~Renderer();
-
 
     void BeginFrame();
     void Add(const RenderPayload& payload);

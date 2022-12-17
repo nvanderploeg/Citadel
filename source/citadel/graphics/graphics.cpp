@@ -9,17 +9,15 @@
 #include <stdexcept>
 #include <unordered_map>
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-
+#include "formatSupport.h"
 #include "queueFamily.h"
 #include "shader.h"
-
 
 namespace {
 
@@ -34,7 +32,7 @@ namespace citadel
     const uint32_t WIDTH = 800;
     const uint32_t HEIGHT = 600;
 
-#   pragma mark - Debug and validation
+    #pragma mark - Debug and validation
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
@@ -123,7 +121,9 @@ namespace citadel
     void VulkanGraphics::CreateInstance() 
     {
         std::cout << "CreateInstance" << std::endl;
+        
         VkApplicationInfo appInfo{};
+        
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName = "CitaDemo";
         appInfo.applicationVersion = VK_MAKE_VERSION(0, 9, 0);
@@ -350,10 +350,10 @@ namespace citadel
     #pragma mark - Graphics Pipeline
 
 
-    VkPipeline VulkanGraphics::CreateGraphicsPipeline(const VkDevice aDevice, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples)
+    VkPipeline VulkanGraphics::CreateGraphicsPipeline(const VkDevice _device, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples)
     {
-        Shader vert(aDevice, vertShader);
-        Shader frag(aDevice, fragShader);
+        Shader vert(_device, vertShader);
+        Shader frag(_device, fragShader);
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -366,8 +366,6 @@ namespace citadel
         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
         fragShaderStageInfo.module = frag.module;
         fragShaderStageInfo.pName = "main";
-
-
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
@@ -442,8 +440,6 @@ namespace citadel
         //this push constant range is accessible only in the vertex shader
         push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-
-
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;
@@ -452,7 +448,7 @@ namespace citadel
         pipelineLayoutInfo.pPushConstantRanges = &push_constant;
         pipelineLayoutInfo.pushConstantRangeCount = 1;
 
-        if (vkCreatePipelineLayout(aDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(_device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -482,7 +478,7 @@ namespace citadel
         pipelineInfo.pDepthStencilState = &depthStencil;
 
         VkPipeline pipeline;
-        if (vkCreateGraphicsPipelines(aDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
+        if (vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
@@ -502,7 +498,7 @@ namespace citadel
         colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentDescription depthAttachment{};
-        depthAttachment.format = FindDepthFormat();
+        depthAttachment.format = FindDepthFormat(physicalDevice);
         depthAttachment.samples = msaaSamples;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -1117,28 +1113,6 @@ namespace citadel
 
     }
 
-    VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
-    {
-        std::cout << "CreateImageView" << std::endl;
-        VkImageViewCreateInfo viewInfo{};
-        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image = image;
-        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format = format;
-        viewInfo.subresourceRange.aspectMask = aspectFlags;
-        viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = mipLevels;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = 1;
-
-        VkImageView imageView;
-        if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture image view!");
-        }
-
-        std::cout << "CreateImageView done " << std::endl;
-        return imageView;
-    }
 
     void VulkanGraphics::CreateTextureImageView(Texture& _texture) const
     {
@@ -1268,35 +1242,9 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    VkFormat VulkanGraphics::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
-                                                 VkImageTiling tiling, 
-                                                 VkFormatFeatureFlags features) const
-    {
-        for (VkFormat format : candidates) {
-            VkFormatProperties props;
-            vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
-
-            if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-                return format;
-            } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-                return format;
-            }
-        }
-
-        throw std::runtime_error("failed to find supported format!");
-    }
-
-    VkFormat VulkanGraphics::FindDepthFormat() const {
-         return FindSupportedFormat(
-            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            VK_IMAGE_TILING_OPTIMAL,
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-        );
-    }
-
     void VulkanGraphics::CreateDepthResources()
     {
-        VkFormat depthFormat = FindDepthFormat();
+        VkFormat depthFormat = FindDepthFormat(physicalDevice);
         CreateImage(swapChain.extent.width, swapChain.extent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
         depthImageView = CreateImageView(device, depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
         
@@ -1317,7 +1265,7 @@ namespace citadel
     void VulkanGraphics::CreateSurface()
     {
         std::cout << "CreateSurface" << std::endl;
-         if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
+        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
             
             throw std::runtime_error("failed to create window surface!");
         }

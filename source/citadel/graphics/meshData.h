@@ -4,7 +4,7 @@
 
 namespace citadel
 {
-    
+
 struct BoundBuffer
 {
     VkDevice device;
@@ -12,8 +12,6 @@ struct BoundBuffer
     VkDeviceMemory bufferMemory;
     ~BoundBuffer();
 };
-
-
 
 struct MeshData
 {
