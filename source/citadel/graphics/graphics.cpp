@@ -12,7 +12,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
 #include "formatSupport.h"
@@ -29,9 +28,6 @@ namespace {
 
 namespace citadel
 {
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 600;
-
     #pragma mark - Debug and validation
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
@@ -780,10 +776,28 @@ namespace citadel
         m_ubo.view = matrix;
     }
 
-    void VulkanGraphics::SetFoV(float radians)
+    void VulkanGraphics::RecaluclateProjection()
     {
-        m_ubo.proj = glm::perspective(glm::radians(radians), swapChain.extent.width / (float) swapChain.extent.height, 0.1f, 10.0f);
+        m_ubo.proj = glm::perspective(glm::radians(m_fieldOfViewDegrees), swapChain.extent.width / (float) swapChain.extent.height, m_cameraNearPlane, m_cameraFarPlane);
         m_ubo.proj[1][1] *= -1;
+    }
+
+    void VulkanGraphics::SetFoV(float degrees)
+    {
+       m_fieldOfViewDegrees = degrees;
+       RecaluclateProjection();
+    }
+
+    void VulkanGraphics::SetNearPlane(float nearPlane)
+    {
+        m_cameraNearPlane = nearPlane;
+        RecaluclateProjection();
+    }
+
+    void VulkanGraphics::SetFarPlane(float farPlane)
+    {
+        m_cameraFarPlane = farPlane;
+        RecaluclateProjection();
     }
 
     void VulkanGraphics::CreateUniformBuffers() 
@@ -1383,6 +1397,7 @@ namespace citadel
     void VulkanGraphics::HandleResize()
     {
         RecreateSwapChain();
+        RecaluclateProjection();
     }
 
 

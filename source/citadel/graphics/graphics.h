@@ -15,7 +15,7 @@
 #include "imageView.h"
 #include "swapchain.h"
 #include "vertex.h"
-// #include "renderer.h"
+#include "renderer.h"
 
 class GLFWwindow;
 
@@ -82,6 +82,9 @@ class VulkanGraphics
     bool framebufferResized = false;
 
     UniformBufferObject m_ubo;
+    float m_fieldOfViewDegrees = 45.0f;
+    float m_cameraNearPlane = 5.0f;
+    float m_cameraFarPlane = 100.f;
 
     // std::unique_ptr<Renderer> m_renderer;
     //Basic setup
@@ -160,6 +163,8 @@ class VulkanGraphics
     VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
+    void RecaluclateProjection();
+
 public:
     //Called to setup Vulkan for use
     static VulkanGraphics* Instance();
@@ -179,7 +184,10 @@ public:
     void SubmitDraw();
 
     void SetViewMatrix(glm::mat4 matrix);
+    void SetProjectionMatrix(glm::mat4 matrix);
     void SetFoV(float radians);
+    void SetNearPlane(float nearPlane);
+    void SetFarPlane(float farPlane);
 
     //Called when we are all done with rendering
     void Cleanup();
