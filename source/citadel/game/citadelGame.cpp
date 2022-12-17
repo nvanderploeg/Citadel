@@ -60,7 +60,7 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     cout << "== INIT ==\n";
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
-    m_camera = make_shared<Camera>();
+    //m_camera = make_shared<Camera>();
 
     if (!glfwInit())
     {
@@ -209,7 +209,7 @@ void CitadelGame::Draw()
 {
 
     //Compile frame
-    VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
+    //VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
     VulkanGraphics::Instance()->StartDraw();
 
     if (m_currentScene) {

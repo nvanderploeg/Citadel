@@ -9,6 +9,7 @@ namespace citadel {
 
 class Camera {
 
+public:
     glm::vec3 m_position;
     glm::vec3 m_target;
     glm::vec3 m_upVector;

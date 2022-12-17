@@ -1,5 +1,6 @@
 
 #include "demoScene.h"
+#include "camera.h"
 
 //#include <iostream>
 
@@ -59,6 +60,7 @@ DemoScene::DemoScene()
     //rotate->speed = 0.5;
     auto mesh = registry.AddComponent<citadel::MeshData>(entity);
     *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
+    auto camera = registry.AddComponent<citadel::Camera>(entity);
 
     auto entity2 = registry.CreateEntity();
     auto transform2 = registry.AddComponent<TransformComponent>(entity2);
@@ -93,6 +95,15 @@ DemoScene::DemoScene()
 void DemoScene::Tick(const citadel::Time &deltaTime)
 {
     PlayerInputSystem(deltaTime);
+
+    auto playerID = *(citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry).begin());
+    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(&registry).begin());
+
+    auto camera = registry.GetComponent<citadel::Camera>(cameraID);
+    auto playerTransform = registry.GetComponent<TransformComponent>(playerID);
+
+    camera->m_position = playerTransform->position + glm::vec3(2, 2, 2);
+    camera->m_target = playerTransform->position;
 
     timer += deltaTime;
 
@@ -133,6 +144,10 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
 
 void DemoScene::Draw()
 {
+    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(&registry).begin());
+    auto camera = registry.GetComponent<citadel::Camera>(cameraID);
+    citadel::VulkanGraphics::Instance()->SetViewMatrix(camera->GetViewMatrix());
+
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(&registry))
     {
         auto transform = registry.GetComponent<TransformComponent>(entity);
@@ -247,7 +262,7 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
     {
         auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
-        glm::vec3 moveDirection = inputComponent->inputRaw * deltaTime.asSeconds();
+        glm::vec3 moveDirection = inputComponent->inputRaw * deltaTime.asSeconds() * 10.f;
 
         auto transform = registry.GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
