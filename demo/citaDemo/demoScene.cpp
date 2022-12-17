@@ -247,7 +247,7 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
     {
         auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
-        glm::vec3 moveDirection = inputComponent->inputRaw;
+        glm::vec3 moveDirection = inputComponent->inputRaw * deltaTime.asSeconds();
 
         auto transform = registry.GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
