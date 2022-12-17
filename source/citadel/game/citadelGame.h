@@ -41,7 +41,7 @@ protected:
     bool m_ready;
     Clock m_clock;
     std::shared_ptr<GameConfig> m_gameConfig;
-    std::shared_ptr<Camera> m_camera;
+    //std::shared_ptr<Camera> m_camera;
     std::shared_ptr<CitadelGameDelegate> m_delegate;
 
     std::shared_ptr<Scene> m_currentScene;
