@@ -16,6 +16,8 @@
 
 namespace
 {
+    const std::string DEFAULT_MODELPATH = "models/";
+    const std::string DEFAULT_SHADERPATH = "shaders/";
     const std::string DEFAULT_TEXTUREPATH = "textures/";
     const std::string DEFAULT_FONTPATH = "fonts/";
     const std::string DEFAULT_DATAPATH = "data/";
@@ -30,6 +32,8 @@ namespace citadel
         Json::Value jConfig = Serializer::loadFile(filepath);
         if (jConfig == Json::nullValue)
         {
+            modelPath = DEFAULT_MODELPATH;
+            shaderPath = DEFAULT_SHADERPATH;
             texturePath = DEFAULT_TEXTUREPATH;
             fontPath = DEFAULT_FONTPATH;
             dataPath = DEFAULT_DATAPATH;
@@ -53,6 +57,8 @@ namespace citadel
     void GameConfig::serialize(Json::Value& jValue)
     {
         windowProperties->serialize(jValue["windowProperties"]);
+        jValue["modelPath"] = modelPath;
+        jValue["shaderPath"] = shaderPath;
         jValue["texturePath"] = texturePath;
         jValue["fontPath"] = fontPath;
         jValue["dataPath"] = dataPath;
@@ -61,6 +67,8 @@ namespace citadel
     void GameConfig::deserialize(const Json::Value& jValue)
     {
         windowProperties->deserialize(jValue["windowProperties"]);
+        modelPath = jValue.get("modelPath", DEFAULT_MODELPATH).asString();
+        shaderPath = jValue.get("shaderPath", DEFAULT_SHADERPATH).asString();
         texturePath = jValue.get("texturePath", DEFAULT_TEXTUREPATH).asString();
         fontPath = jValue.get("fontPath", DEFAULT_FONTPATH).asString();
         dataPath = jValue.get("dataPath", DEFAULT_DATAPATH).asString();

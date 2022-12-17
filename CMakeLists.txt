@@ -6,6 +6,7 @@ project(citadel VERSION 0.1
 
 # find_package(vulkan REQUIRED)
 
+set(GLFW_BUILD_DOCS, OFF)
 add_library(citadel STATIC)
 
 add_subdirectory(source)

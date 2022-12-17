@@ -11,6 +11,8 @@
 
 namespace citadel 
 {
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+
     struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;
         std::vector<VkSurfaceFormatKHR> formats;
@@ -22,7 +24,6 @@ namespace citadel
     VkExtent2D chooseSwapExtent(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities);
 
     VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
-
 
     struct SwapChain {
         VkSwapchainKHR swapChain;

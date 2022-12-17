@@ -10,12 +10,16 @@ camera.cpp
 camera.h
 graphics.cpp
 graphics.h
+meshData.h
 queueFamily.cpp
 queueFamily.h
+renderer.cpp
+renderer.h
 shader.cpp
 shader.h
 swapchain.cpp
 swapchain.h
+texture.h
 vertex.h
 CMakeLists.txt
 )

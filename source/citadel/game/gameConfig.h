@@ -8,6 +8,8 @@
 
 #ifndef gameConfig_hpp
 #define gameConfig_hpp
+#include <memory>
+#include <filesystem>
 
 #include "JSONSerializable.h"
 
@@ -19,6 +21,8 @@ class GameConfig : public IJSONSerializable
 {
 public:
     std::shared_ptr<WindowProperties> windowProperties;
+    std::string modelPath;
+    std::string shaderPath;
     std::string texturePath;
     std::string fontPath;
     std::string dataPath;
@@ -27,6 +31,7 @@ public:
 
 public:
     GameConfig(const std::filesystem::path& path);
+    ~GameConfig() = default;
 
     bool Save();
 

@@ -3,25 +3,21 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-12-09.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
 
 #include "componentPool.h"
 
-namespace citadel
+namespace citadel::ecs
 {
-	namespace ecs
+	ComponentPool::ComponentPool(EntityIndex size)
 	{
-		ComponentPool::ComponentPool(EntityIndex size)
-		{
-			m_size = size;
-			m_pData = new char[size * MAX_ENTITIES];
-		}
+		m_size = size;
+		m_pData = new char[size * MAX_ENTITIES];
+	}
 
-		ComponentPool::~ComponentPool()
-		{
-			delete[] m_pData;
-		}
-
-	} // namespace ecs
-} // namespace citadel
+	ComponentPool::~ComponentPool()
+	{
+		delete[] m_pData;
+	}
+} // namespace citadel::ecs

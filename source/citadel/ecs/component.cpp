@@ -3,22 +3,16 @@
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-12-09.
-//  Copyright © 2022 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2022 Floating Citadel Games. All rights reserved.
 //
-#pragma once
 
 #include "component.h"
 
-namespace citadel
+namespace citadel::ecs
 {
-    namespace ecs
+    namespace Component
     {
-        namespace Component
-        {
-
-            ComponentID s_componentTypeCounter = 0;
-
-        } // namespace Component
-    } // namespace ecs
-} // namespace citadel
+        ComponentID s_componentTypeCounter = 0;
+    } // namespace Component
+} // namespace citadel::ecs
 

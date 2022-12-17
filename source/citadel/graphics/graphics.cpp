@@ -22,7 +22,6 @@
 
 
 namespace {
-    const int MAX_FRAMES_IN_FLIGHT = 2;
 
     const std::string DEFAULT_VERT_SHADER = "shaders/defaultVert.spv";
     const std::string DEFAULT_FRAG_SHADER = "shaders/defaultFrag.spv";
@@ -1335,15 +1334,10 @@ namespace citadel
 
         std::cout << "Loading: '" << modelPath << "'" << std::endl; 
         LoadModel(modelPath, vertices, indices);
-
-        std::cout << "vertex count: " << vertices.size() << std::endl
-                  << "index count: " << indices.size() << std::endl; 
-
+        
         mesh.vertexBuffer = CreateVertexBuffer(vertices);
         mesh.indexBuffer = CreateIndexBuffer(indices);
         mesh.indexCount = indices.size();
-
-        std::cout << "Loaded: '" << modelPath << "'" << std::endl; 
 
         if (!texturePath.empty()) {
             mesh.texture = CreateTexture(texturePath);

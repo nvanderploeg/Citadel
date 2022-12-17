@@ -149,7 +149,7 @@ void DemoScene::Draw()
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
     {
         auto transform = registry.GetComponent<TransformComponent>(entity);
-        std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
+        // std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
     }
 }
 

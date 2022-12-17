@@ -18,7 +18,6 @@ class InputRouter;
 class VulkanGraphics;
 class Camera;
 class Scene;
-class GameObject;
 class CitadelGame;
 
 class CitadelGameDelegate 
