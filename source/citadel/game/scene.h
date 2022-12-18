@@ -23,6 +23,7 @@ namespace citadel
         std::shared_ptr<ecs::Registry> m_registry;
 
     public:
+        Scene() { m_registry = std::make_shared<ecs::Registry>(); }
         virtual void Tick(const Time& deltaTime) = 0;
         virtual void Draw() = 0;
 
