@@ -20,7 +20,7 @@ namespace citadel
     class Scene : public ITickable
     {
     protected:
-        ecs::Registry registry;
+        std::shared_ptr<ecs::Registry> m_registry;
 
     public:
         virtual void Tick(const Time& deltaTime) = 0;
