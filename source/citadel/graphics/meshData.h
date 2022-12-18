@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "texture.h"
 
 namespace citadel
@@ -23,6 +25,12 @@ struct MeshData
     uint32_t indexCount;
 
     Texture texture;
+};
+
+struct RenderPayload
+{
+    glm::mat4 model;
+    MeshData meshData;
 };
 
 }

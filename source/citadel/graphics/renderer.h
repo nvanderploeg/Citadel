@@ -12,12 +12,6 @@
 namespace citadel
 {
 
-struct RenderPayload
-{
-    glm::mat4 model;
-    MeshData meshData;
-};
-
 class Renderer
 {
     VkDevice device; 

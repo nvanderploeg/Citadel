@@ -21,6 +21,8 @@ renderer.cpp
 renderer.h
 shader.cpp
 shader.h
+sprite.cpp
+sprite.h
 swapchain.cpp
 swapchain.h
 texture.h
