@@ -102,7 +102,7 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
     auto camera = m_registry->GetComponent<citadel::Camera>(cameraID);
     auto playerTransform = m_registry->GetComponent<TransformComponent>(playerID);
 
-    camera->m_position = playerTransform->position + glm::vec3(2, 2, 2);
+    camera->m_position = playerTransform->position + glm::vec3(5, 5, 10);
     camera->m_target = playerTransform->position;
 
     timer += deltaTime;
@@ -156,6 +156,7 @@ void DemoScene::Draw()
         glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0 * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::translate(model, transform->position);
 
+        // std::cout << "drawing entity " << entity << std::endl;
         citadel::RenderPayload payload({model, *mesh});
 
         citadel::VulkanGraphics::Instance()->AddToDraw(payload);
