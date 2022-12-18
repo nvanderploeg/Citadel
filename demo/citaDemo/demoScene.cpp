@@ -54,28 +54,28 @@ struct PlayerInputComponent
 DemoScene::DemoScene()
     :Scene()
 {
-    auto entity = registry.CreateEntity();
-    auto transform = registry.AddComponent<TransformComponent>(entity);
+    auto entity = m_registry->CreateEntity();
+    auto transform = m_registry->AddComponent<TransformComponent>(entity);
     //auto rotate = registry.AddComponent<Rotate>(entity);
     //rotate->speed = 0.5;
-    auto mesh = registry.AddComponent<citadel::MeshData>(entity);
+    auto mesh = m_registry->AddComponent<citadel::MeshData>(entity);
     *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
-    auto camera = registry.AddComponent<citadel::Camera>(entity);
+    auto camera = m_registry->AddComponent<citadel::Camera>(entity);
 
-    auto entity2 = registry.CreateEntity();
-    auto transform2 = registry.AddComponent<TransformComponent>(entity2);
-    auto mesh2 = registry.AddComponent<citadel::MeshData>(entity2);
-    registry.AddComponent<Rotate>(entity2);
-    auto bounce = registry.AddComponent<Bounce>(entity2);
+    auto entity2 = m_registry->CreateEntity();
+    auto transform2 = m_registry->AddComponent<TransformComponent>(entity2);
+    auto mesh2 = m_registry->AddComponent<citadel::MeshData>(entity2);
+    m_registry->AddComponent<Rotate>(entity2);
+    auto bounce = m_registry->AddComponent<Bounce>(entity2);
     bounce->topBound = 2.0;
     bounce->bottomBound = 1.0;
     *mesh2 = *mesh;
     transform2->position.z += 1.5;
 
-    auto entity3 = registry.CreateEntity();
-    auto transform3 = registry.AddComponent<TransformComponent>(entity3);
-    auto mesh3 = registry.AddComponent<citadel::MeshData>(entity3);
-    registry.AddComponent<Bounce>(entity3);
+    auto entity3 = m_registry->CreateEntity();
+    auto transform3 = m_registry->AddComponent<TransformComponent>(entity3);
+    auto mesh3 = m_registry->AddComponent<citadel::MeshData>(entity3);
+    m_registry->AddComponent<Bounce>(entity3);
     transform3->position.z -= 1.5;
     mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
     mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
@@ -84,7 +84,7 @@ DemoScene::DemoScene()
 
     //auto player = registry.CreateEntity();
     //auto playerTransform = registry.AddComponent<TransformComponent>(player);
-    auto playerInputComponent = registry.AddComponent<PlayerInputComponent>(entity);
+    auto playerInputComponent = m_registry->AddComponent<PlayerInputComponent>(entity);
     playerInputComponent->isGrounded = true;
     playerInputComponent->isRunning = false;
 
@@ -96,21 +96,21 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
 {
     PlayerInputSystem(deltaTime);
 
-    auto playerID = *(citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry).begin());
-    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(&registry).begin());
+    auto playerID = *(citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()).begin());
+    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(m_registry.get()).begin());
 
-    auto camera = registry.GetComponent<citadel::Camera>(cameraID);
-    auto playerTransform = registry.GetComponent<TransformComponent>(playerID);
+    auto camera = m_registry->GetComponent<citadel::Camera>(cameraID);
+    auto playerTransform = m_registry->GetComponent<TransformComponent>(playerID);
 
     camera->m_position = playerTransform->position + glm::vec3(2, 2, 2);
     camera->m_target = playerTransform->position;
 
     timer += deltaTime;
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Bounce>(&registry)) 
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Bounce>(m_registry.get()))
     {
-        auto transform = registry.GetComponent<TransformComponent>(entity);
-        auto bounce = registry.GetComponent<Bounce>(entity);
+        auto transform = m_registry->GetComponent<TransformComponent>(entity);
+        auto bounce = m_registry->GetComponent<Bounce>(entity);
 
         transform->position.z += bounce->speed * deltaTime.asSeconds() * (bounce->goingUp ? 1.0 : -1.0);
 
@@ -121,10 +121,10 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
         }
     }
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Rotate>(&registry))
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Rotate>(m_registry.get()))
     {
-        auto transform = registry.GetComponent<TransformComponent>(entity);
-        auto rotate = registry.GetComponent<Rotate>(entity);
+        auto transform = m_registry->GetComponent<TransformComponent>(entity);
+        auto rotate = m_registry->GetComponent<Rotate>(entity);
 
         if (transform == nullptr)
             continue;
@@ -144,14 +144,14 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
 
 void DemoScene::Draw()
 {
-    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(&registry).begin());
-    auto camera = registry.GetComponent<citadel::Camera>(cameraID);
+    auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(m_registry.get()).begin());
+    auto camera = m_registry->GetComponent<citadel::Camera>(cameraID);
     citadel::VulkanGraphics::Instance()->SetViewMatrix(camera->GetViewMatrix());
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(&registry))
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(m_registry.get()))
     {
-        auto transform = registry.GetComponent<TransformComponent>(entity);
-        auto mesh = registry.GetComponent<citadel::MeshData>(entity);
+        auto transform = m_registry->GetComponent<TransformComponent>(entity);
+        auto mesh = m_registry->GetComponent<citadel::MeshData>(entity);
         
         glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0 * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::translate(model, transform->position);
@@ -161,9 +161,9 @@ void DemoScene::Draw()
         citadel::VulkanGraphics::Instance()->AddToDraw(payload);
     }
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
     {
-        auto transform = registry.GetComponent<TransformComponent>(entity);
+        auto transform = m_registry->GetComponent<TransformComponent>(entity);
         // std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
     }
 }
@@ -178,9 +178,9 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
     inputRouter->BindCallbackToLabel("moveUp", [this](citadel::InputEventData data)
         {
             auto keyData = std::get<citadel::KeyEventData>(data);
-            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
             {
-                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
                     inputComponent->inputRaw.x += (keyData.action == 1 ? 1.0f : -1.0f);
             }
@@ -189,9 +189,9 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
     inputRouter->BindCallbackToLabel("moveDown", [this](citadel::InputEventData data)
         {
             auto keyData = std::get<citadel::KeyEventData>(data);
-            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
             {
-                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
                     inputComponent->inputRaw.x += (keyData.action == 1 ? -1.0f : 1.0f);
             }
@@ -200,9 +200,9 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
     inputRouter->BindCallbackToLabel("moveLeft", [this](citadel::InputEventData data)
         {
             auto keyData = std::get<citadel::KeyEventData>(data);
-            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
             {
-                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
                     inputComponent->inputRaw.y += (keyData.action == 1 ? -1.0f : 1.0f);
             }
@@ -211,9 +211,9 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
     inputRouter->BindCallbackToLabel("moveRight", [this](citadel::InputEventData data)
         {
             auto keyData = std::get<citadel::KeyEventData>(data);
-            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
             {
-                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
                     inputComponent->inputRaw.y += (keyData.action == 1 ? 1.0f : -1.0f);
             }
@@ -221,9 +221,9 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
         });
     inputRouter->BindCallbackToLabel("runToggle", [this](citadel::InputEventData data)
         {
-            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+            for (auto entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
             {
-                auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+                auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
                 if (inputComponent->isGrounded)
                     inputComponent->isRunning = !inputComponent->isRunning;
             }
@@ -259,12 +259,12 @@ void DemoScene::FreeInput(const std::shared_ptr<citadel::InputRouter>& inputRout
 
 void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
 {
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(&registry))
+    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
     {
-        auto inputComponent = registry.GetComponent<PlayerInputComponent>(entity);
+        auto inputComponent = m_registry->GetComponent<PlayerInputComponent>(entity);
         glm::vec3 moveDirection = inputComponent->inputRaw * deltaTime.asSeconds() * 10.f;
 
-        auto transform = registry.GetComponent<TransformComponent>(entity);
+        auto transform = m_registry->GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
     }
 }
