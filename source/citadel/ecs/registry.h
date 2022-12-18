@@ -26,7 +26,7 @@ namespace citadel::ecs
 
         std::vector<Entity> entities;
         std::vector<EntityIndex> freeEntities;
-        std::vector<ComponentPool*> componentPools;
+        std::vector<std::unique_ptr<ComponentPool>> componentPools;
 
     public:
         EntityID CreateEntity();
@@ -45,13 +45,7 @@ namespace citadel::ecs
             // not enough component pool
             if (componentPools.size() <= componentId)
             {
-                componentPools.resize(componentId + 1, nullptr);
-            }
-
-            // new component, make a new pool
-            if (componentPools[componentId] == nullptr)
-            {
-                componentPools[componentId] = new ComponentPool(sizeof(T));
+                componentPools.emplace_back(std::make_unique<ComponentPool>(sizeof(T)));
             }
 
             // look up the component in the pool and initialize
