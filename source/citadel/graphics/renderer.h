@@ -1,11 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "graphicsCore.h"
 
 namespace citadel
@@ -15,8 +9,27 @@ class Renderer
 {
     GraphicsCore* m_graphics;
 
+
+    // VkRenderPass renderPass;
+    // VkDescriptorSetLayout descriptorSetLayout;
+    // VkPipelineLayout pipelineLayout;
+    // VkPipeline graphicsPipeline;
+
+    void CreateRenderPass();
+    void CreateGraphicsPipeline(const std::string& vertShader, const std::string& fragShader);
+
     // void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
+    UniformBufferObject m_ubo;
+    float m_fieldOfViewDegrees = 45.0f;
+    float m_cameraNearPlane = 5.0f;
+    float m_cameraFarPlane = 100.f;
+
+    void RecaluclateProjection();
+
+    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex);
+
+    void Init();
 public:
     Renderer(GraphicsCore* graphics);
     virtual ~Renderer();
@@ -24,6 +37,11 @@ public:
     void Prepare();
     void Add(const RenderPayload& payload);
     void Submit();
+
+    void SetViewMatrix(glm::mat4 matrix);
+    void SetFoV(float radians);
+    void SetNearPlane(float nearPlane);
+    void SetFarPlane(float farPlane);
 };
 
 

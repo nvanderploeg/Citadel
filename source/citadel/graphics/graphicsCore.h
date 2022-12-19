@@ -81,16 +81,7 @@ class GraphicsCore
     VkDeviceMemory colorImageMemory;
     VkImageView colorImageView;
 
-    bool framebufferResized = false;
-
-    UniformBufferObject m_ubo;
-    float m_fieldOfViewDegrees = 45.0f;
-    float m_cameraNearPlane = 5.0f;
-    float m_cameraFarPlane = 100.f;
-
-    // std::unique_ptr<Renderer> m_renderer;
     //Basic setup
-
     void SetupDebugMessenger();
     void CreateInstance();
     void PickPhysicalDevice();
@@ -120,10 +111,10 @@ class GraphicsCore
                       VkDeviceMemory& bufferMemory) const;
 
     void CreateUniformBuffers();
-    void UpdateUniformBuffer(uint32_t currentImage);
+    void UpdateUniformBuffer(uint32_t currentImage, UniformBufferObject& ubo);
     void CreateDescriptorPool();
 
-    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, VkRenderPass renderPass);
 
     void CreateImage(uint32_t width, 
                      uint32_t height, 
@@ -164,14 +155,13 @@ class GraphicsCore
     VkSampleCountFlagBits GetMaxUsableSampleCount() const;
     VkShaderModule CreateShaderModule(const std::vector<char>& code) const;
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
-
-    void RecaluclateProjection();
-
+    
 public:
     //Called to setup Vulkan for use
     static GraphicsCore* Instance();
-    // inline Renderer* getRenderer() { return m_renderer.get(); }
+    //Init wil set instance var.
     void Init(GLFWwindow* window);
+    void Cleanup();
 
     MeshData Load(std::string modelPath, std::string texturePath);     
     
@@ -181,18 +171,10 @@ public:
     Texture CreateTexture(std::string path);
 
     void HandleResize();
-    void StartDraw();
-    void AddToDraw(const RenderPayload& payload);
-    void SubmitDraw();
 
-    void SetViewMatrix(glm::mat4 matrix);
-    void SetProjectionMatrix(glm::mat4 matrix);
-    void SetFoV(float radians);
-    void SetNearPlane(float nearPlane);
-    void SetFarPlane(float farPlane);
+    void PrepareFrame();
+    void EndFrame();
 
-    //Called when we are all done with rendering
-    void Cleanup();
 };
 
 }

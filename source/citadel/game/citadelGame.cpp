@@ -126,7 +126,7 @@ void CitadelGame::TearDown()
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
-    GraphicsCore::Instance()->Cleanup();
+    m_graphicsCore->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -140,8 +140,6 @@ void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
     scene->FreeInput(m_inputRouter);
     m_currentScene = scene;
     m_currentScene->BindInput(m_inputRouter);
-    //TODO: this should go wherever the Camera class ends up
-    GraphicsCore::Instance()->SetFoV(90.f);
 }
 
 bool CitadelGame::Running() 
@@ -200,7 +198,6 @@ int CitadelGame::run()
 
 void CitadelGame::Tick(Time &deltaTime) 
 {
-    //Update game scenes!
     if (m_currentScene) {
         m_currentScene->Tick(deltaTime);
     }
@@ -208,15 +205,13 @@ void CitadelGame::Tick(Time &deltaTime)
 
 void CitadelGame::Draw() 
 {
-
-    //Compile frame
-    //GraphicsCore::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
-    GraphicsCore::Instance()->StartDraw();
+    m_graphicsCore->PrepareFrame();
 
     if (m_currentScene) {
         m_currentScene->Draw();
     }
-    //Tell the graphics engine to render it!
-    GraphicsCore::Instance()->SubmitDraw();
+
+    m_graphicsCore->EndFrame();
 }
+
 } //namespace citadel

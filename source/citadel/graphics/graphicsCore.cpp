@@ -19,7 +19,6 @@
 #include "shader.h"
 
 namespace {
-
     const std::string DEFAULT_VERT_SHADER = "shaders/defaultVert.spv";
     const std::string DEFAULT_FRAG_SHADER = "shaders/defaultFrag.spv";
 }
@@ -139,7 +138,6 @@ namespace citadel
         CreateCommandPool();
         CreateColorResources();
         CreateDepthResources();
-        CreateFramebuffers();
         CreateUniformBuffers();
         CreateDescriptorPool();
 
@@ -159,9 +157,9 @@ namespace citadel
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
-        vkDestroyPipeline(device, graphicsPipeline, nullptr);
+        // vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
+        // vkDestroyRenderPass(device, renderPass, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -831,40 +829,9 @@ namespace citadel
         return buf;
     }
 
-    void GraphicsCore::UpdateUniformBuffer(uint32_t currentImage) 
+    void GraphicsCore::UpdateUniformBuffer(uint32_t currentImage, UniformBufferObject& ubo) 
     {
-        // std::cout << "UpdateUniformBuffer " << currentImage <<  std::endl;
-
-        memcpy(uniformBuffersMapped[currentImage], &m_ubo, sizeof(m_ubo));
-    }
-
-    void GraphicsCore::SetViewMatrix(glm::mat4 matrix)
-    {
-        m_ubo.view = matrix;
-    }
-
-    void GraphicsCore::RecaluclateProjection()
-    {
-        m_ubo.proj = glm::perspective(glm::radians(m_fieldOfViewDegrees), swapChain.extent.width / (float) swapChain.extent.height, m_cameraNearPlane, m_cameraFarPlane);
-        m_ubo.proj[1][1] *= -1;
-    }
-
-    void GraphicsCore::SetFoV(float degrees)
-    {
-       m_fieldOfViewDegrees = degrees;
-       RecaluclateProjection();
-    }
-
-    void GraphicsCore::SetNearPlane(float nearPlane)
-    {
-        m_cameraNearPlane = nearPlane;
-        RecaluclateProjection();
-    }
-
-    void GraphicsCore::SetFarPlane(float farPlane)
-    {
-        m_cameraFarPlane = farPlane;
-        RecaluclateProjection();
+        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 
     void GraphicsCore::CreateUniformBuffers() 
@@ -1392,15 +1359,17 @@ namespace citadel
     void GraphicsCore::HandleResize()
     {
         RecreateSwapChain();
-        RecaluclateProjection();
     }
 
-
-    void GraphicsCore::StartDraw()
+    void GraphicsCore::PrepareFrame()
     {
-
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-        auto result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+        auto result = vkAcquireNextImageKHR(device, 
+                                            swapChain.swapChain, 
+                                            UINT64_MAX, 
+                                            imageAvailableSemaphores[currentFrame], 
+                                            VK_NULL_HANDLE, 
+                                            &imageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             RecreateSwapChain();
@@ -1409,94 +1378,13 @@ namespace citadel
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        UpdateUniformBuffer(currentFrame);
-
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
-
-        vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-
-        StartCommandBuffer(commandBuffers[currentFrame], imageIndex);
-
     }
 
 
-    void GraphicsCore::StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex)
+    void GraphicsCore::EndFrame()
     {
-
-        // std::cout << "RecordCommandBuffer" << std::endl;
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
-        }
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[_imageIndex];
-        renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = swapChain.extent;
-        
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-        clearValues[1].depthStencil = {1.0f, 0};
-
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        auto& extent = swapChain.extent;
-
-        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-            VkViewport viewport{};
-            viewport.x = 0.0f;
-            viewport.y = 0.0f;
-            viewport.width = (float) extent.width;
-            viewport.height = (float) extent.height;
-            viewport.minDepth = 0.0f;
-            viewport.maxDepth = 1.0f;
-            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkRect2D scissor{};
-            scissor.offset = {0, 0};
-            scissor.extent = extent;
-            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
-    }
-        
-    void GraphicsCore::AddToDraw(const RenderPayload& payload)
-    {
-
-    }
-
-    void GraphicsCore::SubmitDraw()
-    {
-        vkCmdEndRenderPass(commandBuffers[currentFrame]);
-
-        if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
-        }
-        
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
-
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to submit draw command buffer!");
-        }
 
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -1512,8 +1400,7 @@ namespace citadel
 
         auto result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-            framebufferResized = false;
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ) {
             RecreateSwapChain();
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
