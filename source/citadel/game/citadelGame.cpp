@@ -110,11 +110,7 @@ void CitadelGame::Setup()
     // TODO use a logging system
     cout << "SETUP ok." << endl;
 
-    if (m_delegate)
-    {
-        //TODO: this should go wherever the Camera class ends up
-        VulkanGraphics::Instance()->SetFoV(90.f);
-
+    if (m_delegate) {
         m_delegate->OnGameDidFinishInitialization(this);
     }
 }
