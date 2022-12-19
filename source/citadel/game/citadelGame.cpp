@@ -24,7 +24,7 @@
 #include "citadelGame.h"
 #include "gameConfig.h"
 #include "camera.h"
-#include "graphics.h"
+#include "graphicsCore.h"
 #include "windowProperties.h"
 
 #include "input/inputRouter.h"
@@ -98,7 +98,8 @@ void CitadelGame::Setup()
     m_inputRouter->BindToGLFW(m_window);
 
     glfwMakeContextCurrent(m_window);
-    VulkanGraphics::Instance()->Init(m_window);
+    m_graphicsCore = new GraphicsCore();
+    m_graphicsCore->Init(m_window);
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
         //TODO: magic a way to call the graphics that a resize happened
@@ -125,7 +126,7 @@ void CitadelGame::TearDown()
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
-    VulkanGraphics::Instance()->Cleanup();
+    GraphicsCore::Instance()->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -140,7 +141,7 @@ void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
     m_currentScene = scene;
     m_currentScene->BindInput(m_inputRouter);
     //TODO: this should go wherever the Camera class ends up
-    VulkanGraphics::Instance()->SetFoV(90.f);
+    GraphicsCore::Instance()->SetFoV(90.f);
 }
 
 bool CitadelGame::Running() 
@@ -209,13 +210,13 @@ void CitadelGame::Draw()
 {
 
     //Compile frame
-    //VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
-    VulkanGraphics::Instance()->StartDraw();
+    //GraphicsCore::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
+    GraphicsCore::Instance()->StartDraw();
 
     if (m_currentScene) {
         m_currentScene->Draw();
     }
     //Tell the graphics engine to render it!
-    VulkanGraphics::Instance()->SubmitDraw();
+    GraphicsCore::Instance()->SubmitDraw();
 }
 } //namespace citadel

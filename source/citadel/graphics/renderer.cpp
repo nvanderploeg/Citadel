@@ -220,4 +220,52 @@ namespace citadel
 //         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 //     }
 
+
+
+
+
+    Renderer::Renderer(GraphicsCore* graphics)
+    :m_graphics(graphics)
+    {
+
+    }
+
+    Renderer::~Renderer()
+    {
+
+    }
+
+    void Renderer::Prepare()
+    {
+
+    }
+    void Renderer::Add(const RenderPayload& payload)
+    {
+        auto& currentFrame = m_graphics->currentFrame;
+        auto& commandBuffer = m_graphics->commandBuffers[currentFrame];
+        auto& pipelineLayout = m_graphics->pipelineLayout;
+
+        if (!payload.meshData.texture.valid) {
+            return;
+        }
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, 
+        pipelineLayout, 0, 1, &payload.meshData.texture.descriptorSets[currentFrame], 0, nullptr);
+   
+        //upload the model to the GPU via push constants
+        vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
+     
+        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ payload.meshData.vertexBuffer.buffer};
+        VkDeviceSize offsets[] = {payload.meshData.offset};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+        vkCmdBindIndexBuffer(commandBuffer, /*payload.indexBuffer*/payload.meshData.indexBuffer.buffer, 0, payload.meshData.indexBufferFormat);
+
+        vkCmdDrawIndexed(commandBuffer, payload.meshData.indexCount, 1, 0, 0, 0);
+    }
+    void Renderer::Submit()
+    {
+
+    }
+
 }

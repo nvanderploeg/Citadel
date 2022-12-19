@@ -17,6 +17,7 @@ using namespace std;
 
 namespace {
     const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
+    const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
     const std::vector<citadel::Vertex> vertices = {
         {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
@@ -54,12 +55,13 @@ struct PlayerInputComponent
 DemoScene::DemoScene()
     :Scene()
 {
+    m_renderer = std::make_shared<citadel::Renderer>(citadel::GraphicsCore::Instance());
     auto entity = m_registry->CreateEntity();
     auto transform = m_registry->AddComponent<TransformComponent>(entity);
     //auto rotate = registry.AddComponent<Rotate>(entity);
     //rotate->speed = 0.5;
     auto mesh = m_registry->AddComponent<citadel::MeshData>(entity);
-    *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
+    *mesh = citadel::GraphicsCore::Instance()->Load(VIKING_MODEL_PATH, VIKING_TEXTURE_PATH);
     auto camera = m_registry->AddComponent<citadel::Camera>(entity);
 
     auto entity2 = m_registry->CreateEntity();
@@ -77,10 +79,10 @@ DemoScene::DemoScene()
     auto mesh3 = m_registry->AddComponent<citadel::MeshData>(entity3);
     m_registry->AddComponent<Bounce>(entity3);
     transform3->position.z -= 1.5;
-    mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
-    mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
+    mesh3->vertexBuffer = citadel::GraphicsCore::Instance()->CreateVertexBuffer(vertices);
+    mesh3->indexBuffer = citadel::GraphicsCore::Instance()->CreateIndexBuffer(indices);
     mesh3->indexCount = indices.size();
-    mesh3->texture = citadel::VulkanGraphics::Instance()->CreateTexture("textures/nan0.png");
+    mesh3->texture = citadel::GraphicsCore::Instance()->CreateTexture("textures/nan0.png");
 
     //auto player = registry.CreateEntity();
     //auto playerTransform = registry.AddComponent<TransformComponent>(player);
@@ -146,7 +148,7 @@ void DemoScene::Draw()
 {
     auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(m_registry.get()).begin());
     auto camera = m_registry->GetComponent<citadel::Camera>(cameraID);
-    citadel::VulkanGraphics::Instance()->SetViewMatrix(camera->GetViewMatrix());
+    citadel::GraphicsCore::Instance()->SetViewMatrix(camera->GetViewMatrix());
 
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(m_registry.get()))
     {
@@ -159,7 +161,7 @@ void DemoScene::Draw()
         // std::cout << "drawing entity " << entity << std::endl;
         citadel::RenderPayload payload({model, *mesh});
 
-        citadel::VulkanGraphics::Instance()->AddToDraw(payload);
+        m_renderer->Add(payload);
     }
 
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
@@ -246,7 +248,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
             fieldOfView = std::max(45.f, fieldOfView);
             fieldOfView = std::min(120.f, fieldOfView);
-            citadel::VulkanGraphics::Instance()->SetFoV(fieldOfView);
+            citadel::GraphicsCore::Instance()->SetFoV(fieldOfView);
             return true;
         }
         return false;

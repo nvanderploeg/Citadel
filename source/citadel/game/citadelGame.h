@@ -15,7 +15,7 @@ namespace citadel {
 
 class GameConfig;
 class InputRouter;
-class VulkanGraphics;
+class GraphicsCore;
 class Camera;
 class Scene;
 class CitadelGame;
@@ -51,6 +51,7 @@ public:
 
 private:
     GLFWwindow* m_window;
+    GraphicsCore* m_graphicsCore;
     bool Init(const std::filesystem::path& configPath);
     void Setup();
     void TearDown();

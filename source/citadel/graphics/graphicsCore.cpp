@@ -1,4 +1,4 @@
-#include "graphics.h"
+#include "graphicsCore.h"
 
 #include <algorithm>
 #include <chrono>
@@ -22,8 +22,6 @@ namespace {
 
     const std::string DEFAULT_VERT_SHADER = "shaders/defaultVert.spv";
     const std::string DEFAULT_FRAG_SHADER = "shaders/defaultFrag.spv";
-        
-    const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
 }
 
 namespace citadel
@@ -74,7 +72,7 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::SetupDebugMessenger()
+    void GraphicsCore::SetupDebugMessenger()
     {
         if (!enableValidationLayers) return;
 
@@ -86,7 +84,7 @@ namespace citadel
         }
     }
 
-    uint32_t VulkanGraphics::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
+    uint32_t GraphicsCore::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
     {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -99,7 +97,7 @@ namespace citadel
         throw std::runtime_error("failed to find suitable memory type!");
     }
 
-    VkSampleCountFlagBits VulkanGraphics::GetMaxUsableSampleCount() const {
+    VkSampleCountFlagBits GraphicsCore::GetMaxUsableSampleCount() const {
         VkPhysicalDeviceProperties physicalDeviceProperties;
         vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 
@@ -113,8 +111,77 @@ namespace citadel
 
         return VK_SAMPLE_COUNT_1_BIT;
     }
+    
+     namespace {
+        GraphicsCore* s_instance;
+    }
+    GraphicsCore* GraphicsCore::Instance()
+    {
+        return s_instance;
+    }
 
-    void VulkanGraphics::CreateInstance() 
+    void GraphicsCore::Init(GLFWwindow* _window)
+    {
+        s_instance = this;
+        window = _window;
+        //Base setup for Vulkan
+        CreateInstance();
+        SetupDebugMessenger();
+        CreateSurface();
+        //picking devices 
+        PickPhysicalDevice();
+        CreateLogicalDevice();
+        //Setting up presentation stuff
+        swapChain = SwapChain::Create(_window, device, physicalDevice, surface);
+        CreateRenderPass();
+        CreateDescriptorSetLayout();
+        graphicsPipeline = CreateGraphicsPipeline(device, DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER, msaaSamples);
+        CreateCommandPool();
+        CreateColorResources();
+        CreateDepthResources();
+        CreateFramebuffers();
+        CreateUniformBuffers();
+        CreateDescriptorPool();
+
+        CreateCommandBuffers();
+        CreateSyncObjects();
+    }
+
+    void GraphicsCore::Cleanup()
+    {
+        CleanupSwapChain();
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+            vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+        }
+
+        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+        vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+
+        vkDestroyPipeline(device, graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(device, renderPass, nullptr);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(device, inFlightFences[i], nullptr);
+        }
+
+        vkDestroyCommandPool(device, commandPool, nullptr);
+
+        if (enableValidationLayers) {
+            DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+        }
+
+        vkDestroyDevice(device, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyInstance(instance, nullptr);
+    }
+
+
+    void GraphicsCore::CreateInstance() 
     {
         std::cout << "CreateInstance" << std::endl;
         
@@ -209,7 +276,7 @@ namespace citadel
         return requiredExtensions.empty();
     }
 
-    void VulkanGraphics::PickPhysicalDevice()
+    void GraphicsCore::PickPhysicalDevice()
     {
         std::cout << "PickPhysicalDevice" << std::endl;
         auto isDeviceSuitable = [&](VkPhysicalDevice candidateDevice) {
@@ -258,7 +325,7 @@ namespace citadel
         }
     }
 
-    void VulkanGraphics::CreateLogicalDevice()
+    void GraphicsCore::CreateLogicalDevice()
     {
         std::cout << "CreateLogicalDevice" << std::endl;
 
@@ -309,7 +376,7 @@ namespace citadel
 
     #pragma mark - Swap chain
 
-    void VulkanGraphics::CleanupSwapChain()
+    void GraphicsCore::CleanupSwapChain()
     {   
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
@@ -331,7 +398,7 @@ namespace citadel
 
     }
 
-    void VulkanGraphics::RecreateSwapChain()
+    void GraphicsCore::RecreateSwapChain()
     {
         vkDeviceWaitIdle(device);
 
@@ -346,7 +413,7 @@ namespace citadel
     #pragma mark - Graphics Pipeline
 
 
-    VkPipeline VulkanGraphics::CreateGraphicsPipeline(const VkDevice _device, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples)
+    VkPipeline GraphicsCore::CreateGraphicsPipeline(const VkDevice _device, const std::string& vertShader, const std::string& fragShader, const VkSampleCountFlagBits aaSamples)
     {
         Shader vert(_device, vertShader);
         Shader frag(_device, fragShader);
@@ -481,7 +548,7 @@ namespace citadel
         return pipeline;
     }
 
-    void VulkanGraphics::CreateRenderPass()
+    void GraphicsCore::CreateRenderPass()
     {
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = swapChain.imageFormat;
@@ -557,7 +624,7 @@ namespace citadel
     }
 
     #pragma mark - Framebuffers
-    void VulkanGraphics::CreateFramebuffers() 
+    void GraphicsCore::CreateFramebuffers() 
     {
         swapChainFramebuffers.resize(swapChain.imageViews.size());
         for (size_t i = 0; i < swapChain.imageViews.size(); i++) {
@@ -583,7 +650,7 @@ namespace citadel
 
     }
 
-    void VulkanGraphics::CreateCommandPool()
+    void GraphicsCore::CreateCommandPool()
     {
         QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice, surface);
 
@@ -597,7 +664,7 @@ namespace citadel
         }
     }
 
-    void VulkanGraphics::CreateCommandBuffers() 
+    void GraphicsCore::CreateCommandBuffers() 
     {
         commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -612,7 +679,7 @@ namespace citadel
         }
     }
 
-    VkCommandBuffer VulkanGraphics::BeginSingleTimeCommands() const
+    VkCommandBuffer GraphicsCore::BeginSingleTimeCommands() const
     {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -632,7 +699,7 @@ namespace citadel
         return commandBuffer;
     }
 
-    void VulkanGraphics::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
+    void GraphicsCore::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
     {
         vkEndCommandBuffer(commandBuffer);
 
@@ -647,7 +714,7 @@ namespace citadel
         vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
     }
 
-    void VulkanGraphics::CreateSyncObjects()
+    void GraphicsCore::CreateSyncObjects()
     {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -668,7 +735,7 @@ namespace citadel
         }
     }
 
-    void VulkanGraphics::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
+    void GraphicsCore::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
     {
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -679,7 +746,7 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) const {
+    void GraphicsCore::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) const {
         
         std::cout << "CreateBuffer" << std::endl;
         VkBufferCreateInfo bufferInfo{};
@@ -711,7 +778,7 @@ namespace citadel
     }
 
 
-    BoundBuffer VulkanGraphics::CreateVertexBuffer(const std::vector<Vertex>& vertices)   
+    BoundBuffer GraphicsCore::CreateVertexBuffer(const std::vector<Vertex>& vertices)   
     {
         BoundBuffer buf;
         buf.device = device;
@@ -737,7 +804,7 @@ namespace citadel
         return buf;
     }
 
-    BoundBuffer VulkanGraphics::CreateIndexBuffer(const std::vector<uint32_t>& indices) 
+    BoundBuffer GraphicsCore::CreateIndexBuffer(const std::vector<uint32_t>& indices) 
     {
         BoundBuffer buf;
         buf.device = device;
@@ -764,43 +831,43 @@ namespace citadel
         return buf;
     }
 
-    void VulkanGraphics::UpdateUniformBuffer(uint32_t currentImage) 
+    void GraphicsCore::UpdateUniformBuffer(uint32_t currentImage) 
     {
         // std::cout << "UpdateUniformBuffer " << currentImage <<  std::endl;
 
         memcpy(uniformBuffersMapped[currentImage], &m_ubo, sizeof(m_ubo));
     }
 
-    void VulkanGraphics::SetViewMatrix(glm::mat4 matrix)
+    void GraphicsCore::SetViewMatrix(glm::mat4 matrix)
     {
         m_ubo.view = matrix;
     }
 
-    void VulkanGraphics::RecaluclateProjection()
+    void GraphicsCore::RecaluclateProjection()
     {
         m_ubo.proj = glm::perspective(glm::radians(m_fieldOfViewDegrees), swapChain.extent.width / (float) swapChain.extent.height, m_cameraNearPlane, m_cameraFarPlane);
         m_ubo.proj[1][1] *= -1;
     }
 
-    void VulkanGraphics::SetFoV(float degrees)
+    void GraphicsCore::SetFoV(float degrees)
     {
        m_fieldOfViewDegrees = degrees;
        RecaluclateProjection();
     }
 
-    void VulkanGraphics::SetNearPlane(float nearPlane)
+    void GraphicsCore::SetNearPlane(float nearPlane)
     {
         m_cameraNearPlane = nearPlane;
         RecaluclateProjection();
     }
 
-    void VulkanGraphics::SetFarPlane(float farPlane)
+    void GraphicsCore::SetFarPlane(float farPlane)
     {
         m_cameraFarPlane = farPlane;
         RecaluclateProjection();
     }
 
-    void VulkanGraphics::CreateUniformBuffers() 
+    void GraphicsCore::CreateUniformBuffers() 
     {
         std::cout << "CreateUniformBuffers" << std::endl;
         VkDeviceSize bufferSize = sizeof(UniformBufferObject);
@@ -816,7 +883,7 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::CreateDescriptorSetLayout() 
+    void GraphicsCore::CreateDescriptorSetLayout() 
     {
         std::cout << "CreateDescriptorSetLayout" << std::endl;
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -843,7 +910,7 @@ namespace citadel
             throw std::runtime_error("failed to create descriptor set layout!");
         }
     }
-    void VulkanGraphics::CreateDescriptorPool() 
+    void GraphicsCore::CreateDescriptorPool() 
     {
         std::cout << "CreateDescriptorPool" << std::endl;
         std::array<VkDescriptorPoolSize, 2> poolSizes{};
@@ -863,7 +930,7 @@ namespace citadel
         }
     }
     
-    void VulkanGraphics::CreateDescriptorSets(Texture& _texture) const
+    void GraphicsCore::CreateDescriptorSets(Texture& _texture) const
     {
         std::cout << "CreateDescriptorSets" << std::endl;
         std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
@@ -914,7 +981,7 @@ namespace citadel
 
     #pragma mark - textures
 
-    void VulkanGraphics::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) const 
+    void GraphicsCore::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) const 
     {
         std::cout << "CreateImage" << std::endl;
         VkImageCreateInfo imageInfo{};
@@ -952,7 +1019,7 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::TransitionImageLayout(VkImage image, 
+    void GraphicsCore::TransitionImageLayout(VkImage image, 
                                                VkFormat format, 
                                                VkImageLayout oldLayout, 
                                                VkImageLayout newLayout, 
@@ -1007,7 +1074,7 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) const
+    void GraphicsCore::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) const
     {
         std::cout << "CopyBufferToImage" << std::endl;
         VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
@@ -1084,7 +1151,7 @@ namespace citadel
 
     }
 
-    void VulkanGraphics::CreateTextureImage(std::string path, Texture& _texture) const
+    void GraphicsCore::CreateTextureImage(std::string path, Texture& _texture) const
     {
         std::cout << "CreateTextureImage" << std::endl;
         constexpr int bytesPerPixel = 4;
@@ -1130,13 +1197,13 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::CreateTextureImageView(Texture& _texture) const
+    void GraphicsCore::CreateTextureImageView(Texture& _texture) const
     {
         std::cout << "CreateTextureImageView" << std::endl;
         _texture.imageView = CreateImageView(device, _texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _texture.mipLevels);
     }
     
-    void VulkanGraphics::CreateTextureSampler(Texture& _texture) const
+    void GraphicsCore::CreateTextureSampler(Texture& _texture) const
     {
         std::cout << "CreateTextureSampler" << std::endl;
 
@@ -1166,7 +1233,7 @@ namespace citadel
         }
     }
 
-    void VulkanGraphics::GenerateMipmaps(VkImage image, 
+    void GraphicsCore::GenerateMipmaps(VkImage image, 
                                          VkFormat imageFormat, 
                                          int32_t texWidth, 
                                          int32_t texHeight, 
@@ -1258,7 +1325,7 @@ namespace citadel
         EndSingleTimeCommands(commandBuffer);
     }
 
-    void VulkanGraphics::CreateDepthResources()
+    void GraphicsCore::CreateDepthResources()
     {
         VkFormat depthFormat = FindDepthFormat(physicalDevice);
         CreateImage(swapChain.extent.width, swapChain.extent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
@@ -1268,7 +1335,7 @@ namespace citadel
         // TransitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     }
 
-    void VulkanGraphics::CreateColorResources()
+    void GraphicsCore::CreateColorResources()
     {
          VkFormat colorFormat = swapChain.imageFormat;
 
@@ -1278,7 +1345,7 @@ namespace citadel
 
     #pragma mark - Base functions
 
-    void VulkanGraphics::CreateSurface()
+    void GraphicsCore::CreateSurface()
     {
         std::cout << "CreateSurface" << std::endl;
         if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
@@ -1290,7 +1357,7 @@ namespace citadel
 
 
 
-    MeshData VulkanGraphics::Load(std::string modelPath, std::string texturePath)
+    MeshData GraphicsCore::Load(std::string modelPath, std::string texturePath)
     {
         MeshData mesh;
         std::vector<Vertex> vertices;
@@ -1305,12 +1372,12 @@ namespace citadel
 
         if (!texturePath.empty()) {
             mesh.texture = CreateTexture(texturePath);
-
         }
+
         return mesh;
     }
 
-    Texture VulkanGraphics::CreateTexture(std::string path)
+    Texture GraphicsCore::CreateTexture(std::string path)
     {
         Texture texture;
         CreateTextureImage(path, texture);
@@ -1321,89 +1388,15 @@ namespace citadel
         return std::move(texture);
     }
 
-    namespace {
-        VulkanGraphics s_instance;
-    }
-    VulkanGraphics* VulkanGraphics::Instance()
-    {
-        return &s_instance;
-    }
-
-    void VulkanGraphics::Init(GLFWwindow* _window)
-    {
-        window = _window;
-        //Base setup for Vulkan
-        CreateInstance();
-        SetupDebugMessenger();
-        CreateSurface();
-        //picking devices 
-        PickPhysicalDevice();
-        CreateLogicalDevice();
-        //Setting up presentation stuff
-        swapChain = SwapChain::Create(_window, device, physicalDevice, surface);
-        CreateRenderPass();
-        CreateDescriptorSetLayout();
-        graphicsPipeline = CreateGraphicsPipeline(device, DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER, msaaSamples);
-        CreateCommandPool();
-        CreateColorResources();
-        CreateDepthResources();
-        CreateFramebuffers();
-        CreateUniformBuffers();
-        CreateDescriptorPool();
-
-        m_baseTexture = CreateTexture(VIKING_TEXTURE_PATH);
-
-        CreateCommandBuffers();
-        CreateSyncObjects();
-    }
-
-    void VulkanGraphics::Cleanup()
-    {
-        CleanupSwapChain();
-
-        vkDestroySampler(device, m_baseTexture.sampler, nullptr);
-        vkDestroyImageView(device, m_baseTexture.imageView, nullptr);
-
-        vkDestroyImage(device, m_baseTexture.image, nullptr);
-        vkFreeMemory(device, m_baseTexture.imageMemory, nullptr);
-
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-            vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-        }
-
-        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-        vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-
-        vkDestroyPipeline(device, graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyRenderPass(device, renderPass, nullptr);
-
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(device, inFlightFences[i], nullptr);
-        }
-
-        vkDestroyCommandPool(device, commandPool, nullptr);
-
-        if (enableValidationLayers) {
-            DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-        }
-
-        vkDestroyDevice(device, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
-    }
-
-    void VulkanGraphics::HandleResize()
+   
+    void GraphicsCore::HandleResize()
     {
         RecreateSwapChain();
         RecaluclateProjection();
     }
 
 
-    void VulkanGraphics::StartDraw()
+    void GraphicsCore::StartDraw()
     {
 
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -1427,7 +1420,7 @@ namespace citadel
     }
 
 
-    void VulkanGraphics::StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex)
+    void GraphicsCore::StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex)
     {
 
         // std::cout << "RecordCommandBuffer" << std::endl;
@@ -1472,38 +1465,12 @@ namespace citadel
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);            
     }
         
-    void VulkanGraphics::AddToDraw(const RenderPayload& payload)
+    void GraphicsCore::AddToDraw(const RenderPayload& payload)
     {
-        // VkPipelineLayout                            layout,
-        // uint32_t                                    firstSet,
-        // uint32_t                                    descriptorSetCount,
-        // const VkDescriptorSet*                      pDescriptorSets,
-        // uint32_t                                    dynamicOffsetCount,
-        // const uint32_t*                             pDynamicOffsets);
 
-
-        if (payload.meshData.texture.valid) {
-            vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
-            pipelineLayout, 0, 1, &payload.meshData.texture.descriptorSets[currentFrame], 0, nullptr);
-        }
-        else {
-            vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, 
-            pipelineLayout, 0, 1, &m_baseTexture.descriptorSets[currentFrame], 0, nullptr);
-        }
-
-        //upload the model to the GPU via push constants
-        vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(payload.model), &payload.model);
-     
-        VkBuffer vertexBuffers[] = {/*payload.vertexBuffer*/ payload.meshData.vertexBuffer.buffer};
-        VkDeviceSize offsets[] = {payload.meshData.offset};
-        vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
-
-        vkCmdBindIndexBuffer(commandBuffers[currentFrame], /*payload.indexBuffer*/payload.meshData.indexBuffer.buffer, 0, payload.meshData.indexBufferFormat);
-
-        vkCmdDrawIndexed(commandBuffers[currentFrame], payload.meshData.indexCount, 1, 0, 0, 0);
     }
 
-    void VulkanGraphics::SubmitDraw()
+    void GraphicsCore::SubmitDraw()
     {
         vkCmdEndRenderPass(commandBuffers[currentFrame]);
 
@@ -1553,16 +1520,5 @@ namespace citadel
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-    }
-
-
-    BoundBuffer::~BoundBuffer() 
-    {
-        //With these in it crashes because boundbuffer copies and this gets called
-        // probbably need to refcount buffer/buffermem
-        // right onw they are simply leaked if no longer used
-        
-        // vkDestroyBuffer(device, buffer, nullptr);
-        // vkFreeMemory(device, bufferMemory, nullptr);    
     }
 }

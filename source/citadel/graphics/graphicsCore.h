@@ -15,7 +15,9 @@
 #include "imageView.h"
 #include "swapchain.h"
 #include "vertex.h"
-#include "renderer.h"
+#include "meshData.h"
+#include "swapchain.h"
+#include "texture.h"
 
 class GLFWwindow;
 
@@ -28,8 +30,9 @@ struct UniformBufferObject
     glm::mat4 proj;
 };
 
-class VulkanGraphics 
+class GraphicsCore 
 {
+    friend class Renderer;
     GLFWwindow* window;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -68,7 +71,6 @@ class VulkanGraphics
     std::vector<void*> uniformBuffersMapped;
     VkDescriptorPool descriptorPool;
 
-    Texture m_baseTexture;
     VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkImage depthImage;
@@ -167,7 +169,7 @@ class VulkanGraphics
 
 public:
     //Called to setup Vulkan for use
-    static VulkanGraphics* Instance();
+    static GraphicsCore* Instance();
     // inline Renderer* getRenderer() { return m_renderer.get(); }
     void Init(GLFWwindow* window);
 

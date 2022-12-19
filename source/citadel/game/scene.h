@@ -11,7 +11,7 @@
 #include "ecs/registry.h"
 
 #include "cTime.h"
-#include "graphics.h"
+#include "renderer.h"
 
 namespace citadel 
 {
@@ -21,7 +21,7 @@ namespace citadel
     {
     protected:
         std::shared_ptr<ecs::Registry> m_registry;
-
+        std::shared_ptr<Renderer> m_renderer;
     public:
         Scene() { m_registry = std::make_shared<ecs::Registry>(); }
         virtual void Tick(const Time& deltaTime) = 0;
