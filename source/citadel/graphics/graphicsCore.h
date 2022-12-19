@@ -23,6 +23,7 @@ class GLFWwindow;
 
 namespace citadel 
 {
+typedef std::function<void()> SwapChainRecreatedCallback;
 
 struct UniformBufferObject 
 {
@@ -47,16 +48,11 @@ class GraphicsCore
     VkQueue presentQueue;
 
     SwapChain swapChain;
+    std::vector<SwapChainRecreatedCallback> m_swapChainRecreatedCallbacks;
     uint32_t imageIndex;
 
-    //Pipeline!
-    VkRenderPass renderPass;
     VkDescriptorSetLayout descriptorSetLayout;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline graphicsPipeline;
 
-    //Framebuffers
-    std::vector<VkFramebuffer> swapChainFramebuffers;
     VkCommandPool commandPool;
     
     uint32_t currentFrame = 0;

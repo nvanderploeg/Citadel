@@ -126,6 +126,7 @@ void CitadelGame::TearDown()
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
+    m_currentScene = nullptr;
     m_graphicsCore->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);

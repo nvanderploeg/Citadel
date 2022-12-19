@@ -18,11 +18,10 @@ namespace citadel
 
     void Renderer::CreateRenderPass()
     {
-        auto msaaSamples = m_graphics->msaaSamples;
-        auto swapChain = m_graphics->swapChain;
-        auto physicalDevice = m_graphics->physicalDevice;
-        auto device = m_graphics->device;
-        auto& renderPass = m_graphics->renderPass;
+        auto& device = m_graphics->device;
+        auto& physicalDevice = m_graphics->physicalDevice;
+        auto& swapChain = m_graphics->swapChain;
+        auto& msaaSamples = m_graphics->msaaSamples;
 
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = swapChain.imageFormat;
@@ -100,10 +99,8 @@ namespace citadel
     void Renderer::CreateGraphicsPipeline(const std::string& vertShader, const std::string& fragShader)
     {
         auto& _device = m_graphics->device;
-        auto& renderPass = m_graphics->renderPass;
         auto& msaaSamples = m_graphics->msaaSamples;
         auto& descriptorSetLayout = m_graphics->descriptorSetLayout;
-        auto &pipelineLayout = m_graphics->pipelineLayout;
 
         Shader vert(_device, vertShader);
         Shader frag(_device, fragShader);
@@ -229,18 +226,54 @@ namespace citadel
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
         pipelineInfo.pDepthStencilState = &depthStencil;
 
-        // if (vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-        //     throw std::runtime_error("failed to create graphics pipeline!");
-        // }
+        if (vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create graphics pipeline!");
+        }
 
+    }
+
+    void Renderer::CleanupFrameBuffers()
+    {
+        auto& device = m_graphics->device;
+
+        for (auto& framebuffer : framebuffers) {
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+    }
+    
+    void Renderer::CreateFramebuffers() 
+    {
+        auto& device = m_graphics->device;
+        auto& swapChain = m_graphics->swapChain;
+        auto& colorImageView = m_graphics->colorImageView;
+        auto& depthImageView = m_graphics->depthImageView;
+
+        framebuffers.resize(swapChain.imageViews.size());
+        for (size_t i = 0; i < swapChain.imageViews.size(); i++) {
+            std::array<VkImageView, 3> attachments = {
+                colorImageView,
+                depthImageView,
+                swapChain.imageViews[i]
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = renderPass;
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = swapChain.extent.width;
+            framebufferInfo.height = swapChain.extent.height;
+            framebufferInfo.layers = 1;
+
+            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create framebuffer!");
+            }
+        }
     }
 
     void Renderer::StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex)
     {
-        auto& swapChainFramebuffers = m_graphics->swapChainFramebuffers;
         auto& swapChain = m_graphics->swapChain;
-        auto& renderPass = m_graphics->renderPass;
-        auto& graphicsPipeline = m_graphics->graphicsPipeline;
 
         // std::cout << "RecordCommandBuffer" << std::endl;
         VkCommandBufferBeginInfo beginInfo{};
@@ -253,7 +286,7 @@ namespace citadel
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[_imageIndex];
+        renderPassInfo.framebuffer = framebuffers[_imageIndex];
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = swapChain.extent;
         
@@ -286,9 +319,15 @@ namespace citadel
 
     void Renderer::Init()
     {
-        // CreateRenderPass();
-        m_graphics->CreateFramebuffers();
-        // m_graphics->graphicsPipeline = m_graphics->CreateGraphicsPipeline(m_graphics->device, DEFAULT_VERT_SHADER, DEFAULT_VERT_SHADER,m_graphics->msaaSamples);
+        CreateRenderPass();
+        CreateFramebuffers();
+        CreateGraphicsPipeline(DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER);
+
+        m_recreateCallback = [this]() { 
+            CleanupFrameBuffers();
+            CreateFramebuffers();
+        };
+        m_graphics->m_swapChainRecreatedCallbacks.push_back(m_recreateCallback);
     }
 
     Renderer::Renderer(GraphicsCore *graphics)
@@ -299,10 +338,16 @@ namespace citadel
 
     Renderer::~Renderer()
     {
+        auto& device = m_graphics->device;
+
+        vkDestroyPipeline(device, graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(device, renderPass, nullptr);
     }
 
     void Renderer::Prepare()
     {
+        auto& device = m_graphics->device;
         RecaluclateProjection();
         m_graphics->UpdateUniformBuffer(m_graphics->currentFrame, m_ubo);
 
@@ -318,7 +363,6 @@ namespace citadel
     {
         auto &currentFrame = m_graphics->currentFrame;
         auto &commandBuffer = m_graphics->commandBuffers[currentFrame];
-        auto &pipelineLayout = m_graphics->pipelineLayout;
 
         if (!payload.meshData.texture.valid)
         {

@@ -9,16 +9,17 @@ class Renderer
 {
     GraphicsCore* m_graphics;
 
-
-    // VkRenderPass renderPass;
+    VkRenderPass renderPass;
     // VkDescriptorSetLayout descriptorSetLayout;
-    // VkPipelineLayout pipelineLayout;
-    // VkPipeline graphicsPipeline;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+    std::vector<VkFramebuffer> framebuffers;
+    SwapChainRecreatedCallback m_recreateCallback;
 
     void CreateRenderPass();
     void CreateGraphicsPipeline(const std::string& vertShader, const std::string& fragShader);
-
-    // void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void CreateFramebuffers();
+    void CleanupFrameBuffers();
 
     UniformBufferObject m_ubo;
     float m_fieldOfViewDegrees = 45.0f;
