@@ -13,14 +13,17 @@
 namespace citadel 
 {
     class InputRouter;
+    class ecs::Registry;
+    class SceneStack;
 
     class Scene
     {
     protected:
         std::shared_ptr<ecs::Registry> m_registry;
+        std::shared_ptr<SceneStack> m_sceneStack;
 
     public:
-        Scene() { m_registry = std::make_shared<ecs::Registry>(); }
+        Scene(const std::shared_ptr<SceneStack>& sceneStack);
         virtual void Tick(const Time& deltaTime) = 0;
         virtual void Draw() = 0;
 

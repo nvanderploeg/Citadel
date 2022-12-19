@@ -3,11 +3,14 @@
 #include <iostream>
 #include "demoScene.h"
 
-void DemoGame::OnGameDidFinishInitialization(citadel::CitadelGame* game)
+void DemoGame::OnGameDidFinishInitialization(citadel::CitadelGame* pGame)
 {
     std::cout << "didFinishInit start" << std::endl;
-    auto scene = std::make_shared<DemoScene>();
-    game->SetScene(scene);
+
+    auto sceneStack = pGame->GetSceneStack();
+    auto scene = std::make_unique<DemoScene>(sceneStack);
+    scene->BindInput(pGame->GetInputRouter());
+    sceneStack->Push(std::move(scene));
 
     std::cout << "didFinishInit end" << std::endl;
 }

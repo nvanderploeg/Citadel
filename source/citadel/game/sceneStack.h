@@ -1,9 +1,9 @@
-//
+﻿//
 //  sceneStack.h
 //  CitadelEngine
 //
 //  Created by Stephanie Barrett on 2022-12-19.
-//  Copyright ? 2022 Floating Citadel Games. All rights reserved.
+//  Copyright � 2022 Floating Citadel Games. All rights reserved.
 //
 #pragma once
 

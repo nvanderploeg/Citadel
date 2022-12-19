@@ -18,6 +18,7 @@ class InputRouter;
 class VulkanGraphics;
 class Camera;
 class Scene;
+class SceneStack;
 class CitadelGame;
 
 class CitadelGameDelegate 
@@ -34,20 +35,23 @@ public:
     ~CitadelGame() = default;
     int run();
     
-    void SetScene(const std::shared_ptr<Scene>& scene);
-    
 protected:
     bool m_ready;
     Clock m_clock;
     std::shared_ptr<GameConfig> m_gameConfig;
     //std::shared_ptr<Camera> m_camera;
     std::shared_ptr<CitadelGameDelegate> m_delegate;
+    std::shared_ptr<SceneStack> m_sceneStack;
 
-    std::shared_ptr<Scene> m_currentScene;
 public: 
     std::shared_ptr<InputRouter> m_inputRouter;
     virtual void Tick(Time &deltaTime);
     virtual void Draw();
+
+    //TODO: is this the proper return type?
+    //TODO: Maybe Scenes should be friends to avoid these getters?
+    const std::shared_ptr<SceneStack> GetSceneStack() { return m_sceneStack; }
+    const std::shared_ptr<InputRouter> GetInputRouter() { return m_inputRouter; }
 
 private:
     GLFWwindow* m_window;

@@ -4,7 +4,7 @@
 class DemoScene : public citadel::Scene
 {
 public:
-    DemoScene();
+    DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack);
 
     void Tick(const citadel::Time& deltaTime) override;
     void Draw() override;

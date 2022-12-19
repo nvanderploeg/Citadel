@@ -7,8 +7,13 @@
 //
 
 #include "scene.h"
+#include "sceneStack.h"
 
 namespace citadel
 {
-
+	Scene::Scene(const std::shared_ptr<SceneStack>& sceneStack)
+		: m_sceneStack(sceneStack)
+	{
+		m_registry = std::make_shared<ecs::Registry>();
+	}
 }

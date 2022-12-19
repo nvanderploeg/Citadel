@@ -30,6 +30,7 @@
 #include "input/inputRouter.h"
 
 #include "scene.h"
+#include "sceneStack.h"
 
 using namespace std;
 
@@ -61,6 +62,7 @@ bool CitadelGame::Init(const filesystem::path& configPath)
     m_ready = true;
     m_gameConfig = make_shared<GameConfig>(configPath);
     //m_camera = make_shared<Camera>();
+    m_sceneStack = make_shared<SceneStack>();
 
     if (!glfwInit())
     {
@@ -107,7 +109,11 @@ void CitadelGame::Setup()
     // TODO use a logging system
     cout << "SETUP ok." << endl;
 
-    if (m_delegate) {
+    if (m_delegate)
+    {
+        //TODO: this should go wherever the Camera class ends up
+        VulkanGraphics::Instance()->SetFoV(90.f);
+
         m_delegate->OnGameDidFinishInitialization(this);
     }
 }
@@ -134,14 +140,14 @@ void CitadelGame::TearDown()
     cout << "ok." << endl;
 }
 
-void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
-{
-    scene->FreeInput(m_inputRouter);
-    m_currentScene = scene;
-    m_currentScene->BindInput(m_inputRouter);
-    //TODO: this should go wherever the Camera class ends up
-    VulkanGraphics::Instance()->SetFoV(90.f);
-}
+//void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
+//{
+//    scene->FreeInput(m_inputRouter);
+//    m_currentScene = scene;
+//    m_currentScene->BindInput(m_inputRouter);
+//    //TODO: this should go wherever the Camera class ends up
+//    VulkanGraphics::Instance()->SetFoV(90.f);
+//}
 
 bool CitadelGame::Running() 
 {
@@ -199,22 +205,17 @@ int CitadelGame::run()
 
 void CitadelGame::Tick(Time &deltaTime) 
 {
-    //Update game scenes!
-    if (m_currentScene) {
-        m_currentScene->Tick(deltaTime);
-    }
+    m_sceneStack->Tick(deltaTime);
 }
 
 void CitadelGame::Draw() 
 {
-
     //Compile frame
     //VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
     VulkanGraphics::Instance()->StartDraw();
 
-    if (m_currentScene) {
-        m_currentScene->Draw();
-    }
+    m_sceneStack->Draw();
+
     //Tell the graphics engine to render it!
     VulkanGraphics::Instance()->SubmitDraw();
 }

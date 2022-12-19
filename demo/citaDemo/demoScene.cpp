@@ -1,11 +1,7 @@
 
 #include "demoScene.h"
 #include "camera.h"
-#include "graphics/graphics.h"
-
-#include "citadelSystem.h"
-#include "citadelECS.h"
-#include "citadel/input/inputRouter.h"
+#include "citadel.h"
 
 #include "transformComponent.h"
 
@@ -47,8 +43,8 @@ struct PlayerInputComponent
     bool isGrounded;
 };
 
-DemoScene::DemoScene()
-    :Scene()
+DemoScene::DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack)
+    : Scene(sceneStack)
 {
     auto entity = m_registry->CreateEntity();
     auto transform = m_registry->AddComponent<TransformComponent>(entity);
