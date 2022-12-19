@@ -7,28 +7,32 @@
 //
 #pragma once
 
-#include "tickable.h"
-#include "ecs/registry.h"
-
 #include "cTime.h"
 #include "renderer.h"
+#include "ecs/registry.h"
 
 namespace citadel 
 {
     class InputRouter;
+    class SceneStack;
 
-    class Scene : public ITickable
+    class Scene
     {
     protected:
         std::shared_ptr<ecs::Registry> m_registry;
         std::shared_ptr<Renderer> m_renderer;
+        std::shared_ptr<SceneStack> m_sceneStack;
+
     public:
-        Scene() { m_registry = std::make_shared<ecs::Registry>(); }
+        Scene(const std::shared_ptr<SceneStack>& sceneStack);
         virtual void Tick(const Time& deltaTime) = 0;
         virtual void Draw() = 0;
 
         virtual void BindInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
         virtual void FreeInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
+
+        virtual void OnEnter() = 0;
+        virtual void OnExit() = 0;
     };
 
 } // namespace citadel

@@ -8,5 +8,7 @@
 #pragma once
 
 #include "citadelSystem.h"
+#include "graphics/graphics.h"
 #include "citadelECS.h"
-#include "game/citadelGame.h"
+#include "citadelGame.h"
+#include "input/inputRouter.h"

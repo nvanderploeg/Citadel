@@ -1,15 +1,7 @@
 
 #include "demoScene.h"
 #include "camera.h"
-
-//#include <iostream>
-
-//#include <glm/glm.hpp>
-//#include <glm/gtc/quaternion.hpp>
-
-#include "citadelSystem.h"
-#include "citadelECS.h"
-#include "citadel/input/inputRouter.h"
+#include "citadel.h"
 
 #include "transformComponent.h"
 
@@ -52,8 +44,8 @@ struct PlayerInputComponent
     bool isGrounded;
 };
 
-DemoScene::DemoScene()
-    :Scene()
+DemoScene::DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack)
+    : Scene(sceneStack)
 {
     m_renderer = std::make_shared<citadel::Renderer>(citadel::GraphicsCore::Instance());
     auto entity = m_registry->CreateEntity();
@@ -275,4 +267,12 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
         auto transform = m_registry->GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
     }
+}
+
+void DemoScene::OnEnter()
+{
+}
+
+void DemoScene::OnExit()
+{
 }
