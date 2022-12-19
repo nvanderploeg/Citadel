@@ -11,6 +11,10 @@ public:
 
     void BindInput(const std::shared_ptr<citadel::InputRouter>& inputRouter) override;
     void FreeInput(const std::shared_ptr<citadel::InputRouter>& inputRouter) override;
+    
+    void OnEnter() override;
+    void OnExit() override;
+
 
 private:
     citadel::Time timer;

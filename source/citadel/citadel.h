@@ -9,4 +9,4 @@
 
 #include "citadelSystem.h"
 #include "citadelECS.h"
-#include "game/citadelGame.h"
+#include "citadelGame.h"

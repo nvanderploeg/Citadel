@@ -1,11 +1,7 @@
 
 #include "demoScene.h"
 #include "camera.h"
-
-//#include <iostream>
-
-//#include <glm/glm.hpp>
-//#include <glm/gtc/quaternion.hpp>
+#include "graphics/graphics.h"
 
 #include "citadelSystem.h"
 #include "citadelECS.h"
@@ -268,4 +264,12 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
         auto transform = m_registry->GetComponent<TransformComponent>(entity);
         transform->position += moveDirection;
     }
+}
+
+void DemoScene::OnEnter()
+{
+}
+
+void DemoScene::OnExit()
+{
 }

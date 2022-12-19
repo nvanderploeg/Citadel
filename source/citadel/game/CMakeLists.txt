@@ -15,4 +15,6 @@ gameObject.cpp
 gameObject.h
 scene.cpp
 scene.h
+sceneStack.cpp
+sceneStack.h
 )
