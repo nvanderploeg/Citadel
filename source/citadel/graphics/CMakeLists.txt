@@ -10,8 +10,8 @@ camera.cpp
 camera.h
 formatSupport.cpp
 formatSupport.h
-graphics.cpp
-graphics.h
+graphicsCore.cpp
+graphicsCore.h
 imageView.cpp
 imageView.h
 meshData.h

@@ -8,18 +8,19 @@
 #pragma once
 
 #include "cTime.h"
+#include "renderer.h"
 #include "ecs/registry.h"
 
 namespace citadel 
 {
     class InputRouter;
-    class ecs::Registry;
     class SceneStack;
 
     class Scene
     {
     protected:
         std::shared_ptr<ecs::Registry> m_registry;
+        std::shared_ptr<Renderer> m_renderer;
         std::shared_ptr<SceneStack> m_sceneStack;
 
     public:

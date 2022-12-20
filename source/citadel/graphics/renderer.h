@@ -1,39 +1,48 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "meshData.h"
-#include "swapchain.h"
+#include "graphicsCore.h"
 
 namespace citadel
 {
 
 class Renderer
 {
-    VkDevice device; 
-    VkPhysicalDevice physicalDevice;
-    VkCommandPool commandPool;
+    GraphicsCore* m_graphics;
 
-    uint32_t imageIndex;
-    SwapChain swapChain;
-    std::vector<VkFramebuffer> swapChainFramebuffers;
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+    VkRenderPass renderPass;
+    // VkDescriptorSetLayout descriptorSetLayout;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+    std::vector<VkFramebuffer> framebuffers;
+    SwapChainRecreatedCallback m_recreateCallback;
 
-    void CreateRenderPass(VkSampleCountFlagBits samples);
+    void CreateRenderPass();
+    void CreateGraphicsPipeline(const std::string& vertShader, const std::string& fragShader);
+    void CreateFramebuffers();
+    void CleanupFrameBuffers();
 
-    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    UniformBufferObject m_ubo;
+    float m_fieldOfViewDegrees = 45.0f;
+    float m_cameraNearPlane = 5.0f;
+    float m_cameraFarPlane = 100.f;
 
+    void RecaluclateProjection();
+
+    void StartCommandBuffer(VkCommandBuffer commandBuffer, uint32_t _imageIndex);
+
+    void Init();
 public:
-    Renderer(VkDevice _device, VkPhysicalDevice _physicalDevice, VkCommandPool _commandPool);
+    Renderer(GraphicsCore* graphics);
     virtual ~Renderer();
 
-    void BeginFrame();
+    void Prepare();
     void Add(const RenderPayload& payload);
-    void EndFrame();
+    void Submit();
+
+    void SetViewMatrix(glm::mat4 matrix);
+    void SetFoV(float radians);
+    void SetNearPlane(float nearPlane);
+    void SetFarPlane(float farPlane);
 };
 
 

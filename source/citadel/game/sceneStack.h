@@ -6,6 +6,7 @@
 //  Copyright � 2022 Floating Citadel Games. All rights reserved.
 //
 #pragma once
+#include <memory>
 
 #include "cTime.h"
 

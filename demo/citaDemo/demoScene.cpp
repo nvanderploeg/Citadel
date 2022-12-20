@@ -9,6 +9,7 @@ using namespace std;
 
 namespace {
     const std::string VIKING_MODEL_PATH = "models/viking_room.obj";
+    const std::string VIKING_TEXTURE_PATH = "textures/viking_room.png";
     const std::vector<citadel::Vertex> vertices = {
         {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
@@ -46,12 +47,13 @@ struct PlayerInputComponent
 DemoScene::DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack)
     : Scene(sceneStack)
 {
+    m_renderer = std::make_shared<citadel::Renderer>(citadel::GraphicsCore::Instance());
     auto entity = m_registry->CreateEntity();
     auto transform = m_registry->AddComponent<TransformComponent>(entity);
     //auto rotate = registry.AddComponent<Rotate>(entity);
     //rotate->speed = 0.5;
     auto mesh = m_registry->AddComponent<citadel::MeshData>(entity);
-    *mesh = citadel::VulkanGraphics::Instance()->Load(VIKING_MODEL_PATH, "");
+    *mesh = citadel::GraphicsCore::Instance()->Load(VIKING_MODEL_PATH, VIKING_TEXTURE_PATH);
     auto camera = m_registry->AddComponent<citadel::Camera>(entity);
 
     auto entity2 = m_registry->CreateEntity();
@@ -69,10 +71,10 @@ DemoScene::DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack)
     auto mesh3 = m_registry->AddComponent<citadel::MeshData>(entity3);
     m_registry->AddComponent<Bounce>(entity3);
     transform3->position.z -= 1.5;
-    mesh3->vertexBuffer = citadel::VulkanGraphics::Instance()->CreateVertexBuffer(vertices);
-    mesh3->indexBuffer = citadel::VulkanGraphics::Instance()->CreateIndexBuffer(indices);
+    mesh3->vertexBuffer = citadel::GraphicsCore::Instance()->CreateVertexBuffer(vertices);
+    mesh3->indexBuffer = citadel::GraphicsCore::Instance()->CreateIndexBuffer(indices);
     mesh3->indexCount = indices.size();
-    mesh3->texture = citadel::VulkanGraphics::Instance()->CreateTexture("textures/nan0.png");
+    mesh3->texture = citadel::GraphicsCore::Instance()->CreateTexture("textures/nan0.png");
 
     //auto player = registry.CreateEntity();
     //auto playerTransform = registry.AddComponent<TransformComponent>(player);
@@ -138,27 +140,32 @@ void DemoScene::Draw()
 {
     auto cameraID = *(citadel::ecs::Filter<TransformComponent, citadel::Camera>(m_registry.get()).begin());
     auto camera = m_registry->GetComponent<citadel::Camera>(cameraID);
-    citadel::VulkanGraphics::Instance()->SetViewMatrix(camera->GetViewMatrix());
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(m_registry.get()))
-    {
-        auto transform = m_registry->GetComponent<TransformComponent>(entity);
-        auto mesh = m_registry->GetComponent<citadel::MeshData>(entity);
-        
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0 * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, transform->position);
+    m_renderer->SetViewMatrix(camera->GetViewMatrix());
 
-        // std::cout << "drawing entity " << entity << std::endl;
-        citadel::RenderPayload payload({model, *mesh});
+    m_renderer->Prepare();
 
-        citadel::VulkanGraphics::Instance()->AddToDraw(payload);
-    }
+        for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, citadel::MeshData>(m_registry.get()))
+        {
+            auto transform = m_registry->GetComponent<TransformComponent>(entity);
+            auto mesh = m_registry->GetComponent<citadel::MeshData>(entity);
+            
+            glm::mat4 model = glm::rotate(glm::mat4(1.0f), 0 * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::translate(model, transform->position);
 
-    for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
-    {
-        auto transform = m_registry->GetComponent<TransformComponent>(entity);
-        // std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
-    }
+            // std::cout << "drawing entity " << entity << std::endl;
+            citadel::RenderPayload payload({model, *mesh});
+
+            m_renderer->Add(payload);
+        }
+
+        for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()))
+        {
+            auto transform = m_registry->GetComponent<TransformComponent>(entity);
+            // std::cout << "player (id: " << entity << ") position: {" << transform->position.x << ", " << transform->position.y << ", " << transform->position.z << "}\n";
+        }
+    
+    m_renderer->Submit();
 }
 
 void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRouter)
@@ -238,7 +245,7 @@ void DemoScene::BindInput(const std::shared_ptr<citadel::InputRouter>& inputRout
             fieldOfView += (scrollData.yOffset > 0) ? 5 : -5;
             fieldOfView = std::max(45.f, fieldOfView);
             fieldOfView = std::min(120.f, fieldOfView);
-            citadel::VulkanGraphics::Instance()->SetFoV(fieldOfView);
+            m_renderer->SetFoV(fieldOfView);
             return true;
         }
         return false;

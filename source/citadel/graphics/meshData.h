@@ -12,7 +12,6 @@ struct BoundBuffer
     VkDevice device;
     VkBuffer buffer;
     VkDeviceMemory bufferMemory;
-    ~BoundBuffer();
 };
 
 struct MeshData

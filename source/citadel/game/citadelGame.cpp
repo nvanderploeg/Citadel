@@ -24,7 +24,7 @@
 #include "citadelGame.h"
 #include "gameConfig.h"
 #include "camera.h"
-#include "graphics.h"
+#include "graphicsCore.h"
 #include "windowProperties.h"
 
 #include "input/inputRouter.h"
@@ -102,7 +102,8 @@ void CitadelGame::Setup()
     m_sceneStack->SetInputRouter(m_inputRouter);
 
     glfwMakeContextCurrent(m_window);
-    VulkanGraphics::Instance()->Init(m_window);
+    m_graphicsCore = new GraphicsCore();
+    m_graphicsCore->Init(m_window);
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window,int width, int height) {
         //TODO: magic a way to call the graphics that a resize happened
@@ -130,7 +131,7 @@ void CitadelGame::TearDown()
     bool savedGameConfig = m_gameConfig->Save();
     cout << (savedGameConfig ? "ok." : "error.") << endl;
 
-    VulkanGraphics::Instance()->Cleanup();
+    m_graphicsCore->Cleanup();
     assert(m_window);
     glfwDestroyWindow(m_window);
     glfwTerminate();
@@ -200,13 +201,11 @@ void CitadelGame::Tick(Time &deltaTime)
 
 void CitadelGame::Draw() 
 {
-    //Compile frame
-    //VulkanGraphics::Instance()->SetViewMatrix(m_camera->GetViewMatrix());
-    VulkanGraphics::Instance()->StartDraw();
+    m_graphicsCore->PrepareFrame();
 
     m_sceneStack->Draw();
 
-    //Tell the graphics engine to render it!
-    VulkanGraphics::Instance()->SubmitDraw();
+    m_graphicsCore->EndFrame();
 }
+
 } //namespace citadel
