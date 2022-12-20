@@ -38,4 +38,11 @@ namespace citadel::ecs
         freeEntities.push_back(entityIndex);
     }
 
+    void Registry::Clear()
+    {
+        componentPools.clear();
+        entities.clear();
+        freeEntities.clear();
+    }
+
 } // namespace citadel::ecs

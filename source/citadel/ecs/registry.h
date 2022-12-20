@@ -31,6 +31,7 @@ namespace citadel::ecs
     public:
         EntityID CreateEntity();
         void DestroyEntity(EntityID id);
+        void Clear();
 
         template<typename T>
         inline T* AddComponent(EntityID id)
