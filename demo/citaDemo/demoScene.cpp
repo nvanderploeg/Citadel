@@ -262,10 +262,3 @@ void DemoScene::PlayerInputSystem(const citadel::Time& deltaTime)
     }
 }
 
-void DemoScene::OnEnter()
-{
-}
-
-void DemoScene::OnExit()
-{
-}

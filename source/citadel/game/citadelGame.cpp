@@ -99,6 +99,8 @@ void CitadelGame::Setup()
     m_inputRouter = std::make_shared<InputRouter>();
     m_inputRouter->BindToGLFW(m_window);
 
+    m_sceneStack->SetInputRouter(m_inputRouter);
+
     glfwMakeContextCurrent(m_window);
     VulkanGraphics::Instance()->Init(m_window);
 
@@ -111,9 +113,6 @@ void CitadelGame::Setup()
 
     if (m_delegate)
     {
-        //TODO: this should go wherever the Camera class ends up
-        VulkanGraphics::Instance()->SetFoV(90.f);
-
         m_delegate->OnGameDidFinishInitialization(this);
     }
 }
@@ -139,15 +138,6 @@ void CitadelGame::TearDown()
     // TODO: logging
     cout << "ok." << endl;
 }
-
-//void CitadelGame::SetScene(const std::shared_ptr<Scene>& scene)
-//{
-//    scene->FreeInput(m_inputRouter);
-//    m_currentScene = scene;
-//    m_currentScene->BindInput(m_inputRouter);
-//    //TODO: this should go wherever the Camera class ends up
-//    VulkanGraphics::Instance()->SetFoV(90.f);
-//}
 
 bool CitadelGame::Running() 
 {

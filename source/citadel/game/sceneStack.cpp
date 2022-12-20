@@ -6,11 +6,19 @@
 //  Copyright � 2022 Floating Citadel Games. All rights reserved.
 //
 
-#include "sceneStack.h"
 #include "scene.h"
+#include "inputRouter.h"
+#include "sceneStack.h"
+
 
 namespace citadel
 {
+	SceneStack::SceneStack(const std::shared_ptr<InputRouter>& inputRouter)
+		: m_inputRouter(inputRouter)
+	{
+		// empty
+	}
+
 	void SceneStack::Tick(const Time& deltaTime)
 	{
 		m_scenes.back()->Tick(deltaTime);
@@ -32,12 +40,18 @@ namespace citadel
 	void SceneStack::Push(std::unique_ptr<Scene> scene)
 	{
 		m_scenes.emplace_back(std::move(scene));
-		m_scenes.back()->OnEnter();
+		m_scenes.back()->OnEnter(m_inputRouter);
 	}
 
 	void SceneStack::Pop()
 	{
-		m_scenes.back()->OnExit();
+		m_scenes.back()->OnExit(m_inputRouter);
 		m_scenes.pop_back();
 	}
+
+	void SceneStack::SetInputRouter(const std::shared_ptr<InputRouter>& inputRouter)
+	{
+		m_inputRouter = inputRouter;
+	}
+
 } // namespace citadel

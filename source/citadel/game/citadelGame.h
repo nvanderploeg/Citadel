@@ -48,10 +48,7 @@ public:
     virtual void Tick(Time &deltaTime);
     virtual void Draw();
 
-    //TODO: is this the proper return type?
-    //TODO: Maybe Scenes should be friends to avoid these getters?
     const std::shared_ptr<SceneStack> GetSceneStack() { return m_sceneStack; }
-    const std::shared_ptr<InputRouter> GetInputRouter() { return m_inputRouter; }
 
 private:
     GLFWwindow* m_window;

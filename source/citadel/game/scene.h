@@ -30,8 +30,8 @@ namespace citadel
         virtual void BindInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
         virtual void FreeInput(const std::shared_ptr<InputRouter>& inputRouter) = 0;
 
-        virtual void OnEnter() = 0;
-        virtual void OnExit() = 0;
+        virtual void OnEnter(const std::shared_ptr<InputRouter>& inputRouter);
+        virtual void OnExit(const std::shared_ptr<InputRouter>& inputRouter);
     };
 
 } // namespace citadel
