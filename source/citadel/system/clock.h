@@ -2,6 +2,8 @@
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 
+#include "system/cTime.h"
+
 namespace citadel {
 
 	/// \class citadel::Clock
@@ -30,6 +32,7 @@ namespace citadel {
 	{
 	protected:
 		Time m_startTime; ///< Time of last restart, in microseconds
+		bool m_isActive;
 
 	public:
 		/// \brief Default constructor.
@@ -48,6 +51,8 @@ namespace citadel {
 		/// It also returns the time elapsed since the clock was started.
 		/// \return Time elapsed
 		Time restart();
+		Time start();
+		Time stop();
 
 	}; // Clock
 

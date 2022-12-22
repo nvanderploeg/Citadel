@@ -82,12 +82,15 @@ DemoScene::DemoScene(const std::shared_ptr<citadel::SceneStack>& sceneStack)
     playerInputComponent->isGrounded = true;
     playerInputComponent->isRunning = false;
 
+    timer.Every(3, []() {std::cout << "every 3 seconds\n"; }).start();
+
     std::cout << "DemoScene() finish" << std::endl;
 }
 
 
 void DemoScene::Tick(const citadel::Time &deltaTime)
 {
+    timer.Tick(deltaTime);
     PlayerInputSystem(deltaTime);
 
     auto playerID = *(citadel::ecs::Filter<TransformComponent, PlayerInputComponent>(m_registry.get()).begin());
@@ -99,7 +102,7 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
     camera->m_position = playerTransform->position + glm::vec3(5, 5, 10);
     camera->m_target = playerTransform->position;
 
-    timer += deltaTime;
+    rotateTimer += deltaTime;
 
     for (citadel::ecs::EntityID entity : citadel::ecs::Filter<TransformComponent, Bounce>(m_registry.get()))
     {
@@ -123,7 +126,7 @@ void DemoScene::Tick(const citadel::Time &deltaTime)
         if (transform == nullptr)
             continue;
         
-        auto currentTime = timer.asSeconds() * rotate->speed;
+        auto currentTime = rotateTimer.asSeconds() * rotate->speed;
         currentTime -= (int)currentTime;
 
         auto angle = lerp(0.0f, 6.28f, currentTime);

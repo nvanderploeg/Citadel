@@ -1,5 +1,6 @@
 
 #include "citadel/game/scene.h"
+#include "citadel/system/timer.h"
 
 class DemoScene : public citadel::Scene
 {
@@ -13,7 +14,8 @@ public:
     void FreeInput(const std::shared_ptr<citadel::InputRouter>& inputRouter) override;
 
 private:
-    citadel::Time timer;
+    citadel::Timer timer;
+    citadel::Time rotateTimer;
 
     float fieldOfView = 90.f;
 
