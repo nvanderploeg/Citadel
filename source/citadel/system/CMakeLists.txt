@@ -17,6 +17,8 @@ resourcePath.h
 serializer.cpp
 serializer.h
 tickable.h
+timer.cpp
+timer.h
 types.h
 windowProperties.cpp
 windowProperties.h
