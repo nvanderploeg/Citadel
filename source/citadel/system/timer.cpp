@@ -4,14 +4,14 @@ namespace citadel
 {
 	void Timer::Tick(const Time& deltaTime)
 	{
-		if (!m_isActive)
+		if (!m_isActive || m_duration == Time::microseconds(0))
 			return;
 
 		m_progress += deltaTime;
 		while (m_progress >= m_duration)
 		{
 			m_progress -= m_duration;
-			m_lambda();
+			if (m_lambda) m_lambda();
 		}
 	}
 

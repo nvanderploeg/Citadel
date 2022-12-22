@@ -17,6 +17,8 @@ namespace citadel
 		virtual void Tick(const Time& deltaTime) override;
 
 		Timer& Every(f32 frequency, std::function<void(void)> lamda);
+
+		inline bool isActive() const { return m_isActive; }
 	};
 
 } // namespace Timer

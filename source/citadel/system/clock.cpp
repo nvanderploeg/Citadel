@@ -17,6 +17,7 @@ namespace citadel {
 
 	Time Clock::restart()
 	{
+		m_isActive = true;
 		Time now = Time::getCurrentTime();
 		Time elapsed = now - m_startTime;
 		m_startTime = now;
