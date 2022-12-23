@@ -14,8 +14,6 @@ cTime.cpp
 cTime.h
 JSONSerializable.h
 resourcePath.h
-random.cpp
-random.h
 serializer.cpp
 serializer.h
 tickable.h
