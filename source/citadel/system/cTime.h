@@ -2,7 +2,6 @@
 #ifndef __TIME_H__
 #define __TIME_H__
 
-#include "types.h"
 #include "JSONSerializable.h"
 
 namespace citadel
@@ -60,7 +59,7 @@ namespace citadel
 		Time();
 		
 		/// \brief Construct the time from a seconds value.
-		explicit Time(f32 seconds);
+		explicit Time(float seconds);
 
 		/// \brief Construct from a number of microseconds.
 		/// \param microseconds Number of microseconds
@@ -73,7 +72,7 @@ namespace citadel
 		/// \brief Return the time value as a number of seconds.
 		/// \return Time in seconds.
 		/// \see asMilliseconds, asMicroseconds
-		f32 asSeconds() const;
+		float asSeconds() const;
 
 		/// \brief Return the time value as a number of milliseconds.
 		/// \return Time in milliseconds.
@@ -94,7 +93,7 @@ namespace citadel
 		/// \param seconds Number of seconds.
 		/// \return Time value constructed from the amount of seconds.
 		/// \see milliseconds, microseconds
-		static Time seconds(f32 seconds);
+		static Time seconds(float seconds);
 
 		/// \brief Construct a time value from a number of milliseconds.
 		/// \param milliseconds Number of milliseconds.
@@ -191,77 +190,77 @@ namespace citadel
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left multiplied by \a right.
-	Time operator *  (Time left, f32 right);
+	Time operator *  (Time left, float right);
 
 	/// \relates Time
 	/// \brief Overload of binary * operator to scale a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left multiplied by \a right.
-	Time operator *  (Time left, s64 right);
-
-	/// \relates Time
-	/// \brief Overload of binary * operator to scale a time value.
-	/// \param left  Left operand (a number).
-	/// \param right Right operand (a time).
-	/// \return \a left multiplied by \a right.
-	Time operator *  (f32 left, Time right);
+	Time operator *  (Time left, int64_t right);
 
 	/// \relates Time
 	/// \brief Overload of binary * operator to scale a time value.
 	/// \param left  Left operand (a number).
 	/// \param right Right operand (a time).
 	/// \return \a left multiplied by \a right.
-	Time operator *  (s64 left, Time right);
+	Time operator *  (float left, Time right);
+
+	/// \relates Time
+	/// \brief Overload of binary * operator to scale a time value.
+	/// \param left  Left operand (a number).
+	/// \param right Right operand (a time).
+	/// \return \a left multiplied by \a right.
+	Time operator *  (int64_t left, Time right);
 
 	/// \relates Time
 	/// \brief Overload of binary *= operator to scale/assign a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left multiplied by \a right.
-	Time& operator*= (Time &left, f32 right);
+	Time& operator*= (Time &left, float right);
 
 	/// \relates Time
 	/// \brief Overload of binary *= operator to scale/assign a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left multiplied by \a right.
-	Time& operator*= (Time &left, s64 right);
+	Time& operator*= (Time &left, int64_t right);
 
 	/// \relates Time
 	/// \brief Overload of binary *= operator to scale/assign a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left multiplied by \a right.
-	Time operator /  (Time left, f32 right);
+	Time operator /  (Time left, float right);
 
 	/// \relates Time
 	/// \brief Overload of binary / operator to scale a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left divided by \a right.
-	Time operator /  (Time left, s64 right);
+	Time operator /  (Time left, int64_t right);
 
 	/// \relates Time
 	/// \brief Overload of binary /= operator to scale/assign a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left divided by \a right.
-	Time& operator/= (Time &left, f32 right);
+	Time& operator/= (Time &left, float right);
 
 	/// \relates Time
 	/// \brief Overload of binary /= operator to scale/assign a time value.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a number).
 	/// \return \a left divided by \a right.
-	Time& operator/= (Time &left, s64 right);
+	Time& operator/= (Time &left, int64_t right);
 
 	/// \relates Time
 	/// \brief Overload of binary / operator to compute the ratio of two time values.
 	/// \param left  Left operand (a time).
 	/// \param right Right operand (a time).
 	/// \return \a left divided by \a right.
-	f32 operator  /  (Time left, Time right);
+	float operator  /  (Time left, Time right);
 
 	/// \relates Time
 	/// \brief Overload of binary % operator to compute remainder of a time value.

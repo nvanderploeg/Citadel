@@ -17,7 +17,7 @@ namespace citadel {
 
 	}
 
-	Time::Time(f32 seconds)
+	Time::Time(float seconds)
 		: m_microseconds(static_cast<int64_t>(seconds * 1000000))
 	{
 
@@ -25,14 +25,14 @@ namespace citadel {
 
 	// CONVERSION METHODS
 
-	f32 Time::asSeconds() const
+	float Time::asSeconds() const
 	{
 		return m_microseconds / 1000000.0f;
 	}
 
 	int32_t Time::asMilliseconds() const
 	{
-		return static_cast<s32>(m_microseconds / 1000);
+		return static_cast<int32_t>(m_microseconds / 1000);
 	}
 
     int64_t Time::asMicroseconds() const
@@ -47,7 +47,7 @@ namespace citadel {
 
 	// STATIC METHODS
 
-	Time Time::seconds(f32 seconds)
+	Time Time::seconds(float seconds)
 	{
 		return Time(seconds);
 	}
@@ -130,57 +130,57 @@ namespace citadel {
 		return left = left + right;
 	}
 
-	Time operator *  (Time left, f32 right)
+	Time operator *  (Time left, float right)
 	{
 		return Time::seconds(left.asSeconds() * right);
 	}
 
-	Time operator *  (Time left, s64 right)
+	Time operator *  (Time left, int64_t right)
 	{
 		return Time::microseconds(left.asMicroseconds() * right);
 	}
 
-	Time operator *  (f32 left, Time right)
+	Time operator *  (float left, Time right)
 	{
 		return right * left;
 	}
 
-	Time operator *  (s64 left, Time right)
+	Time operator *  (int64_t left, Time right)
 	{
 		return right * left;
 	}
 
-	Time& operator*= (Time &left, f32 right)
+	Time& operator*= (Time &left, float right)
 	{
 		return left = left * right;
 	}
 
-	Time& operator*= (Time &left, s64 right)
+	Time& operator*= (Time &left, int64_t right)
 	{
 		return left = left * right;
 	}
 
-	Time operator /  (Time left, f32 right)
+	Time operator /  (Time left, float right)
 	{
 		return Time::seconds(left.asSeconds() / right);
 	}
 
-	Time operator /  (Time left, s64 right)
+	Time operator /  (Time left, int64_t right)
 	{
 		return Time::microseconds(left.asMicroseconds() / right);
 	}
 
-	Time& operator/= (Time &left, f32 right)
+	Time& operator/= (Time &left, float right)
 	{
 		return left = left / right;
 	}
 
-	Time& operator/= (Time &left, s64 right)
+	Time& operator/= (Time &left, int64_t right)
 	{
 		return left = left / right;
 	}
 
-	f32 operator  /  (Time left, Time right)
+	float operator  /  (Time left, Time right)
 	{
 		return left.asSeconds() / right.asSeconds();
 	}

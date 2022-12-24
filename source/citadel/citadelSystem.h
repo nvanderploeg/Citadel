@@ -20,7 +20,6 @@
 
 //Citadel System
 #include "system/resourcePath.h"
-#include "system/types.h"
 #include "system/JSONSerializable.h"
 #include "system/serializer.h"
 #include "system/cTime.h"

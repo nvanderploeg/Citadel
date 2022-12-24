@@ -15,7 +15,7 @@ namespace citadel
 		}
 	}
 
-	Timer& Timer::Every(f32 frequency, std::function<void(void)> lambda)
+	Timer& Timer::Every(float frequency, std::function<void(void)> lambda)
 	{
 		m_duration = Time::seconds(frequency);
 		m_lambda = std::move(lambda);
