@@ -232,8 +232,13 @@ namespace citadel
         }
         
 #ifdef __APPLE__ //If we are running on an APPLE device, this means we need to use Metal, or MoltenVK compatbility
+        
+        requiredExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+
+//        requiredExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
         requiredExtensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
         createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+                                        
 #endif
 
         createInfo.enabledExtensionCount = (uint32_t) requiredExtensions.size();

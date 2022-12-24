@@ -11,14 +11,14 @@ namespace citadel {
 
 	}
 
-	Time::Time(s64 microseconds)
+	Time::Time(int64_t microseconds)
 		: m_microseconds(microseconds)
 	{
 
 	}
 
 	Time::Time(f32 seconds)
-		: m_microseconds(static_cast<s64>(seconds * 1000000))
+		: m_microseconds(static_cast<int64_t>(seconds * 1000000))
 	{
 
 	}
@@ -30,19 +30,19 @@ namespace citadel {
 		return m_microseconds / 1000000.0f;
 	}
 
-	s32 Time::asMilliseconds() const
+	int32_t Time::asMilliseconds() const
 	{
 		return static_cast<s32>(m_microseconds / 1000);
 	}
 
-	s64 Time::asMicroseconds() const
+    int64_t Time::asMicroseconds() const
 	{
 		return m_microseconds;
 	}
 
 	Time Time::getCurrentTime()
 	{
-		return Time(static_cast<s64>(std::chrono::high_resolution_clock::now().time_since_epoch().count() / 1000));
+		return Time(static_cast<int64_t>(std::chrono::high_resolution_clock::now().time_since_epoch().count() / 1000));
 	}
 
 	// STATIC METHODS
@@ -52,12 +52,12 @@ namespace citadel {
 		return Time(seconds);
 	}
 
-	Time Time::milliseconds(s32 milliseconds)
+	Time Time::milliseconds(int32_t milliseconds)
 	{
-		return Time(static_cast<s64>(milliseconds));
+		return Time(static_cast<int64_t>(milliseconds));
 	}
 
-	Time Time::microseconds(s64 microseconds)
+	Time Time::microseconds(int64_t microseconds)
 	{
 		return Time(microseconds);
 	}

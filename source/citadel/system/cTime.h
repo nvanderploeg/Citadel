@@ -64,7 +64,7 @@ namespace citadel
 
 		/// \brief Construct from a number of microseconds.
 		/// \param microseconds Number of microseconds
-		explicit Time(s64 microseconds);
+		explicit Time(int64_t microseconds);
 
 		virtual void serialize(Json::Value& jValue);
 
@@ -78,12 +78,12 @@ namespace citadel
 		/// \brief Return the time value as a number of milliseconds.
 		/// \return Time in milliseconds.
 		/// \see asSeconds, asMicroseconds
-		s32 asMilliseconds() const;
+        int32_t asMilliseconds() const;
 
 		/// \brief Return the time value as a number of microseconds.
 		/// \return Time in microseconds.
 		/// \see asSeconds, asMilliseconds
-		s64 asMicroseconds() const;
+        int64_t asMicroseconds() const;
 
 		/// \brief Get the current system time.
 		/// \note This function uses std::chrono and the std::chrono::high_resolution_clock.
@@ -100,13 +100,13 @@ namespace citadel
 		/// \param milliseconds Number of milliseconds.
 		/// \return Time value constructed from the amount of milliseconds.
 		/// \see seconds, microseconds
-		static Time milliseconds(s32 milliseconds);
+		static Time milliseconds(int32_t milliseconds);
 
 		/// \brief Construct a time value from a number of microseconds.
 		/// \param microseconds Number of microseconds.
 		/// \return Time value constructed from the amount of microseconds.
 		/// \see seconds, milliseconds
-		static Time microseconds(s64 microseconds);
+		static Time microseconds(int64_t microseconds);
 
 	}; // class Time
 
