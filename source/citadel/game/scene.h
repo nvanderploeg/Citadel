@@ -25,6 +25,7 @@ namespace citadel
 
     public:
         Scene(const std::shared_ptr<SceneStack>& sceneStack);
+        virtual ~Scene() = default;
         virtual void Tick(const Time& deltaTime) = 0;
         virtual void Draw() = 0;
 

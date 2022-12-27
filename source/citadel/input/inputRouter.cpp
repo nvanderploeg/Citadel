@@ -55,9 +55,15 @@ namespace citadel
             //std::cout << "Key Callback" << std::endl << key << "," << scancode << "," << action << "," << mods << std::endl;
         });
 
-        glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+        glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
             InputRouter * router = static_cast<InputRouter*>(glfwGetWindowUserPointer(window));
-            // std::cout << "MousePos Callback" << std::endl << "(" << x << ", " << y << ")" << std::endl;
+//            std::cout << "cursorPos callback" << std::endl << "(" << xoffset << ", " << yoffset << ")" << std::endl;
+            for (auto& callback : router->callbackMap["mouseMoved"]) {
+                InputEventData data(MouseMoveEventData({(int)xoffset,(int)yoffset}));
+                if(callback(data)) {
+                    break;
+                }
+            }
         });
 
         glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
