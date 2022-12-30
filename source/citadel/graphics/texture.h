@@ -16,7 +16,7 @@ struct Texture
     VkImageView imageView;
     VkSampler sampler;
 
-    //Is an array to hold one set per swapChain frame
+    //Is an array to, one set per swapChain frame 
     std::vector<VkDescriptorSet> descriptorSets;
 };
 

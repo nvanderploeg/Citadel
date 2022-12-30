@@ -19,7 +19,7 @@ namespace citadel
         //object's Parent, may be null
         GameObject* m_parent;
 
-        //Object's children, must not be null
+        //Object's children, items must not be null
         std::vector<GameObject*> m_children;
 
         //TransformComponent* m_transform;

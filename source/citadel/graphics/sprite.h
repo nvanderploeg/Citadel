@@ -14,7 +14,7 @@ class Sprite
     glm::vec3 scale;
 public:
     Sprite() = default;
-    virtual ~Sprite();
+    virtual ~Sprite() = default;
     
     RenderPayload GetRenderPayload();
 };
