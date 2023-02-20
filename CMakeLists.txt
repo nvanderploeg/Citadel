@@ -10,6 +10,10 @@ set(GLFW_BUILD_DOCS, OFF)
 add_library(citadel STATIC)
 
 add_subdirectory(source)
+
+get_target_property(CITADEL_SOURCES citadel SOURCES)
+source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${CITADEL_SOURCES})
+
 add_subdirectory(external/jsoncpp)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)
