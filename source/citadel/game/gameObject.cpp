@@ -22,14 +22,14 @@ namespace citadel
         //Use this opportunity to teardown components or save data.
     }
 
-    void GameObject::Update(const Time &delta)
+    void GameObject::Tick(const Time& delta)
     {
         if (!isActive()) {
             return;
         }
 
         for (auto& child : m_children) {
-            child->Update(delta);
+            child->Tick(delta);
         }
     }
 

@@ -65,9 +65,9 @@ namespace citadel
 		/// \param microseconds Number of microseconds
 		explicit Time(int64_t microseconds);
 
-		virtual void serialize(Json::Value& jValue);
+		virtual void serialize(Json::Value& jValue) const override;
 
-		virtual void deserialize(const Json::Value& jValue);
+		virtual void deserialize(const Json::Value& jValue) override;
 
 		/// \brief Return the time value as a number of seconds.
 		/// \return Time in seconds.

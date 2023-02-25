@@ -11,7 +11,7 @@ namespace citadel {
     public:
         IJSONSerializable() = default;
         virtual ~IJSONSerializable() = default;
-        virtual void serialize(Json::Value& jValue) = 0;
+        virtual void serialize(Json::Value& jValue) const = 0;
         virtual void deserialize(const Json::Value& jValue) = 0;
         
     }; // class IJSONSerializable

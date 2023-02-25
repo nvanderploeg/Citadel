@@ -36,8 +36,8 @@ namespace citadel
 
         bool Save();
 
-        virtual void serialize(Json::Value& jValue);
-        virtual void deserialize(const Json::Value& jValue);
+        virtual void serialize(Json::Value& jValue) const override;
+        virtual void deserialize(const Json::Value& jValue) override;
     };
 }
 

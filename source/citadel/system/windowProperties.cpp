@@ -35,7 +35,7 @@ namespace citadel
 			maxFPS = DEFAULT_MAXFPS;
 	}
 
-	void WindowProperties::serialize(Json::Value& jValue)
+	void WindowProperties::serialize(Json::Value& jValue) const
 	{
 		jValue["width"] = width;
 		jValue["height"] = height;

@@ -64,7 +64,7 @@ namespace citadel {
 
 	// SERIALIZATION
 
-	void Time::serialize(Json::Value& jValue)
+	void Time::serialize(Json::Value& jValue) const
 	{
 		jValue["microseconds"] = (Json::UInt64) m_microseconds;
 	}

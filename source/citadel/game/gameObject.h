@@ -51,7 +51,7 @@ namespace citadel
         virtual void onEnteredScene();
         
         //Called each frame
-        virtual void Update(const Time &delta);
+        virtual void Tick(const Time& delta);
         
         //Called once before it is removed from the scene and is expected to deallocate
         //Use this method to teardown components or finalize data.

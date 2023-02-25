@@ -14,7 +14,7 @@ namespace citadel {
 		WindowProperties();
 		WindowProperties(uint32_t _width, uint32_t _height, const std::string & _title = "", uint32_t _maxFPS = 0);
 
-		virtual void serialize(Json::Value& jValue);
-		virtual void deserialize(const Json::Value& jValue);
+		virtual void serialize(Json::Value& jValue) const override;
+		virtual void deserialize(const Json::Value& jValue) override;
 	};
 } // namespace citadel

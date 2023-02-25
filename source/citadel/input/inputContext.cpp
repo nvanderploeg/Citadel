@@ -50,7 +50,7 @@ namespace citadel
         return Serializer::serialize(this, filepath);
     }
 
-    void InputContext::serialize(Json::Value& jValue)
+    void InputContext::serialize(Json::Value& jValue) const
     {
         // TODO:
         std::cout << "WARNING: InputContext::serialize is unimplemented.\n";

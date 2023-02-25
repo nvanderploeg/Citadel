@@ -8,5 +8,6 @@ PUBLIC
 add_subdirectory(ecs)
 add_subdirectory(game)
 add_subdirectory(graphics)
+add_subdirectory(gui)
 add_subdirectory(input)
 add_subdirectory(system)

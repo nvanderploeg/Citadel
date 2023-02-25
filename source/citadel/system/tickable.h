@@ -10,7 +10,7 @@ namespace citadel
     class ITickable
     {
     public:
-        virtual void Tick(const Time & deltaTime) = 0;
+        virtual void Tick(const Time& deltaTime) = 0;
         
     }; // class ITickable
     

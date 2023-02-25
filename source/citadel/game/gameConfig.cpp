@@ -54,7 +54,7 @@ namespace citadel
         return Serializer::serialize(this, filepath);
     }
 
-    void GameConfig::serialize(Json::Value& jValue)
+    void GameConfig::serialize(Json::Value& jValue) const
     {
         windowProperties->serialize(jValue["windowProperties"]);
         jValue["modelPath"] = modelPath;
