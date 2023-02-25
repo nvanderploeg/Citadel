@@ -16,9 +16,7 @@ namespace citadel::gui
 
     const std::string GUIButton::kOnClickEvent = "onClickedEvent";
 
-	GUIButton::GUIButton(): GUIObject(getType())
-    {
-    }
+	GUIButton::GUIButton(): GUIObject(getType()) { }
 
     std::shared_ptr<GUIObject> GUIButton::build(const Json::Value& objData, std::shared_ptr<GUIEnvironment> pEnv)
     {
@@ -42,8 +40,7 @@ namespace citadel::gui
         GUIObject::deserialize(jValue);
       
         Json::Value stateValues = jValue["states"];
-        if (stateValues != Json::nullValue) 
-		{
+        if (stateValues != Json::nullValue)  {
             setButtonState(BUTTONSTATE_OVER, stateValues["mouseOver"]);
             setButtonState(BUTTONSTATE_DOWN, stateValues["mouseDown"]);
             setButtonState(BUTTONSTATE_NORMAL, stateValues["default"]);
@@ -57,9 +54,9 @@ namespace citadel::gui
         if (jValue == Json::nullValue) {
             return;
         }
+        
         Json::Value renderValue = jValue["renderComponent"];
-        if (renderValue != Json::nullValue)
-        {
+        if (renderValue != Json::nullValue) {
             std::string renderID = renderValue.asString();
 //            Json::Value renderComponent = m_env->getRenderData(renderID);
 //            if (renderComponent != Json::nullValue)

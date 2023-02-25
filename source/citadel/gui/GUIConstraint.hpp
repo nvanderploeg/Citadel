@@ -20,11 +20,11 @@ enum GUIConstraintHook : int
     Bottom,
     Left,
     Right,
-    
 };
 
 struct GUIConstraint {
     std::weak_ptr<GUIObject> target;
+    std::string target_id;
     GUIConstraintHook sourceHook;
     GUIConstraintHook targetHook;
     

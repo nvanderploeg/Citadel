@@ -8,6 +8,7 @@
 
 
 #include <gui/GUIObject.hpp>
+#include <gui/GUIEnvironment.hpp>
 
 #include <system/serializer.h>
 
@@ -66,29 +67,27 @@ namespace citadel::gui {
         m_bIsVisible = jValue.get("isVisible", true).asBool();
         m_bIsActive = jValue.get("isActive", true).asBool();
         
-//        Json::Value renderData = jValue.get("renderData", Json::arrayValue);
-//        for (auto data : renderData) {
-//            std::string id = data.get("id", "").asString();
-//            if (id != "") {
-//                m_env->addRenderData(id, data);
-//            }
-//        }
+        Json::Value renderData = jValue.get("renderData", Json::arrayValue);
+        for (auto data : renderData) {
+            std::string id = data.get("id", "").asString();
+            if (id != "") {
+                m_env->addRenderData(id, data);
+            }
+        }
         
 //        for (auto jChild : jValue.get("children", Json::arrayValue)) {
 //            addChild(GUIFactory::buildObject(jChild, m_env));
 //        }
         
-//        for (auto jChild : jValue.get("constraint", Json::arrayValue)) {
-//            auto targetName = jChild.get("target", Json::stringValue);
-//            auto targetHook = jChild.get("target_hook", Json::intValue);
-//            auto sourceHook = jChild.get("source_hook", Json::intValue);
-//
-//            auto targetObj = m_env->findObject(targetName.asString());
-//
-//            if (targetObj) {
-//                addConstraint({targetObj, (GUIConstraintHook)sourceHook.asInt(), (GUIConstraintHook)targetHook.asInt()});
-//            }
-//        }
+        for (auto jChild : jValue.get("constraint", Json::arrayValue)) {
+            auto targetName = jChild.get("target", Json::stringValue);
+            auto targetHook = jChild.get("target_hook", Json::intValue);
+            auto sourceHook = jChild.get("source_hook", Json::intValue);
+            
+            auto targetObj = m_env->findObject(targetName.asString());
+            
+            addConstraint({targetObj, targetName.asString(), (GUIConstraintHook)sourceHook.asInt(), (GUIConstraintHook)targetHook.asInt()});
+        }
         
 //        for (auto jTrigger : jValue.get("triggers", Json::arrayValue)) {
 //            auto trigger = std::make_unique<GUIActionTrigger>(shared_from_this());
@@ -238,24 +237,6 @@ namespace citadel::gui {
         newChild->m_env = m_env;
         m_children.emplace_back(newChild);
         setNeedsUpdate();
-    }
-    
-    void GUIObject::addChild(std::string file)
-    {
-        Json::Value jroot = Serializer::loadFile(file);
-        addChild(jroot);
-    }
-    
-    void GUIObject::addChild(Json::Value jValue)
-    {
-        if (jValue.isArray())  {
-            for (auto it = jValue.begin(); it != jValue.end(); ++it)  {
-//                addChild(GUIFactory::buildObject(*it, m_env));
-            }
-        }
-        else {
-//            addChild(GUIFactory::buildObject(jValue, m_env));
-        }
     }
     
     std::shared_ptr<GUIObject> GUIObject::findObjectAt(const glm::vec2 & point)

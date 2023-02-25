@@ -35,7 +35,7 @@ namespace citadel::gui {
 //        WindowEventHandler * m_handler; ///< Pointer to event handler to register with for mouse/touch events.
         
         std::vector<std::shared_ptr<GUIObject>> m_objects;
-//        std::map<std::string,Json::Value> m_renderData;
+        std::map<std::string, Json::Value> m_renderData;
         
         std::map<std::string, std::vector<std::shared_ptr<GUIEventListener>> > m_listeners;
         
@@ -61,21 +61,19 @@ namespace citadel::gui {
         void removeEventListener(const std::string& eventName, std::shared_ptr<GUIEventListener> listener);
         
         void draw() const;
-        virtual void Tick(const Time & deltaTime) override;
+        virtual void Tick(const Time& deltaTime) override;
 
         virtual void serialize(Json::Value& jValue) const override;
         virtual void deserialize(const Json::Value& jValue) override;
         
         void addObject(std::shared_ptr<GUIObject> newObject);
-        void addObject(const std::string & file);
-        void addObject(const Json::Value& jValue);
         
         glm::vec2 getLastMousePos() const;
         
-        std::shared_ptr<GUIObject> findObject(const std::string & objectID) const;
-        std::shared_ptr<GUIObject> findObjectAt(const glm::vec2 & point) const;
-//        Json::Value getRenderData(const std::string & renderID);
-//        inline void addRenderData(const std::string & renderID, const Json::Value& value) { m_renderData[renderID] = value; };
+        std::shared_ptr<GUIObject> findObject(const std::string& objectID) const;
+        std::shared_ptr<GUIObject> findObjectAt(const glm::vec2& point) const;
+        Json::Value getRenderData(const std::string& renderID);
+        inline void addRenderData(const std::string& renderID, const Json::Value& value) { m_renderData[renderID] = value; };
 //
         const glm::vec2 & getSize() const;
         

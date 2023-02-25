@@ -81,9 +81,6 @@ namespace citadel::gui
         void removeConstraint(const GUIConstraint& constraint);
         
         void addChild(std::shared_ptr<GUIObject> newChild);
-        void addChild(std::string file);
-        void addChild(Json::Value jValue);
-        
         bool removeChild(const std::string& ID);
         
         std::shared_ptr<GUIObject> findObjectAt(const glm::vec2 & point);

@@ -18,9 +18,6 @@ namespace citadel::gui {
     GUIEnvironment::~GUIEnvironment()
     {
 //		detachEventHandler();
-//		m_listeners.clear();
-//		m_renderData.clear();
-		m_objects.clear();
     }
     
     std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithFile(const std::string & path, const std::string & file)
@@ -258,24 +255,6 @@ namespace citadel::gui {
         m_bNeedsUpdate = true;
     }
     
-    void GUIEnvironment::addObject(const std::string & file)
-    {
-        Json::Value jroot = Serializer::loadFile(m_path + file);
-        addObject(jroot);
-    }
-    
-    void GUIEnvironment::addObject(const Json::Value& jValue)
-    {
-        if (jValue.isArray()) {
-            for (auto & it : jValue) {
-//                addObject(GUIFactory::buildObject(it, shared_from_this()));
-            }
-        }
-        else {
-//            addObject(GUIFactory::buildObject(jValue, shared_from_this()));
-        }
-    }
-    
     void GUIEnvironment::draw() const
     {
         for (auto & object : m_objects) {
@@ -335,11 +314,11 @@ namespace citadel::gui {
         return nullptr;
     }
     
-//    Json::Value GUIEnvironment::getRenderData(const std::string & renderID)
-//    {
-//        auto findItr = m_renderData.find(renderID);
-//        return (findItr != m_renderData.end()) ? findItr->second : Json::nullValue;
-//    }
+    Json::Value GUIEnvironment::getRenderData(const std::string & renderID)
+    {
+        auto findItr = m_renderData.find(renderID);
+        return (findItr != m_renderData.end()) ? findItr->second : Json::nullValue;
+    }
     
     const glm::vec2 & GUIEnvironment::getSize() const
     {
