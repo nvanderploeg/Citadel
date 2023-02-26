@@ -1094,7 +1094,7 @@ namespace citadel
         
         mesh.vertexBuffer = CreateVertexBuffer(vertices);
         mesh.indexBuffer = CreateIndexBuffer(indices);
-        mesh.indexCount = indices.size();
+        mesh.indexCount = (uint32_t)indices.size();
 
         if (!texturePath.empty()) {
             mesh.texture = CreateTexture(texturePath);

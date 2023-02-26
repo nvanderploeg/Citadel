@@ -72,6 +72,7 @@ namespace citadel::gui {
         
         std::shared_ptr<GUIObject> findObject(const std::string& objectID) const;
         std::shared_ptr<GUIObject> findObjectAt(const glm::vec2& point) const;
+        
         Json::Value getRenderData(const std::string& renderID);
         inline void addRenderData(const std::string& renderID, const Json::Value& value) { m_renderData[renderID] = value; };
 //

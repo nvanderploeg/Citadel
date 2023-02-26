@@ -23,7 +23,7 @@ namespace citadel::ecs
             return entities[newIndex].id;
         }
 
-        EntityID newId = Entity::CreateEntityID(entities.size(), 0);
+        EntityID newId = Entity::CreateEntityID((EntityIndex)entities.size(), 0);
         entities.push_back({ newId, ComponentMask() });
         return entities.back().id;
     }

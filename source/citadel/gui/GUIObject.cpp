@@ -8,6 +8,7 @@
 
 
 #include <gui/GUIObject.hpp>
+#include <gui/GUIFactory.hpp>
 #include <gui/GUIEnvironment.hpp>
 
 #include <system/serializer.h>
@@ -27,7 +28,6 @@ namespace citadel::gui {
     
     bool GUIObject::containsPoint(const glm::vec2 & point) const
     {
-        
         if (point.x < m_position.x)
             return false;
         if (point.x > m_position.x + m_size.x)
@@ -75,9 +75,9 @@ namespace citadel::gui {
             }
         }
         
-//        for (auto jChild : jValue.get("children", Json::arrayValue)) {
-//            addChild(GUIFactory::buildObject(jChild, m_env));
-//        }
+        for (auto jChild : jValue.get("children", Json::arrayValue)) {
+            addChild(GUIFactory::buildObject(jChild, m_env));
+        }
         
         for (auto jChild : jValue.get("constraint", Json::arrayValue)) {
             auto targetName = jChild.get("target", Json::stringValue);

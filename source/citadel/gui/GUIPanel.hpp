@@ -11,6 +11,8 @@
 #include "gui/GUIObject.hpp"
 
 namespace citadel::gui {
+
+    class GUIRenderObject;
     
     class GUIPanel : public GUIObject
     {
@@ -21,7 +23,7 @@ namespace citadel::gui {
         bool m_bDraggable;
         bool m_bInteractable;
         
-//        std::shared_ptr<GUIRenderObject> m_renderObj;
+        std::shared_ptr<GUIRenderObject> m_renderObj;
                 
     public:
         GUIPanel();
@@ -41,7 +43,7 @@ namespace citadel::gui {
         
         virtual void onMouseDragged(const glm::vec2& offset);
         
-//        virtual void setRenderObject( std::shared_ptr<GUIRenderObject> renderObj);
+        virtual void setRenderObject(std::shared_ptr<GUIRenderObject> renderObj);
     };
 
 }

@@ -42,7 +42,6 @@ namespace citadel::gui {
         anEnvironment->m_origin = {0,0};
         
         //Add Input hooks here.
-        
         return anEnvironment;
     }
     std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithBounds(glm::vec4 bounds)
@@ -187,13 +186,13 @@ namespace citadel::gui {
 //        m_origin.serialize(jValue["origin"]);
 //        m_size.serialize(jValue["size"]);
 //
-//        jValue["objects"] = Json::arrayValue;
-//
-//        for (auto it = m_objects.begin(); it != m_objects.end(); ++it) {
-//            Json::Value jChild;
-//            (*it)->serialize(jChild);
-//            jValue["objects"].append(jChild);
-//        }
+        jValue["objects"] = Json::arrayValue;
+
+        for (auto object : m_objects) {
+            Json::Value jChild;
+            object->serialize(jChild);
+            jValue["objects"].append(jChild);
+        }
     }
     
     void GUIEnvironment::deserialize(const Json::Value& jValue)
@@ -275,7 +274,6 @@ namespace citadel::gui {
         for (auto & object : m_objects) {
             if (m_bNeedsUpdate) {
                 object->setNeedsUpdate();
-                
 //                Recti setZone(m_origin.x, m_origin.y, m_size.x, m_size.y);
 //                object->setWorldZone({m_origin, setZone});
             }
