@@ -87,8 +87,9 @@ namespace citadel::gui
     
     bool GUIPanel::containsPoint(const glm::vec2 & point) const
     {
-        if (!m_bInteractable)
+        if (!m_bInteractable) {
             return false;
+        }
 
         return GUIObject::containsPoint(point);
     }

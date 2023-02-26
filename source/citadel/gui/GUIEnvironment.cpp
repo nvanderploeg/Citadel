@@ -20,7 +20,7 @@ namespace citadel::gui {
 //		detachEventHandler();
     }
     
-    std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithFile(const std::string & path, const std::string & file)
+    std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithFile(const std::string& path, const std::string& file)
     {
 //        DEBUG("Loading %s", (path + file).c_str());
         Json::Value jRoot = Serializer::loadFile(path + file);
