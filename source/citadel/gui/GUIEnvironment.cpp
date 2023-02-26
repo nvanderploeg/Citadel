@@ -7,6 +7,7 @@
 //
 
 #include <gui/GUIEnvironment.hpp>
+#include <gui//GUIFactory.hpp>
 #include <gui/GUIObject.hpp>
 
 #include <system/serializer.h>
@@ -218,21 +219,21 @@ namespace citadel::gui {
 //
 //		}
 //
-//        Json::Value renderData = jValue["renderData"];
-//        if (renderData != Json::nullValue) {
-//            for ( auto it = renderData.begin(); it != renderData.end() ; it++) {
-//                Json::Value renderObject = *it;
-//                std::string id = renderObject["id"].asString();
-//                m_renderData[id] = renderObject;
-//            }
-//        }
-//
-//        for (auto jChild : jValue["objects"]) {
-//            std::shared_ptr<GUIObject> obj = GUIFactory::buildObject(jChild, shared_from_this());
-//            if (obj != nullptr) {
-//                m_objects.emplace_back(obj);
-//            }
-//        }
+        Json::Value renderData = jValue["renderData"];
+        if (renderData != Json::nullValue) {
+            for ( auto it = renderData.begin(); it != renderData.end() ; it++) {
+                Json::Value renderObject = *it;
+                std::string id = renderObject["id"].asString();
+                m_renderData[id] = renderObject;
+            }
+        }
+        
+        for (auto jChild : jValue["objects"]) {
+            std::shared_ptr<GUIObject> obj = GUIFactory::buildObject(jChild, shared_from_this());
+            if (obj != nullptr) {
+                m_objects.emplace_back(obj);
+            }
+        }
         
         m_bNeedsUpdate = true;
     }

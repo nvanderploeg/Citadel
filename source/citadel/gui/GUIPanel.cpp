@@ -10,11 +10,12 @@
 
 #include <gui/GUIEnvironment.hpp>
 #include <gui/GUIRenderObject.hpp>
+#include <gui/GUIFactory.hpp>
 
 namespace citadel::gui
 {
 
-//    bool GUIPanel::s_registered = GUIFactory::registerBuilderForClassType(GUIPanel::build, GUIPanel::getType());
+    bool GUIPanel::s_registered = GUIFactory::registerBuilder<GUIPanel>(GUIPanel::build, GUIPanel::getType());
     
     GUIPanel::GUIPanel()
         : GUIObject(getType())

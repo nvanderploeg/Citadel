@@ -20,18 +20,19 @@ namespace citadel::gui
 	{
     public:
         using GUIBuildMethod = std::shared_ptr<GUIObject>(*)(const Json::Value&, std::shared_ptr<GUIEnvironment>);
-        using GUIBuildMap = std::unordered_map<std::string, GUIBuildMethod>;
-
     private:
-        static GUIBuildMap & BuilderMap();
-
+        std::unordered_map<std::string, GUIBuildMethod> m_builderMap;
+        GUIFactory() = default;
     public:
-        GUIFactory() = delete;
-        
+        static GUIFactory* Shared();
         static std::shared_ptr<GUIObject> buildObject(const std::string& filePath, std::shared_ptr<GUIEnvironment> pEnv);
         static std::shared_ptr<GUIObject> buildObject(const Json::Value& objData, std::shared_ptr<GUIEnvironment> pEnv);
         
-        static bool registerBuilderForClassType(GUIBuildMethod builder, const std::string & type);
+        template<typename T>
+        static bool registerBuilder(GUIBuildMethod builder, const std::string & type) {
+             auto buildMap = GUIFactory::Shared()->m_builderMap;
+            buildMap[type] = builder;
+        }
     };
 
 } // namespace citadel::gui

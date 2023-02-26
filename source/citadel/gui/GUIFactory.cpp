@@ -9,21 +9,31 @@
 #include <gui/GUIFactory.hpp>
 
 #include <iostream>
+#include <memory>
+#include <thread>
 
 #include <system/serializer.h>
 
 #include <gui/GUIEnvironment.hpp>
 #include <gui/GUIObject.hpp>
 
+
+namespace {
+
+std::unique_ptr<citadel::gui::GUIFactory> g_factory = nullptr;
+std::mutex g_factoryMutex;
+}
+
 namespace citadel::gui
 {
 
-    GUIFactory::GUIBuildMap& GUIFactory::BuilderMap()
-    {
-        static GUIBuildMap s_builderMap;
-        return s_builderMap;
+    GUIFactory* GUIFactory::Shared() {
+        std::lock_guard<std::mutex> guard(g_factoryMutex);
+        if (!g_factory) {
+            g_factory = std::unique_ptr<GUIFactory>( new GUIFactory());
+        }
+        return g_factory.get();
     }
-    
 
     std::shared_ptr<GUIObject> GUIFactory::buildObject(const std::string& filePath, std::shared_ptr<GUIEnvironment> pEnv)
     {
@@ -37,6 +47,7 @@ namespace citadel::gui
 
     std::shared_ptr<GUIObject> GUIFactory::buildObject(const Json::Value& json, std::shared_ptr<GUIEnvironment> pEnv)
     {
+        auto buildMap = GUIFactory::Shared()->m_builderMap;
         Json::Value jRoot = json;
         if (jRoot.isString()) {
             jRoot  = Serializer::loadFile(pEnv->getPath() + jRoot.asString());
@@ -45,26 +56,16 @@ namespace citadel::gui
         if (jRoot.isObject()) {
             Json::Value typeValue = jRoot["type"];
             if (typeValue != Json::nullValue) {
-                if (auto it = BuilderMap().find(typeValue.asString()); it != BuilderMap().end()) {
+                if (auto it = buildMap.find(typeValue.asString()); it != buildMap.end()) {
                     return it->second(jRoot, pEnv);
                 }
 				else {
-					std::cout << "Didn't find factory for" << typeValue.asString() << std::endl;
+					std::cout << "Didn't find factory for: " << typeValue.asString() << std::endl;
 				}
             }
         }
         
         return nullptr;
-    }
-    
-    bool GUIFactory::registerBuilderForClassType(GUIFactory::GUIBuildMethod buildMethod, const std::string & type)
-    {
-        if (auto it = BuilderMap().find(type); it == BuilderMap().end()) {
-			std::cout << "Registered factory method for " << type << std::endl;
-            BuilderMap()[type] = buildMethod;
-            return true;
-        }
-        return false;
     }
     
 }

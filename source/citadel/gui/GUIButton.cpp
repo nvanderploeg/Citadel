@@ -10,9 +10,11 @@
 #include <gui/GUIEnvironment.hpp>
 #include <gui/GUIRenderObject.hpp>
 
+#include <gui/GUIFactory.hpp>
+
 namespace citadel::gui
 {
-//    bool GUIButton::s_registered = GUIFactory::registerBuilderForClassType(GUIButton::build, GUIButton::getType());
+    bool GUIButton::s_registered = GUIFactory::registerBuilder<GUIButton>(GUIButton::build, GUIButton::getType());
 
     const std::string GUIButton::kOnClickEvent = "onClickedEvent";
 
