@@ -14,8 +14,7 @@
 
 namespace citadel::gui
 {
-    bool GUIButton::s_registered = GUIFactory::registerBuilder<GUIButton>(GUIButton::build, GUIButton::getType());
-
+   
     const std::string GUIButton::kOnClickEvent = "onClickedEvent";
 
 	GUIButton::GUIButton(): GUIObject(getType()) { }

@@ -17,20 +17,38 @@
 #include <gui/GUIEnvironment.hpp>
 #include <gui/GUIObject.hpp>
 
+#include <gui/GUIButton.hpp>
+//#include <gui/GUINineSlice.hpp>
+#include <gui/GUIPanel.hpp>
+//#include <gui/GUIProgressBar.hpp>
+//#include <gui/GUISliderBar.hpp>
+//#include <gui/GUIText.hpp>
+//#include <gui/GUIThreeSlice.hpp>
 
 namespace {
 
 std::unique_ptr<citadel::gui::GUIFactory> g_factory = nullptr;
 std::mutex g_factoryMutex;
+
 }
 
 namespace citadel::gui
 {
+    void BaseRegisterObjects() {
+        g_factory->registerBuilder(GUIButton::build, GUIButton::getType());
+//        factory->registerBuilder(GUINineSlice::build, GUINineSlice::getType());
+        g_factory->registerBuilder(GUIPanel::build, GUIPanel::getType());
+//        factory->registerBuilder(GUIProgressBar::build, GUIProgressBar::getType());
+//        factory->registerBuilder(GUISliderBar::build, GUISliderBar::getType());
+//        factory->registerBuilder(GUIText::build, GUIText::getType());
+//        factory->registerBuilder(GUIThreeSlice::build, GUIThreeSlice::getType());
+    }
 
     GUIFactory* GUIFactory::Shared() {
         std::lock_guard<std::mutex> guard(g_factoryMutex);
         if (!g_factory) {
             g_factory = std::unique_ptr<GUIFactory>( new GUIFactory());
+            BaseRegisterObjects();
         }
         return g_factory.get();
     }

@@ -16,5 +16,4 @@ struct Camera {
     virtual glm::mat4 CalculateViewMatrix() const;
 };
 
-
 }

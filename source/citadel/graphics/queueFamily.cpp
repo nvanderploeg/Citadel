@@ -4,7 +4,6 @@
 
 namespace citadel
 {
-    //TODO Move to a better place
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice _device, VkSurfaceKHR _surface) {
          QueueFamilyIndices indices;
 

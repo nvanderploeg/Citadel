@@ -15,8 +15,6 @@
 namespace citadel::gui
 {
 
-    bool GUIPanel::s_registered = GUIFactory::registerBuilder<GUIPanel>(GUIPanel::build, GUIPanel::getType());
-    
     GUIPanel::GUIPanel()
         : GUIObject(getType())
         , m_bIsMouseDown(false)

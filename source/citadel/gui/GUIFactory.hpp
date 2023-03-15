@@ -28,10 +28,8 @@ namespace citadel::gui
         static std::shared_ptr<GUIObject> buildObject(const std::string& filePath, std::shared_ptr<GUIEnvironment> pEnv);
         static std::shared_ptr<GUIObject> buildObject(const Json::Value& objData, std::shared_ptr<GUIEnvironment> pEnv);
         
-        template<typename T>
-        static bool registerBuilder(GUIBuildMethod builder, const std::string & type) {
-             auto buildMap = GUIFactory::Shared()->m_builderMap;
-            buildMap[type] = builder;
+        bool registerBuilder(GUIBuildMethod builder, const std::string & type) {
+            m_builderMap[type] = builder;
         }
     };
 
