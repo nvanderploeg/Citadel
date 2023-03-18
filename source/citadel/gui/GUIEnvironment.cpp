@@ -263,6 +263,12 @@ namespace citadel::gui {
         }
     }
     
+
+    void GUIEnvironment::appendRenderData(const RenderPayload& payload)
+    {
+        m_renderer->Add(payload);
+    }
+    
     void GUIEnvironment::Tick(const Time & deltaTime)
     {
         //Order object
