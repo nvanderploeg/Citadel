@@ -375,7 +375,8 @@ namespace citadel
     #pragma mark - Swap chain
 
     void GraphicsCore::CleanupSwapChain()
-    {   
+    {
+        vkDeviceWaitIdle(device);
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
@@ -394,8 +395,6 @@ namespace citadel
 
     void GraphicsCore::RecreateSwapChain()
     {
-        vkDeviceWaitIdle(device);
-
         CleanupSwapChain();
 
         swapChain = SwapChain::Create(window, device, physicalDevice, surface);

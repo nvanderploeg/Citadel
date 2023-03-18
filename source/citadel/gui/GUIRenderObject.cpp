@@ -8,8 +8,23 @@
 
 
 #include <gui/GUIRenderObject.hpp>
+#include <graphics/graphicsCore.h>
 
+namespace  {
 
+const std::vector<citadel::Vertex> baseVerticies = {
+    {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+    {{1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
+    {{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+    {{0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+};
+
+const std::vector<uint32_t> baseIndicies = {
+    0, 1, 2, //topRight
+    2, 3, 0 //bottomLeft
+};
+
+}
 
 namespace citadel::gui {
     
@@ -23,20 +38,20 @@ namespace citadel::gui {
     {
         // NOTE: parse colour before we parse the texture so that colour can be applied to the texture
         
-//        Json::Value jColour = jValue.get("colour", Json::nullValue);
-//        if (jColour != Json::nullValue)
-//        {
-//            Json::Value jFill = jColour.get("fill", Json::nullValue);
-//            if (jFill != Json::nullValue)
-//            {
+        Json::Value jColour = jValue.get("colour", Json::nullValue);
+        if (jColour != Json::nullValue)
+        {
+            Json::Value jFill = jColour.get("fill", Json::nullValue);
+            if (jFill != Json::nullValue)
+            {
 //                Colour fillColour;
 //                fillColour.deserialize(jFill);
 //                setFillColour(fillColour);
-//            }
-//
-//            Json::Value jVertexColours = jColour.get("vertex", Json::nullValue);
-//            if (jVertexColours != Json::nullValue)
-//            {
+            }
+
+            Json::Value jVertexColours = jColour.get("vertex", Json::nullValue);
+            if (jVertexColours != Json::nullValue)
+            {
 //                Colour vertexColour;
 //                std::vector<Colour> vertexColours;
 //                for (auto & jColour : jVertexColours)
@@ -45,20 +60,23 @@ namespace citadel::gui {
 //                    vertexColours.emplace_back(vertexColour);
 //                }
 //                setVertexColours(vertexColours);
-//            }
-//        }
-//
-//        //TODO: vertex colour data needs to sync with rect data!!!
-//        // NOTE: by default, we'll have one quad. If any are specified in data, this one will be overwritten.
-//        m_vertices.clear();
-//        m_vertices.resize(4);
-//
-//        Json::Value jTexture = jValue.get("texture", Json::nullValue);
-//        if (jTexture != Json::nullValue)
-//        {
-//            Json::Value jName = jTexture.get("name", Json::nullValue);
-//            if (jName != Json::nullValue)
-//            {
+            }
+        }
+
+        //TODO: vertex colour data needs to sync with rect data!!!
+        // NOTE: by default, we'll have one quad. If any are specified in data, this one will be overwritten.
+        
+        m_mesh.vertexBuffer = citadel::GraphicsCore::Instance()->CreateVertexBuffer(baseVerticies);
+        m_mesh.indexBuffer = citadel::GraphicsCore::Instance()->CreateIndexBuffer(baseIndicies);
+        m_mesh.indexCount = (uint32_t)baseIndicies.size();
+//        cubeMesh.texture = citadel::GraphicsCore::Instance()->CreateTexture(VIKING_TEXTURE_PATH);
+
+        Json::Value jTexture = jValue.get("texture", Json::nullValue);
+        if (jTexture != Json::nullValue && jTexture.type() == Json::objectValue)
+        {
+            Json::Value jName = jTexture.get("name", Json::nullValue);
+            if (jName != Json::nullValue)
+            {
 //                auto & textureManager = Game::get()->getTextureManager();
 //                // NOTE: TextureManager checks for nullptr; releasing any existing texture
 //                textureManager.releaseResource(m_texture);
@@ -71,8 +89,8 @@ namespace citadel::gui {
 //                else {
 //                    setTextureCoords({0.0f, 0.0f, m_texture->getSize().x, m_texture->getSize().y});
 //                }
-//            }
-//        }
+            }
+        }
         
         syncVertexColours();
         
@@ -132,8 +150,13 @@ namespace citadel::gui {
         m_needsUpdate = true;
     }
     
-    void GUIRenderObject::draw() const
+    RenderPayload GUIRenderObject::draw() const
     {
+        RenderPayload payload;
+        payload.meshData = m_mesh;
+        payload.model = glm::mat4(1.0f);
+        
+        return std::move(payload);
     }
 
     void GUIRenderObject::Tick(const Time& deltaTime)

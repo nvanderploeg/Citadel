@@ -12,6 +12,7 @@
 
 #include <system/JSONSerializable.h>
 #include <system/tickable.h>
+#include <graphics/meshData.h>
 
 namespace citadel::gui
 {
@@ -42,8 +43,7 @@ namespace citadel::gui
     class GUIRenderObject : public ITickable, public IJSONSerializable
     {
     protected:
-//        Texture * m_texture;
-//        sf::VertexArray m_vertices;
+        MeshData m_mesh;
         glm::vec4 m_textureRect;
         glm::vec4 m_bounds;
         GUIBorderSize m_borderSize;
@@ -56,7 +56,7 @@ namespace citadel::gui
         virtual void serialize(Json::Value& jValue) const override;
         virtual void deserialize(const Json::Value& jValue) override;
         
-        virtual void draw() const;
+        virtual RenderPayload draw() const;
         virtual void Tick(const Time & deltaTime) override;
         
 //        Texture * getTexture() { return m_texture; }

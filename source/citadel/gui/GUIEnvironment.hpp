@@ -12,6 +12,8 @@
 #include <glm/glm.hpp> //For vec2
 #include <system/JSONSerializable.h>
 #include <system/tickable.h>
+#include <graphics/renderer.h>
+#include <graphics/meshData.h>
 
 namespace citadel::gui {
     class GUIObject;
@@ -36,6 +38,7 @@ namespace citadel::gui {
         
         std::vector<std::shared_ptr<GUIObject>> m_objects;
         std::map<std::string, Json::Value> m_renderData;
+        std::shared_ptr<Renderer> m_renderer;
         
         std::map<std::string, std::vector<std::shared_ptr<GUIEventListener>> > m_listeners;
         
@@ -52,6 +55,8 @@ namespace citadel::gui {
         static std::shared_ptr<GUIEnvironment> environmentWithFile(const std::string& path, const std::string& file);
         static std::shared_ptr<GUIEnvironment> environmentWithSize(glm::vec2 size);
         static std::shared_ptr<GUIEnvironment> environmentWithBounds(glm::vec4 bounds);
+        
+        inline void SetRenderer(std::shared_ptr<Renderer> renderer) { m_renderer = renderer; }
 //
 //        void attachEventHandler(WindowEventHandler * handler);
 //        void detachEventHandler();
@@ -60,7 +65,9 @@ namespace citadel::gui {
         void addEventListener(const std::string& eventName, std::shared_ptr<GUIEventListener> listener);
         void removeEventListener(const std::string& eventName, std::shared_ptr<GUIEventListener> listener);
         
+        void appendRenderData(const RenderPayload& payload);
         void draw() const;
+        
         virtual void Tick(const Time& deltaTime) override;
 
         virtual void serialize(Json::Value& jValue) const override;

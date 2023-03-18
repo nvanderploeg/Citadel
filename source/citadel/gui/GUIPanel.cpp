@@ -63,7 +63,7 @@ namespace citadel::gui
     void GUIPanel::draw() const
     {
         if (m_renderObj) {
-            m_renderObj->draw();
+            m_env->appendRenderData(m_renderObj->draw());
         }
         
         GUIObject::draw();
