@@ -8,13 +8,12 @@
 namespace citadel {
 
 struct Camera {
-    glm::vec3 m_position;
-    glm::vec3 m_target;
-    glm::vec3 m_upVector;
+    glm::vec3 m_position = {2, 2, 2};
+    glm::vec3 m_target = {0, 0, 0};
+    glm::vec3 m_upVector = {0, 0, 1};
     Camera() = default;
     virtual ~Camera() = default;
     virtual glm::mat4 CalculateViewMatrix() const;
 };
-
 
 }
