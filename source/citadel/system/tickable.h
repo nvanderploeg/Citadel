@@ -2,7 +2,7 @@
 #ifndef __UPDATEABLE_H__
 #define __UPDATEABLE_H__
 
-#include "cTime.h"
+#include "citadel/system/cTime.h"
 
 namespace citadel
 {

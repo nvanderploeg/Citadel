@@ -2,7 +2,7 @@
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 
-#include "system/cTime.h"
+#include "citadel/system/cTime.h"
 
 namespace citadel {
 

@@ -1,4 +1,4 @@
-﻿//
+//
 //  sceneStack.h
 //  CitadelEngine
 //
@@ -8,7 +8,7 @@
 #pragma once
 #include <memory>
 
-#include "cTime.h"
+#include "citadel/system/cTime.h"
 
 namespace citadel
 {

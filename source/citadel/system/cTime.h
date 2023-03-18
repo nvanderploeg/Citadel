@@ -1,6 +1,5 @@
 
-#ifndef __TIME_H__
-#define __TIME_H__
+#pragma once
 
 #include "JSONSerializable.h"
 
@@ -277,5 +276,3 @@ namespace citadel
 	Time& operator%= (Time &left, Time right);
 
 } // namespace citadel
-
-#endif // __TIME_H__

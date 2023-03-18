@@ -3,7 +3,7 @@
 //  CitadelEngine
 //
 //  Created by Norman van der Ploeg.
-//  Copyright © 2020 Floating Citadel Games. All rights reserved.
+//  Copyright ï¿½ 2020 Floating Citadel Games. All rights reserved.
 //
 #pragma once
 
@@ -24,5 +24,6 @@
 #include "system/serializer.h"
 #include "system/cTime.h"
 #include "system/tickable.h"
+#include "system/traceLog.hpp"
 #include "system/clock.h"
 #include "system/errorCodes.h"

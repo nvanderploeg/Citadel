@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "cTime.h"
+#include "citadel/system/cTime.h"
 #include "renderer.h"
 #include "ecs/registry.h"
 

@@ -19,6 +19,8 @@ serializer.h
 tickable.h
 timer.cpp
 timer.h
+traceLog.cpp
+traceLog.hpp
 windowProperties.cpp
 windowProperties.h
 )
