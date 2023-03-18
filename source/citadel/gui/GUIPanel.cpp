@@ -8,17 +8,19 @@
 
 #include <gui/GUIPanel.hpp>
 
+#include <gui/GUIEnvironment.hpp>
+#include <gui/GUIRenderObject.hpp>
+#include <gui/GUIFactory.hpp>
+
 namespace citadel::gui
 {
 
-//    bool GUIPanel::s_registered = GUIFactory::registerBuilderForClassType(GUIPanel::build, GUIPanel::getType());
-    
     GUIPanel::GUIPanel()
         : GUIObject(getType())
         , m_bIsMouseDown(false)
         , m_bDraggable(true)
         , m_bInteractable(true)
-//        , m_renderObj(nullptr)
+        , m_renderObj(nullptr)
     {
 
     }
@@ -47,48 +49,46 @@ namespace citadel::gui
         m_bInteractable = jValue.get("interactable", true).asBool();
         
         Json::Value renderValue = jValue.get("renderComponent", Json::nullValue);
-        if (renderValue != Json::nullValue)
-        {
-//            std::string renderID = renderValue.asString();
-//            Json::Value renderComponent = m_env->getRenderData(renderID);
-//            if (renderComponent != Json::nullValue)
-//            {
-//                m_renderObj = std::make_shared<GUIRenderObject>();
-//                m_renderObj->deserialize(renderComponent);
-//                m_renderObj->setSize(m_size);
-//            }
+        if (renderValue != Json::nullValue) {
+            std::string renderID = renderValue.asString();
+            Json::Value renderComponent = m_env->getRenderData(renderID);
+            if (renderComponent != Json::nullValue) {
+                m_renderObj = std::make_shared<GUIRenderObject>();
+                m_renderObj->deserialize(renderComponent);
+                m_renderObj->setSize(m_size);
+            }
         }
     }
     
     void GUIPanel::draw() const
     {
-//        if (m_renderObj)
-//        {
-//            m_renderObj->draw(target, states);
-//        }
-//        GUIObject::draw(target, states);
+        if (m_renderObj) {
+            m_renderObj->draw();
+        }
+        
+        GUIObject::draw();
     }
     
     void GUIPanel::Tick(const Time& deltaTime)
     {
-//        if (needsUpdate())
-//        {
-//            if (m_renderObj) {
+        if (needsUpdate()) {
+            if (m_renderObj) {
 //                m_renderObj->setBounds(calculateSubWorld().zone);
-//            }
-//        }
-//        if (m_renderObj)
-//        {
-//            m_renderObj->update(deltaTime);
-//        }
-//
+            }
+        }
+        
+        if (m_renderObj) {
+            m_renderObj->Tick(deltaTime);
+        }
+        
         GUIObject::Tick(deltaTime);
     }
     
     bool GUIPanel::containsPoint(const glm::vec2 & point) const
     {
-        if (!m_bInteractable)
+        if (!m_bInteractable) {
             return false;
+        }
 
         return GUIObject::containsPoint(point);
     }
@@ -103,14 +103,14 @@ namespace citadel::gui
         }
     }
     
-//    void GUIPanel::setRenderObject(std::shared_ptr<GUIRenderObject> renderObj)
-//    {
-//        if (nullptr == renderObj)
-//            return; // Throw?? Assert???
-//
-//        m_renderObj = renderObj;
-//        m_renderObj->setSize(m_size);
-//        setNeedsUpdate();
-//    }
+    void GUIPanel::setRenderObject(std::shared_ptr<GUIRenderObject> renderObj)
+    {
+        if (nullptr == renderObj)
+            return; // Throw?? Assert???
+
+        m_renderObj = renderObj;
+        m_renderObj->setSize(m_size);
+        setNeedsUpdate();
+    }
     
 } //namespace citadel::gui

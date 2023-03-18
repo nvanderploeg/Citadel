@@ -14,6 +14,8 @@ GUIButton.hpp
 GUIConstraint.hpp
 GUIEnvironment.cpp
 GUIEnvironment.hpp
+GUIFactory.cpp
+GUIFactory.hpp
 GUIObject.cpp
 GUIObject.hpp
 GUIPanel.cpp

@@ -17,7 +17,7 @@ namespace citadel::ecs
 #define INVALID_ENTITY CreateEntityId(EntityIndex(-1), 0)
 
     using EntityID = uint64_t;
-    using EntityIndex = uint32_t;
+    using EntityIndex = uint64_t;
     using EntityVersion = uint32_t;
     const ComponentID MAX_COMPONENT_TYPES = 64;
     using ComponentMask = std::bitset<MAX_COMPONENT_TYPES>;

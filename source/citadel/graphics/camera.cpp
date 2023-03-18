@@ -1,10 +1,11 @@
 #include "camera.h"
 
-namespace citadel {
+namespace citadel
+{
 
-    glm::mat4 Camera::CalculateViewMatrix() const {
+    glm::mat4 Camera::CalculateViewMatrix() const
+    {
         return glm::lookAt(m_position, m_target, m_upVector);
     }
-
 
 }

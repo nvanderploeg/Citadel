@@ -10,10 +10,11 @@
 #include <gui/GUIEnvironment.hpp>
 #include <gui/GUIRenderObject.hpp>
 
+#include <gui/GUIFactory.hpp>
+
 namespace citadel::gui
 {
-//    bool GUIButton::s_registered = GUIFactory::registerBuilderForClassType(GUIButton::build, GUIButton::getType());
-
+   
     const std::string GUIButton::kOnClickEvent = "onClickedEvent";
 
 	GUIButton::GUIButton(): GUIObject(getType()) { }
@@ -48,7 +49,6 @@ namespace citadel::gui
         }
     }
 
-
     void GUIButton::setButtonState(const EButtonState state, const Json::Value& jValue)
     {
         if (jValue == Json::nullValue) {
@@ -58,14 +58,13 @@ namespace citadel::gui
         Json::Value renderValue = jValue["renderComponent"];
         if (renderValue != Json::nullValue) {
             std::string renderID = renderValue.asString();
-//            Json::Value renderComponent = m_env->getRenderData(renderID);
-//            if (renderComponent != Json::nullValue)
-//            {
-//                auto renderObjs = std::make_shared<GUIRenderObject>();
-//                renderObjs->deserialize(renderComponent);
-//                renderObjs->setSize(m_size);
-//                setButtonStateRenderObj(state, renderObjs);
-//            }
+            Json::Value renderComponent = m_env->getRenderData(renderID);
+            if (renderComponent != Json::nullValue) {
+                auto renderObjs = std::make_shared<GUIRenderObject>();
+                renderObjs->deserialize(renderComponent);
+                renderObjs->setSize(m_size);
+                setButtonStateRenderObj(state, renderObjs);
+            }
         }
     }
 
@@ -105,8 +104,7 @@ namespace citadel::gui
     void GUIButton::setCurrentState(EButtonState state)
     {
         m_currentState = state;
-        if (nullptr != m_renderObjs[m_currentState])
-        {
+        if (m_renderObjs[m_currentState]) {
 //            m_renderObjs[m_currentState]->setBounds(calculateSubWorld().zone);
             m_renderObjs[m_currentState]->Tick(Time());
         }
@@ -132,11 +130,13 @@ namespace citadel::gui
         GUIObject::onActionEvent("__button_up", shared_from_this());
         
 		if (m_bIsMouseDown) {
-            if (m_onClick)
+            if (m_onClick) {
                 m_onClick();
+            }
             
-//            if (m_env)
-//                m_env->emitEvent(kOnClickEvent, shared_from_this());
+            if (m_env) {
+                m_env->emitEvent(kOnClickEvent, shared_from_this());
+            }
 //            GameEvent<Json::Value> clickEvent("click", Json::nullValue);
 //            m_gameEventHandler.pushEvent(clickEvent);
         }

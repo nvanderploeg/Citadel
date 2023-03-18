@@ -7,6 +7,7 @@
 //
 
 #include <gui/GUIEnvironment.hpp>
+#include <gui//GUIFactory.hpp>
 #include <gui/GUIObject.hpp>
 
 #include <system/serializer.h>
@@ -14,13 +15,12 @@
 
 namespace citadel::gui {
     
-    
     GUIEnvironment::~GUIEnvironment()
     {
 //		detachEventHandler();
     }
     
-    std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithFile(const std::string & path, const std::string & file)
+    std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithFile(const std::string& path, const std::string& file)
     {
 //        DEBUG("Loading %s", (path + file).c_str());
         Json::Value jRoot = Serializer::loadFile(path + file);
@@ -42,7 +42,6 @@ namespace citadel::gui {
         anEnvironment->m_origin = {0,0};
         
         //Add Input hooks here.
-        
         return anEnvironment;
     }
     std::shared_ptr<GUIEnvironment> GUIEnvironment::environmentWithBounds(glm::vec4 bounds)
@@ -187,13 +186,13 @@ namespace citadel::gui {
 //        m_origin.serialize(jValue["origin"]);
 //        m_size.serialize(jValue["size"]);
 //
-//        jValue["objects"] = Json::arrayValue;
-//
-//        for (auto it = m_objects.begin(); it != m_objects.end(); ++it) {
-//            Json::Value jChild;
-//            (*it)->serialize(jChild);
-//            jValue["objects"].append(jChild);
-//        }
+        jValue["objects"] = Json::arrayValue;
+
+        for (auto object : m_objects) {
+            Json::Value jChild;
+            object->serialize(jChild);
+            jValue["objects"].append(jChild);
+        }
     }
     
     void GUIEnvironment::deserialize(const Json::Value& jValue)
@@ -219,21 +218,21 @@ namespace citadel::gui {
 //
 //		}
 //
-//        Json::Value renderData = jValue["renderData"];
-//        if (renderData != Json::nullValue) {
-//            for ( auto it = renderData.begin(); it != renderData.end() ; it++) {
-//                Json::Value renderObject = *it;
-//                std::string id = renderObject["id"].asString();
-//                m_renderData[id] = renderObject;
-//            }
-//        }
-//
-//        for (auto jChild : jValue["objects"]) {
-//            std::shared_ptr<GUIObject> obj = GUIFactory::buildObject(jChild, shared_from_this());
-//            if (obj != nullptr) {
-//                m_objects.emplace_back(obj);
-//            }
-//        }
+        Json::Value renderData = jValue["renderData"];
+        if (renderData != Json::nullValue) {
+            for ( auto it = renderData.begin(); it != renderData.end() ; it++) {
+                Json::Value renderObject = *it;
+                std::string id = renderObject["id"].asString();
+                m_renderData[id] = renderObject;
+            }
+        }
+        
+        for (auto jChild : jValue["objects"]) {
+            std::shared_ptr<GUIObject> obj = GUIFactory::buildObject(jChild, shared_from_this());
+            if (obj != nullptr) {
+                m_objects.emplace_back(obj);
+            }
+        }
         
         m_bNeedsUpdate = true;
     }
@@ -275,7 +274,6 @@ namespace citadel::gui {
         for (auto & object : m_objects) {
             if (m_bNeedsUpdate) {
                 object->setNeedsUpdate();
-                
 //                Recti setZone(m_origin.x, m_origin.y, m_size.x, m_size.y);
 //                object->setWorldZone({m_origin, setZone});
             }
